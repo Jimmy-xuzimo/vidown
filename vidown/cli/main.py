@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from .. import __version__
+from ..compat import configure_utf8_stdout
 from ..core.config import load_config
 from ..core.logger import get_logger, setup_logging
 from ..core.models import DownloadStatus
@@ -305,6 +306,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Optional[List[str]] = None) -> int:
+    # Windows cp1252 兼容：argparse 在 --help 之前会格式化带中文的 help 文本，
+    # 这要求 stdout 是 utf-8 编码。
+    configure_utf8_stdout()
     parser = build_parser()
     if not argv:
         argv = sys.argv[1:]
