@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Optional
 
-from .models import FormatInfo, VideoInfo, MediaKind
-from .config import QualityConfig, Config
-
+from .models import FormatInfo, VideoInfo
+from .config import QualityConfig
 
 # ----------------------------------------------------------------------
 # 评估函数
 # ----------------------------------------------------------------------
+
 
 def _is_h264(f: FormatInfo) -> bool:
     c = (f.vcodec or "").lower()
@@ -64,7 +64,12 @@ def _score_codec(f: FormatInfo, quality: QualityConfig) -> float:
         return 1000
     if quality.force_codec.lower() == "vp9" and _is_vp9(f):
         return 1000
-    if quality.force_codec.lower() == "h264" and not quality.allow_hevc and not quality.allow_av1 and not quality.allow_vp9:
+    if (
+        quality.force_codec.lower() == "h264"
+        and not quality.allow_hevc
+        and not quality.allow_av1
+        and not quality.allow_vp9
+    ):
         # 拒绝非允许的编码
         if _is_hevc(f) or _is_av1(f) or _is_vp9(f):
             return -1000
@@ -74,6 +79,7 @@ def _score_codec(f: FormatInfo, quality: QualityConfig) -> float:
 @dataclass
 class SelectionResult:
     """格式选择结果。"""
+
     video: Optional[FormatInfo] = None
     audio: Optional[FormatInfo] = None
     single: Optional[FormatInfo] = None
@@ -87,6 +93,7 @@ class SelectionResult:
 # ----------------------------------------------------------------------
 # 主选择函数
 # ----------------------------------------------------------------------
+
 
 def select_formats(
     info: VideoInfo,
@@ -109,9 +116,15 @@ def select_formats(
     # 偏好最高 / 特定分辨率
     if quality.preference != "best":
         target_h = {
-            "8k": 4320, "2160p": 2160, "4k": 2160,
-            "1440p": 1440, "2k": 1440,
-            "1080p": 1080, "720p": 720, "480p": 480, "360p": 360,
+            "8k": 4320,
+            "2160p": 2160,
+            "4k": 2160,
+            "1440p": 1440,
+            "2k": 1440,
+            "1080p": 1080,
+            "720p": 720,
+            "480p": 480,
+            "360p": 360,
         }.get(quality.preference.lower())
         if target_h:
             # 选择不超过目标的最高分辨率
@@ -126,11 +139,7 @@ def select_formats(
 
     # 评分：编码偏好 + 分辨率 + 码率
     def _score(f: FormatInfo) -> float:
-        return (
-            _score_codec(f, quality)
-            + float(_height(f))
-            + (f.tbr or f.vbr or 0) / 100.0
-        )
+        return _score_codec(f, quality) + float(_height(f)) + (f.tbr or f.vbr or 0) / 100.0
 
     videos.sort(key=_score, reverse=True)
     audios.sort(key=lambda f: (f.abr or f.tbr or 0), reverse=True)
@@ -138,11 +147,16 @@ def select_formats(
     best_video = videos[0]
     best_audio = audios[0] if audios else None
 
+    # 如果 best_audio 和 best_video 其实是同一条流（即没有独立音频轨道），
+    # 不要把它当作需要合并的两条流。
+    if best_audio is best_video:
+        best_audio = None
+
     # 如果 best_video 自身已含音频且非 video-only，优先单文件
     if _has_audio(best_video) and not prefer_separate:
         return SelectionResult(single=best_video, reason="单流 (含音频)")
 
-    # 如果无单独音频而 best_video 含音频
+    # 如果无独立音频而 best_video 含音频，走单流
     if not best_audio and _has_audio(best_video):
         return SelectionResult(single=best_video, reason="单流 (含音频)")
 
@@ -162,9 +176,15 @@ def build_ytdlp_format_string(quality: QualityConfig) -> str:
             return "bv*[vcodec~='^((he|a)vc|h26[45])']+ba/bv*+ba/b"
         # 指定分辨率
         target_h = {
-            "8k": 4320, "2160p": 2160, "4k": 2160,
-            "1440p": 1440, "2k": 1440,
-            "1080p": 1080, "720p": 720, "480p": 480, "360p": 360,
+            "8k": 4320,
+            "2160p": 2160,
+            "4k": 2160,
+            "1440p": 1440,
+            "2k": 1440,
+            "1080p": 1080,
+            "720p": 720,
+            "480p": 480,
+            "360p": 360,
         }.get(pref)
         if target_h:
             return (

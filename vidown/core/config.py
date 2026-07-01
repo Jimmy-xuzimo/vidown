@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 import json
-import os
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 try:
     import yaml  # type: ignore
+
     _HAS_YAML = True
 except ImportError:
     _HAS_YAML = False
@@ -78,9 +78,7 @@ class GeneralConfig:
 class YtDlpEngineConfig:
     enabled: bool = True
     format_selector: str = "bestvideo*+bestaudio/best"
-    h264_format_selector: str = (
-        "bv*[vcodec~='^((he|a)vc|h26[45])']+ba/bv*+ba/b"
-    )
+    h264_format_selector: str = "bv*[vcodec~='^((he|a)vc|h26[45])']+ba/bv*+ba/b"
     extra_args: List[str] = field(default_factory=list)
 
 
@@ -141,6 +139,7 @@ class UIConfig:
 @dataclass
 class Config:
     """Vidown 顶层配置。"""
+
     general: GeneralConfig = field(default_factory=GeneralConfig)
     quality: QualityConfig = field(default_factory=QualityConfig)
     naming: NamingConfig = field(default_factory=NamingConfig)
@@ -169,6 +168,7 @@ class Config:
 # ----------------------------------------------------------------------
 # 加载 / 合并
 # ----------------------------------------------------------------------
+
 
 def _deep_merge(base: dict, override: dict) -> dict:
     """递归合并 dict，override 优先。"""

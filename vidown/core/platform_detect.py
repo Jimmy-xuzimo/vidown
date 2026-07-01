@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import re
 from typing import Iterable, List, Optional, Tuple
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 from .models import Platform, MediaKind
-
 
 # ----------------------------------------------------------------------
 # 平台签名表
@@ -52,6 +51,7 @@ _URL_RE = re.compile(r"https?://[^\s<>\"]+", re.IGNORECASE)
 # ----------------------------------------------------------------------
 # 工具函数
 # ----------------------------------------------------------------------
+
 
 def is_url(text: str) -> bool:
     if not text:

@@ -77,9 +77,7 @@ class Database:
     @contextmanager
     def _connect(self) -> Iterator[sqlite3.Connection]:
         with self._lock:
-            conn = sqlite3.connect(
-                self.path, detect_types=sqlite3.PARSE_DECLTYPES, timeout=30
-            )
+            conn = sqlite3.connect(self.path, detect_types=sqlite3.PARSE_DECLTYPES, timeout=30)
             conn.row_factory = sqlite3.Row
             try:
                 yield conn

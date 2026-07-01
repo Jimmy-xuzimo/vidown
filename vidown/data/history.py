@@ -6,7 +6,7 @@ import time
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from ..core.models import DownloadTask, DownloadStatus, Platform
+from ..core.models import DownloadTask
 from .database import Database, get_db
 
 
@@ -84,33 +84,39 @@ class HistoryRepository:
             error_message=excluded.error_message,
             finished_at=excluded.finished_at
         """
-        self.db.execute(sql, (
-            task.id,
-            task.url,
-            task.title or (info.title if info else ""),
-            task.platform.value if task.platform else "unknown",
-            task.status.value,
-            task.output_path or "",
-            file_size,
-            task.engine_used or "",
-            task.error_message or "",
-            task.created_at,
-            task.finished_at or 0.0,
-        ))
+        self.db.execute(
+            sql,
+            (
+                task.id,
+                task.url,
+                task.title or (info.title if info else ""),
+                task.platform.value if task.platform else "unknown",
+                task.status.value,
+                task.output_path or "",
+                file_size,
+                task.engine_used or "",
+                task.error_message or "",
+                task.created_at,
+                task.finished_at or 0.0,
+            ),
+        )
 
     def mark_finished(self, task: DownloadTask) -> None:
         sql = """
         UPDATE history SET status=?, output_path=?, engine=?, error_message=?, finished_at=?
         WHERE task_id=?
         """
-        self.db.execute(sql, (
-            task.status.value,
-            task.output_path or "",
-            task.engine_used or "",
-            task.error_message or "",
-            task.finished_at or time.time(),
-            task.id,
-        ))
+        self.db.execute(
+            sql,
+            (
+                task.status.value,
+                task.output_path or "",
+                task.engine_used or "",
+                task.error_message or "",
+                task.finished_at or time.time(),
+                task.id,
+            ),
+        )
 
     def get(self, task_id: str) -> Optional[HistoryEntry]:
         row = self.db.query_one("SELECT * FROM history WHERE task_id=?", (task_id,))

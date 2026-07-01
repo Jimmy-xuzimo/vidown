@@ -5,13 +5,13 @@ from __future__ import annotations
 import json
 import subprocess
 from dataclasses import dataclass, asdict
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
 @dataclass
 class MediaInfo:
     """ffprobe 返回的精简媒体信息。"""
+
     path: str
     duration: Optional[float] = None
     bit_rate: Optional[int] = None
@@ -67,8 +67,10 @@ def probe_media(path: str, ffprobe_bin: str = "ffprobe") -> MediaInfo:
     """使用 ffprobe 探测媒体信息。"""
     cmd = [
         ffprobe_bin,
-        "-v", "quiet",
-        "-print_format", "json",
+        "-v",
+        "quiet",
+        "-print_format",
+        "json",
         "-show_format",
         "-show_streams",
         path,

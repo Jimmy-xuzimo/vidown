@@ -12,7 +12,7 @@ import os
 import re
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from ..core.config import Config
 from ..core.exceptions import EngineError, NetworkError
@@ -26,7 +26,7 @@ from ..core.models import (
     VideoInfo,
 )
 from ..core.platform_detect import classify_url
-from ..core.utils import check_optional_tool, find_executable, run_command
+from ..core.utils import find_executable, run_command
 from .base import BaseEngine, EngineCapability, EngineContext
 
 logger = get_logger("engines.m3u8")
@@ -116,12 +116,16 @@ class M3U8Engine(BaseEngine):
     def _parse_master_playlist(self, url: str, ctx: EngineContext) -> List[FormatInfo]:
         """解析 m3u8 master playlist，提取各码率。"""
         import requests  # type: ignore
-        from ..core.utils import free_disk_bytes
-        proxies = {"http": self.config.network.proxy, "https": self.config.network.proxy} \
-            if self.config.network.proxy else None
+
+        proxies = (
+            {"http": self.config.network.proxy, "https": self.config.network.proxy}
+            if self.config.network.proxy
+            else None
+        )
         try:
             resp = requests.get(
-                url, timeout=self.config.network.connect_timeout,
+                url,
+                timeout=self.config.network.connect_timeout,
                 headers={"User-Agent": self.config.network.user_agent},
                 proxies=proxies,
             )
@@ -140,17 +144,17 @@ class M3U8Engine(BaseEngine):
                 uri = lines[i + 1].strip() if i + 1 < len(lines) else ""
                 if not uri:
                     continue
-                # 计算完整 URL
-                full_url = self._resolve_url(url, uri)
+                # 计算完整 URL（仅用于日志；暂不作为变量保留以避免未用告警）
+                self._resolve_url(url, uri)
                 bandwidth = float(attrs.get("BANDWIDTH", 0)) / 1000.0  # kbps
                 res = attrs.get("RESOLUTION", "")
                 codecs = attrs.get("CODECS", "")
                 w, h = 0, 0
                 if "x" in res:
                     try:
-                        w, h = res.split("x")
-                        w, h = int(w), int(h)
-                    except ValueError:
+                        parts = res.split("x")
+                        w, h = int(parts[0]), int(parts[1])
+                    except (ValueError, IndexError):
                         w, h = 0, 0
                 vcodec, acodec = self._split_codecs(codecs)
                 formats.append(
@@ -198,20 +202,20 @@ class M3U8Engine(BaseEngine):
     @staticmethod
     def _resolve_url(base: str, ref: str) -> str:
         from urllib.parse import urljoin
+
         return urljoin(base, ref)
 
     @staticmethod
     def _guess_title_from_url(url: str) -> str:
         from urllib.parse import urlparse
+
         p = urlparse(url)
         return os.path.basename(p.path) or p.netloc or "m3u8"
 
     # ------------------------------------------------------------------
     # 下载
     # ------------------------------------------------------------------
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         if self._m3u8dl_bin:
             return self._download_with_external(info, task, ctx)
         return self._download_with_internal(info, task, ctx)
@@ -226,10 +230,14 @@ class M3U8Engine(BaseEngine):
         cmd = [
             binary,
             info.url,
-            "--save-dir", download_dir,
-            "--tmp-dir", os.path.join(download_dir, "_tmp"),
-            "--thread-count", str(self.config.engines.m3u8dl.threads),
-            "--download-retry-count", str(self.config.engines.m3u8dl.retry_count),
+            "--save-dir",
+            download_dir,
+            "--tmp-dir",
+            os.path.join(download_dir, "_tmp"),
+            "--thread-count",
+            str(self.config.engines.m3u8dl.threads),
+            "--download-retry-count",
+            str(self.config.engines.m3u8dl.retry_count),
             "--auto-select-best",  # 自动选最佳
             "--no-ansi",
         ]
@@ -245,9 +253,7 @@ class M3U8Engine(BaseEngine):
             raise EngineError(f"N_m3u8DL-RE 执行失败: {e}") from e
 
         if proc.returncode != 0:
-            raise EngineError(
-                f"N_m3u8DL-RE 返回非零码: {proc.returncode}\n{proc.stderr}"
-            )
+            raise EngineError(f"N_m3u8DL-RE 返回非零码: {proc.returncode}\n{proc.stderr}")
         return self._find_output(download_dir)
 
     def _download_with_internal(
@@ -268,7 +274,8 @@ class M3U8Engine(BaseEngine):
 
         proxies = (
             {"http": self.config.network.proxy, "https": self.config.network.proxy}
-            if self.config.network.proxy else None
+            if self.config.network.proxy
+            else None
         )
         sess = requests.Session()
         sess.headers.update({"User-Agent": self.config.network.user_agent})
@@ -298,19 +305,15 @@ class M3U8Engine(BaseEngine):
                 media_url = urljoin(info.url, best_line)
                 ctx.log("info", f"选择最佳变体: {media_url} (bw={best_bw/1000:.0f}kbps)")
         media = _get(media_url)
-        if "#EXT-X-KEY" in media and 'METHOD=SAMPLE-AES' in media:
-            raise EngineError(
-                "检测到 SAMPLE-AES 加密，请安装 N_m3u8DL-RE 后重试。"
-            )
+        if "#EXT-X-KEY" in media and "METHOD=SAMPLE-AES" in media:
+            raise EngineError("检测到 SAMPLE-AES 加密，请安装 N_m3u8DL-RE 后重试。")
 
         # 2) 解析 TS 片段
         segs: List[str] = []
-        ext_x_key = None
         for ln in media.splitlines():
             ln = ln.strip()
             if not ln or ln.startswith("#"):
-                if ln.startswith("#EXT-X-KEY"):
-                    ext_x_key = ln
+                # 加密的 m3u8 暂不支持；保留解析位以便后续扩展
                 continue
             segs.append(urljoin(media_url, ln))
 
@@ -319,7 +322,6 @@ class M3U8Engine(BaseEngine):
 
         # 3) 多线程下载
         ts_files: List[Path] = []
-        ts_files_lock = None  # append-only
         total = len(segs)
         done = 0
         bytes_done = 0
@@ -385,12 +387,14 @@ class M3U8Engine(BaseEngine):
                 f.write(f"file '{ts.as_posix()}'\n")
 
         from ..core.utils import find_executable
+
         ffmpeg = find_executable("ffmpeg")
         if not ffmpeg:
             raise EngineError("未找到 ffmpeg，无法合并 M3U8 片段")
         # 优先走 FFmpegPostProcessor；这里简单做 concat
         from ..postprocess.ffmpeg_pipe import concat_segments
-        concat_segments(ts_files, out_path, ffmpeg)
+
+        concat_segments([str(p) for p in ts_files], str(out_path), ffmpeg)
         return str(out_path)
 
     # ------------------------------------------------------------------
@@ -404,6 +408,7 @@ class M3U8Engine(BaseEngine):
     @staticmethod
     def _safe_name(name: str) -> str:
         from ..core.utils import sanitize_filename
+
         return sanitize_filename(name)
 
     @staticmethod

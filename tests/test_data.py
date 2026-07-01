@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import tempfile
-import time
 from pathlib import Path
 
 import pytest
@@ -40,12 +39,20 @@ def test_history_upsert_and_list(tmp_db):
 
 def test_history_search(tmp_db):
     repo = HistoryRepository(tmp_db)
-    repo.upsert_task(DownloadTask(
-        url="https://example.com/foo", title="foo bar", platform=Platform.YOUTUBE,
-    ))
-    repo.upsert_task(DownloadTask(
-        url="https://example.com/baz", title="baz qux", platform=Platform.BILIBILI,
-    ))
+    repo.upsert_task(
+        DownloadTask(
+            url="https://example.com/foo",
+            title="foo bar",
+            platform=Platform.YOUTUBE,
+        )
+    )
+    repo.upsert_task(
+        DownloadTask(
+            url="https://example.com/baz",
+            title="baz qux",
+            platform=Platform.BILIBILI,
+        )
+    )
     results = repo.list(search="foo")
     assert len(results) == 1
     assert results[0].title == "foo bar"
@@ -54,7 +61,9 @@ def test_history_search(tmp_db):
 def test_history_update(tmp_db):
     repo = HistoryRepository(tmp_db)
     task = DownloadTask(
-        url="https://example.com", title="x", platform=Platform.YOUTUBE,
+        url="https://example.com",
+        title="x",
+        platform=Platform.YOUTUBE,
         status=DownloadStatus.DOWNLOADING,
     )
     repo.upsert_task(task)
@@ -69,10 +78,14 @@ def test_history_update(tmp_db):
 def test_history_stats(tmp_db):
     repo = HistoryRepository(tmp_db)
     for status in [DownloadStatus.COMPLETED, DownloadStatus.COMPLETED, DownloadStatus.FAILED]:
-        repo.upsert_task(DownloadTask(
-            url=f"https://x/{status}", title="x",
-            platform=Platform.YOUTUBE, status=status,
-        ))
+        repo.upsert_task(
+            DownloadTask(
+                url=f"https://x/{status}",
+                title="x",
+                platform=Platform.YOUTUBE,
+                status=status,
+            )
+        )
     stats = repo.stats()
     assert stats.get("completed") == 2
     assert stats.get("failed") == 1
@@ -81,7 +94,9 @@ def test_history_stats(tmp_db):
 def test_history_delete(tmp_db):
     repo = HistoryRepository(tmp_db)
     task = DownloadTask(
-        url="https://x", title="x", platform=Platform.YOUTUBE,
+        url="https://x",
+        title="x",
+        platform=Platform.YOUTUBE,
         status=DownloadStatus.COMPLETED,
     )
     repo.upsert_task(task)

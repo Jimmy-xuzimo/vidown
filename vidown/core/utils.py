@@ -12,10 +12,10 @@ from typing import Optional, Tuple
 
 from .exceptions import FFmpegNotFoundError
 
-
 # ----------------------------------------------------------------------
 # 路径
 # ----------------------------------------------------------------------
+
 
 def expand_path(path: str) -> Path:
     """展开 ~ 和环境变量，并确保父目录存在。"""
@@ -35,7 +35,10 @@ def sanitize_filename(name: str, max_length: int = 200, windows_safe: bool = Tru
         name = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "_", name)
         # Windows 保留名
         reserved = {
-            "CON", "PRN", "AUX", "NUL",
+            "CON",
+            "PRN",
+            "AUX",
+            "NUL",
             *(f"COM{i}" for i in range(1, 10)),
             *(f"LPT{i}" for i in range(1, 10)),
         }
@@ -55,6 +58,7 @@ def sanitize_filename(name: str, max_length: int = 200, windows_safe: bool = Tru
 # ----------------------------------------------------------------------
 # 外部依赖探测
 # ----------------------------------------------------------------------
+
 
 def find_executable(name: str) -> Optional[str]:
     """跨平台查找可执行文件。"""
@@ -83,6 +87,7 @@ def check_yt_dlp() -> Optional[str]:
     """
     try:
         import yt_dlp  # type: ignore
+
         version = getattr(yt_dlp.version, "__version__", None)
         if version is None:
             # 新版 yt-dlp
@@ -108,6 +113,7 @@ def check_optional_tool(name: str) -> Optional[str]:
 # ----------------------------------------------------------------------
 # 子进程
 # ----------------------------------------------------------------------
+
 
 def run_command(
     cmd,

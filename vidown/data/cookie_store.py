@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import json
-import os
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -42,11 +40,8 @@ class CookieStore:
             for c in jar:
                 # 格式参考 yt-dlp cookiefile
                 secure = "TRUE" if c.secure else "FALSE"
-                httponly = "TRUE" if c._rest.get("HttpOnly") else "FALSE"
                 expires = int(c.expires) if c.expires else 0
-                f.write(
-                    f"{c.domain}\tTRUE\t{c.path}\t{secure}\t{expires}\t{c.name}\t{c.value}\n"
-                )
+                f.write(f"{c.domain}\tTRUE\t{c.path}\t{secure}\t{expires}\t{c.name}\t{c.value}\n")
         # 记录
         self.db.execute(
             "INSERT OR REPLACE INTO cookies (browser, cookies_file, imported_at) VALUES (?, ?, ?)",

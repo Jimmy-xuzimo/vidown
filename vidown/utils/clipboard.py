@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import threading
-import time
 from typing import Callable, List, Optional, Set
 
 from ..core.logger import get_logger
@@ -45,9 +44,7 @@ class ClipboardWatcher:
         if self._thread and self._thread.is_alive():
             return
         self._stop.clear()
-        self._thread = threading.Thread(
-            target=self._loop, name="clipboard-watcher", daemon=True
-        )
+        self._thread = threading.Thread(target=self._loop, name="clipboard-watcher", daemon=True)
         self._thread.start()
         logger.info("剪贴板监听已启动")
 
@@ -86,12 +83,11 @@ class ClipboardWatcher:
     # ------------------------------------------------------------------
     def _read_clipboard(self) -> str:
         import sys
+
         if sys.platform == "darwin":
             return self._run_get(["pbpaste"])
         if sys.platform.startswith("win"):
-            return self._run_get([
-                "powershell", "-NoProfile", "-Command", "Get-Clipboard"
-            ])
+            return self._run_get(["powershell", "-NoProfile", "-Command", "Get-Clipboard"])
         # Linux: 优先 wl-paste (Wayland)，再 xclip，最后 xsel
         for cmd in (
             ["wl-paste", "--no-newline"],
@@ -109,10 +105,9 @@ class ClipboardWatcher:
     @staticmethod
     def _run_get(cmd: List[str]) -> str:
         import subprocess
+
         try:
-            proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=2
-            )
+            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
         except FileNotFoundError:
             raise
         except Exception:

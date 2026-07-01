@@ -3,22 +3,19 @@
 from __future__ import annotations
 
 import json
-import os
 import socket
-import sys
 import threading
 import time
 import webbrowser
-from dataclasses import asdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 
-from ..core.config import Config, load_config, save_config
+from ..core.config import Config, load_config
 from ..core.exceptions import VidownError
 from ..core.logger import get_logger
-from ..core.models import DownloadStatus, DownloadTask
+from ..core.models import DownloadTask
 from ..core.platform_detect import classify_url, filter_urls, platform_display_name
 from ..core.scheduler import DownloadScheduler
 from ..data.history import HistoryRepository
@@ -32,6 +29,7 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 # ----------------------------------------------------------------------
 # 应用上下文
 # ----------------------------------------------------------------------
+
 
 class AppContext:
     """Web GUI 后端上下文。"""
@@ -63,10 +61,15 @@ class AppContext:
 
             def _on_new_link(url, platform, kind):
                 task = self.scheduler.add_task(url, platform=platform, kind=kind)
-                self._push_event("clipboard", {
-                    "url": url, "platform": platform.value, "kind": kind.value,
-                    "task_id": task.id,
-                })
+                self._push_event(
+                    "clipboard",
+                    {
+                        "url": url,
+                        "platform": platform.value,
+                        "kind": kind.value,
+                        "task_id": task.id,
+                    },
+                )
 
             self._clipboard_watcher = ClipboardWatcher(_on_new_link)
             self._clipboard_watcher.start()
@@ -96,9 +99,14 @@ class AppContext:
 
     def _push_log(self, task: DownloadTask, level: str, msg: str) -> None:
         if level in ("error", "warning", "info"):
-            self._push_event("log", {
-                "task_id": task.id, "level": level, "message": msg,
-            })
+            self._push_event(
+                "log",
+                {
+                    "task_id": task.id,
+                    "level": level,
+                    "message": msg,
+                },
+            )
 
     def _push_event(self, event: str, data: Dict[str, Any]) -> None:
         with self._lock:
@@ -130,6 +138,7 @@ class AppContext:
 # SSE 客户端模拟
 # ----------------------------------------------------------------------
 
+
 class _SSEClient:
     def __init__(self, wfile):
         self.wfile = wfile
@@ -149,6 +158,7 @@ class _SSEClient:
 # HTTP Handler
 # ----------------------------------------------------------------------
 
+
 class VidownHTTPHandler(BaseHTTPRequestHandler):
     server_version = "VidownHTTP/1.0"
     app: AppContext  # 由 build_handler 注入
@@ -167,8 +177,9 @@ class VidownHTTPHandler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
-    def _send_text(self, text: str, status: int = 200,
-                   content_type: str = "text/plain; charset=utf-8") -> None:
+    def _send_text(
+        self, text: str, status: int = 200, content_type: str = "text/plain; charset=utf-8"
+    ) -> None:
         body = text.encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", content_type)
@@ -225,6 +236,7 @@ class VidownHTTPHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/version":
             from .. import __version__
+
             self._send_json({"version": __version__})
             return
         if path == "/api/config":
@@ -242,6 +254,7 @@ class VidownHTTPHandler(BaseHTTPRequestHandler):
             return
         if path.startswith("/api/info"):
             from urllib.parse import parse_qs
+
             qs = parse_qs(urlparse(self.path).query)
             url = qs.get("url", [""])[0]
             self._probe(url)
@@ -342,17 +355,20 @@ class VidownHTTPHandler(BaseHTTPRequestHandler):
         self.app.scheduler._ensure_registry()
         assert self.app.scheduler._registry is not None
         from ..engines.base import EngineContext
+
         platform_enum, kind = classify_url(url)
         engine = self.app.scheduler._registry.select(url, platform_enum, kind)
         if not engine:
             return self._send_json({"error": "无可用引擎"}, 400)
         try:
             info = engine.probe(url, EngineContext(config=self.app.config))
-            self._send_json({
-                "engine": engine.name,
-                "platform": platform_display_name(platform_enum),
-                "info": info.to_dict(),
-            })
+            self._send_json(
+                {
+                    "engine": engine.name,
+                    "platform": platform_display_name(platform_enum),
+                    "info": info.to_dict(),
+                }
+            )
         except VidownError as e:
             self._send_json({"error": str(e)}, 400)
         except Exception as e:
@@ -381,8 +397,10 @@ class VidownHTTPHandler(BaseHTTPRequestHandler):
 
 def build_handler(app: AppContext):
     """返回一个绑定了 app 的 Handler 类。"""
+
     class _Handler(VidownHTTPHandler):
         pass
+
     _Handler.app = app
     return _Handler
 
@@ -390,6 +408,7 @@ def build_handler(app: AppContext):
 # ----------------------------------------------------------------------
 # 启动入口
 # ----------------------------------------------------------------------
+
 
 class VidownHTTPServer(ThreadingHTTPServer):
     """带 AppContext 的 HTTP Server。"""
@@ -407,8 +426,7 @@ def _find_free_port() -> int:
         return s.getsockname()[1]
 
 
-def run_server(host: str = "127.0.0.1", port: int = 8765,
-               open_browser: bool = True) -> None:
+def run_server(host: str = "127.0.0.1", port: int = 8765, open_browser: bool = True) -> None:
     config = load_config()
     app = AppContext(config)
     # 启动剪贴板

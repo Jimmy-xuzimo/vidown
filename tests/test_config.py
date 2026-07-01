@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-import tempfile
-from pathlib import Path
 
 import pytest
 
@@ -14,7 +12,6 @@ from vidown.core.config import (
     load_config,
     save_config,
 )
-from vidown.core.exceptions import ConfigError
 
 
 class TestQualityConfig:
@@ -71,6 +68,7 @@ quality:
 def _has_yaml():
     try:
         import yaml  # noqa
+
         return True
     except ImportError:
         return False

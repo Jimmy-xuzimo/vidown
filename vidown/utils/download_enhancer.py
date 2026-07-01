@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from typing import List, Optional, Set
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import requests
 
@@ -47,7 +47,8 @@ class DownloadEnhancer:
     def fetch(self, url: str) -> str:
         proxies = (
             {"http": self.config.network.proxy, "https": self.config.network.proxy}
-            if self.config.network.proxy else None
+            if self.config.network.proxy
+            else None
         )
         resp = requests.get(
             url,
@@ -59,9 +60,7 @@ class DownloadEnhancer:
         resp.encoding = resp.apparent_encoding or "utf-8"
         return resp.text
 
-    def discover_playlists(
-        self, page_url: str, html: Optional[str] = None
-    ) -> List[str]:
+    def discover_playlists(self, page_url: str, html: Optional[str] = None) -> List[str]:
         """从页面中找出 m3u8 / mpd / video 源 URL 列表。"""
         try:
             html = html or self.fetch(page_url)

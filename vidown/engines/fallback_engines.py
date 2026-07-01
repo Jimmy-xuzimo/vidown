@@ -6,9 +6,6 @@
 from __future__ import annotations
 
 import os
-import re
-import shlex
-import shutil
 import subprocess
 from pathlib import Path
 from typing import List, Optional
@@ -18,12 +15,10 @@ from ..core.exceptions import EngineError
 from ..core.logger import get_logger
 from ..core.models import (
     DownloadTask,
-    FormatInfo,
     MediaKind,
     Platform,
     VideoInfo,
 )
-from ..core.platform_detect import classify_url
 from ..core.utils import find_executable
 from .base import BaseEngine, EngineCapability, EngineContext
 
@@ -33,6 +28,7 @@ logger = get_logger("engines.fallback")
 # ----------------------------------------------------------------------
 # 通用：解析命令行下载器输出
 # ----------------------------------------------------------------------
+
 
 def _find_most_recent(download_dir: Path, exts: List[str]) -> Optional[Path]:
     candidates: List[Path] = []
@@ -48,6 +44,7 @@ def _find_most_recent(download_dir: Path, exts: List[str]) -> Optional[Path]:
 # you-get
 # ----------------------------------------------------------------------
 
+
 class YouGetEngine(BaseEngine):
     name = "you_get"
     display_name = "you-get"
@@ -57,6 +54,7 @@ class YouGetEngine(BaseEngine):
         super().__init__(config)
         try:
             import you_get  # type: ignore
+
             self._module = you_get
             self._has_python = True
         except ImportError:
@@ -66,8 +64,14 @@ class YouGetEngine(BaseEngine):
 
     def can_handle(self, url: str, platform: Platform, kind: MediaKind) -> bool:
         # you-get 主要支持中文站点
-        cn = {Platform.BILIBILI, Platform.DOUYIN, Platform.IQIYI, Platform.YOUKU,
-              Platform.TENCENT, Platform.MANGETV}
+        cn = {
+            Platform.BILIBILI,
+            Platform.DOUYIN,
+            Platform.IQIYI,
+            Platform.YOUKU,
+            Platform.TENCENT,
+            Platform.MANGETV,
+        }
         if platform in cn:
             return True
         # 兜底：通用
@@ -76,8 +80,14 @@ class YouGetEngine(BaseEngine):
         return False
 
     def priority(self, url: str, platform: Platform, kind: MediaKind) -> int:
-        cn = {Platform.BILIBILI, Platform.DOUYIN, Platform.IQIYI, Platform.YOUKU,
-              Platform.TENCENT, Platform.MANGETV}
+        cn = {
+            Platform.BILIBILI,
+            Platform.DOUYIN,
+            Platform.IQIYI,
+            Platform.YOUKU,
+            Platform.TENCENT,
+            Platform.MANGETV,
+        }
         if platform in cn:
             return 60  # 低于 yt-dlp
         return 10
@@ -86,9 +96,7 @@ class YouGetEngine(BaseEngine):
         # 简化：直接返回基本信息
         return VideoInfo(url=url, title=url, platform=Platform.UNKNOWN)
 
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         download_dir = self._download_dir()
         if self._binary:
             cmd = [self._binary, "-o", download_dir, "-f", info.url]
@@ -97,7 +105,10 @@ class YouGetEngine(BaseEngine):
         ctx.log("info", f"调用 you-get: {' '.join(cmd)}")
         try:
             proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=600,
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,
             )
         except Exception as e:
             raise EngineError(f"you-get 执行失败: {e}") from e
@@ -117,6 +128,7 @@ class YouGetEngine(BaseEngine):
 # ----------------------------------------------------------------------
 # lux
 # ----------------------------------------------------------------------
+
 
 class LuxEngine(BaseEngine):
     name = "lux"
@@ -139,15 +151,16 @@ class LuxEngine(BaseEngine):
     def probe(self, url: str, ctx: EngineContext) -> VideoInfo:
         return VideoInfo(url=url, title=url, platform=Platform.UNKNOWN)
 
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         download_dir = self._download_dir()
         cmd = [self._binary, "-d", download_dir, "-o", download_dir, info.url]
         ctx.log("info", f"调用 lux: {' '.join(cmd)}")
         try:
             proc = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=600,
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=600,
             )
         except Exception as e:
             raise EngineError(f"lux 执行失败: {e}") from e
@@ -168,6 +181,7 @@ class LuxEngine(BaseEngine):
 # gallery-dl
 # ----------------------------------------------------------------------
 
+
 class GalleryDLEngine(BaseEngine):
     name = "gallery_dl"
     display_name = "gallery-dl"
@@ -177,6 +191,7 @@ class GalleryDLEngine(BaseEngine):
         super().__init__(config)
         try:
             import gallery_dl  # type: ignore
+
             self._module = gallery_dl
             self._has_python = True
         except ImportError:
@@ -200,9 +215,7 @@ class GalleryDLEngine(BaseEngine):
     def probe(self, url: str, ctx: EngineContext) -> VideoInfo:
         return VideoInfo(url=url, title=url, platform=Platform.UNKNOWN, kind=MediaKind.IMAGE)
 
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         download_dir = self._download_dir()
         if self._binary:
             cmd = [self._binary, "-d", download_dir, info.url]

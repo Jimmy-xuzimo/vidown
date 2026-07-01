@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
 
 from vidown.core.utils import (
     human_readable_size,
@@ -65,4 +64,5 @@ class TestFindExecutable:
 
 def sys_executable_name():
     import sys
+
     return Path(sys.executable).name

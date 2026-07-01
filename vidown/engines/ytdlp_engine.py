@@ -6,18 +6,14 @@
 
 from __future__ import annotations
 
-import json
 import os
 import re
-import shutil
-import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from ..core.config import Config
 from ..core.exceptions import (
     EngineError,
-    NetworkError,
     DRMRestrictedError,
     FormatNotFoundError,
 )
@@ -32,7 +28,7 @@ from ..core.models import (
     VideoInfo,
 )
 from ..core.platform_detect import classify_url
-from ..core.utils import check_yt_dlp, find_executable
+from ..core.utils import check_yt_dlp
 from .base import BaseEngine, EngineCapability, EngineContext
 
 logger = get_logger("engines.ytdlp")
@@ -58,12 +54,11 @@ class YtDlpEngine(BaseEngine):
         super().__init__(config)
         version = check_yt_dlp()
         if not version:
-            raise EngineError(
-                "yt-dlp 未安装，请运行 `pip install -U yt-dlp` 安装。"
-            )
+            raise EngineError("yt-dlp 未安装，请运行 `pip install -U yt-dlp` 安装。")
         self._version = version
         # 延迟导入，加快启动速度
         import yt_dlp  # type: ignore
+
         self._yt_dlp = yt_dlp
         logger.info(f"yt-dlp 引擎就绪 (version={version})")
 
@@ -97,7 +92,7 @@ class YtDlpEngine(BaseEngine):
             Platform.IQIYI: 100,
             Platform.TENCENT: 100,
             Platform.MANGETV: 100,
-            Platform.NETFLIX: 50,    # 可能受 DRM 限制
+            Platform.NETFLIX: 50,  # 可能受 DRM 限制
             Platform.UNKNOWN: 80,
         }
         return priority_map.get(platform, 80)
@@ -124,9 +119,7 @@ class YtDlpEngine(BaseEngine):
     # ------------------------------------------------------------------
     # 下载
     # ------------------------------------------------------------------
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         out_template = self._build_output_template(info)
         opts = self._build_ydl_options(ctx, download=True, outtmpl=out_template)
         # 用户指定格式
@@ -158,35 +151,43 @@ class YtDlpEngine(BaseEngine):
         # 错误。
         if self.config.network.use_sponsorblock:
             opts["postprocessors"] = opts.get("postprocessors", [])
-            opts["postprocessors"].append({
-                "key": "SponsorBlock",
-                "categories": self.config.network.sponsorblock_categories,
-                "api": "https://sponsor.anjok.gq",
-            })
+            opts["postprocessors"].append(
+                {
+                    "key": "SponsorBlock",
+                    "categories": self.config.network.sponsorblock_categories,
+                    "api": "https://sponsor.anjok.gq",
+                }
+            )
 
         # 强制转 H.264
         opts["postprocessors"] = opts.get("postprocessors", [])
-        opts["postprocessors"].append({
-            "key": "FFmpegVideoConvertor",
-            "preferedformat": "mp4",
-        })
+        opts["postprocessors"].append(
+            {
+                "key": "FFmpegVideoConvertor",
+                "preferedformat": "mp4",
+            }
+        )
 
         # 嵌入元数据
         if self.config.postprocess.embed_metadata:
             opts["postprocessors"].append({"key": "FFmpegMetadata"})
         if self.config.postprocess.embed_thumbnail:
             opts["writethumbnail"] = True
-            opts["postprocessors"].append({
-                "key": "EmbedThumbnail",
-                "already_have_thumbnail": False,
-            })
+            opts["postprocessors"].append(
+                {
+                    "key": "EmbedThumbnail",
+                    "already_have_thumbnail": False,
+                }
+            )
         if self.config.postprocess.embed_subtitles:
             opts["writesubtitles"] = True
             opts["writeautomaticsub"] = True
             opts["subtitleslangs"] = self.config.postprocess.subtitle_languages
-            opts["postprocessors"].append({
-                "key": "FFmpegEmbedSubtitle",
-            })
+            opts["postprocessors"].append(
+                {
+                    "key": "FFmpegEmbedSubtitle",
+                }
+            )
 
         # 重命名 / 不修改源
         if self.config.postprocess.preserve_original:
@@ -334,9 +335,7 @@ class YtDlpEngine(BaseEngine):
     # ------------------------------------------------------------------
     # 进度回调
     # ------------------------------------------------------------------
-    def _on_ytdlp_progress(
-        self, d: Dict[str, Any], ctx: EngineContext, info: VideoInfo
-    ) -> None:
+    def _on_ytdlp_progress(self, d: Dict[str, Any], ctx: EngineContext, info: VideoInfo) -> None:
         status = d.get("status")
         if status == "downloading":
             total = d.get("total_bytes") or d.get("total_bytes_estimate")

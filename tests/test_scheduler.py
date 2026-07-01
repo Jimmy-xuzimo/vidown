@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-import threading
-import time
-
-import pytest
 
 from vidown.core.config import Config
-from vidown.core.models import DownloadStatus, Platform, MediaKind
+from vidown.core.models import DownloadStatus, Platform
 from vidown.core.scheduler import DownloadScheduler
 
 
@@ -51,7 +47,7 @@ def test_callbacks_fire():
     status_calls = []
 
     sched.on_status(lambda t: status_calls.append(t.status))
-    t = sched.add_task("https://example.com", platform=Platform.UNKNOWN)
+    sched.add_task("https://example.com", platform=Platform.UNKNOWN)
     assert DownloadStatus.QUEUED in status_calls
 
 

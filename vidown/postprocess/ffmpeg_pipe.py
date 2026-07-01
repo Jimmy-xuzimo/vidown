@@ -16,9 +16,9 @@ import os
 import shutil
 import subprocess
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence
+from typing import Any, Callable, Dict, Optional, Sequence
 
 from ..core.exceptions import FFmpegNotFoundError
 from ..core.logger import get_logger
@@ -29,6 +29,7 @@ logger = get_logger("postprocess.ffmpeg")
 # ----------------------------------------------------------------------
 # 工具
 # ----------------------------------------------------------------------
+
 
 def find_ffmpeg() -> str:
     p = shutil.which("ffmpeg")
@@ -59,9 +60,7 @@ def run_ffmpeg(
     cmd = [binary, "-hide_banner", "-loglevel", "error", "-y", *args]
     logger.debug(f"ffmpeg cmd: {' '.join(cmd)}")
     try:
-        return subprocess.run(
-            cmd, capture_output=True, text=True, timeout=timeout
-        )
+        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired as e:
         raise TimeoutError(f"ffmpeg 执行超时: {' '.join(cmd[:6])}...") from e
 
@@ -70,9 +69,11 @@ def run_ffmpeg(
 # 进度回调封装
 # ----------------------------------------------------------------------
 
+
 @dataclass
 class FFmpegPipe:
     """带进度回调的 ffmpeg 包装器。"""
+
     binary: Optional[str] = None
     progress_callback: Optional[Callable[[float, str], None]] = None
     log_callback: Optional[Callable[[str], None]] = None
@@ -81,8 +82,9 @@ class FFmpegPipe:
     _stop_flag: bool = False
     _last_duration: float = 0.0
 
-    def run(self, args: Sequence[str], duration: Optional[float] = None,
-            timeout: Optional[int] = None) -> int:
+    def run(
+        self, args: Sequence[str], duration: Optional[float] = None, timeout: Optional[int] = None
+    ) -> int:
         binary = self.binary or find_ffmpeg()
         cmd = [binary, "-hide_banner", "-y", "-progress", "pipe:2", *args]
         logger.debug(f"ffmpeg: {' '.join(cmd[:8])}...")
@@ -90,16 +92,17 @@ class FFmpegPipe:
         self._last_duration = duration or 0
         try:
             self._proc = subprocess.Popen(
-                cmd, stderr=subprocess.PIPE, stdout=subprocess.DEVNULL,
-                text=True, bufsize=1,
+                cmd,
+                stderr=subprocess.PIPE,
+                stdout=subprocess.DEVNULL,
+                text=True,
+                bufsize=1,
             )
         except FileNotFoundError as e:
             raise FFmpegNotFoundError(str(e)) from e
 
         if self.progress_callback and self._proc.stderr:
-            self._reader_thread = threading.Thread(
-                target=self._read_progress, daemon=True
-            )
+            self._reader_thread = threading.Thread(target=self._read_progress, daemon=True)
             self._reader_thread.start()
 
         try:
@@ -157,6 +160,7 @@ class FFmpegPipe:
 # 高层 API
 # ----------------------------------------------------------------------
 
+
 def merge_streams(
     video_path: str,
     audio_path: str,
@@ -174,6 +178,7 @@ def merge_streams(
     - 否则使用 libx264 + aac 重编码。
     """
     from .probe import probe_media
+
     ffprobe = find_ffprobe()
     v_info = probe_media(video_path, ffprobe)
     a_info = probe_media(audio_path, ffprobe)
@@ -183,25 +188,40 @@ def merge_streams(
 
     if prefer_copy and is_h264(video_codec) and audio_codec in ("aac", "mp4a", ""):
         args = [
-            "-i", video_path,
-            "-i", audio_path,
-            "-c", "copy",
-            "-movflags", "+faststart",
+            "-i",
+            video_path,
+            "-i",
+            audio_path,
+            "-c",
+            "copy",
+            "-movflags",
+            "+faststart",
             output_path,
         ]
     else:
         args = [
-            "-i", video_path,
-            "-i", audio_path,
-            "-map", "0:v:0",
-            "-map", "1:a:0?",
-            "-c:v", "libx264",
-            "-crf", str(crf),
-            "-preset", preset,
-            "-pix_fmt", "yuv420p",
-            "-c:a", "aac",
-            "-b:a", audio_bitrate,
-            "-movflags", "+faststart",
+            "-i",
+            video_path,
+            "-i",
+            audio_path,
+            "-map",
+            "0:v:0",
+            "-map",
+            "1:a:0?",
+            "-c:v",
+            "libx264",
+            "-crf",
+            str(crf),
+            "-preset",
+            preset,
+            "-pix_fmt",
+            "yuv420p",
+            "-c:a",
+            "aac",
+            "-b:a",
+            audio_bitrate,
+            "-movflags",
+            "+faststart",
             output_path,
         ]
 
@@ -223,25 +243,37 @@ def transcode_to_h264(
 ) -> str:
     """任意视频 → H.264 MP4。若源已是 H.264 则直接复制。"""
     from .probe import probe_media
+
     ffprobe = find_ffprobe()
     info = probe_media(input_path, ffprobe)
     if copy_if_already_h264 and is_h264(info.vcodec):
         args = [
-            "-i", input_path,
-            "-c", "copy",
-            "-movflags", "+faststart",
+            "-i",
+            input_path,
+            "-c",
+            "copy",
+            "-movflags",
+            "+faststart",
             output_path,
         ]
     else:
         args = [
-            "-i", input_path,
-            "-c:v", "libx264",
-            "-crf", str(crf),
-            "-preset", preset,
-            "-pix_fmt", "yuv420p",
-            "-c:a", audio_codec,
-            "-b:a", audio_bitrate,
-            "-movflags", "+faststart",
+            "-i",
+            input_path,
+            "-c:v",
+            "libx264",
+            "-crf",
+            str(crf),
+            "-preset",
+            preset,
+            "-pix_fmt",
+            "yuv420p",
+            "-c:a",
+            audio_codec,
+            "-b:a",
+            audio_bitrate,
+            "-movflags",
+            "+faststart",
             output_path,
         ]
     pipe = FFmpegPipe(binary=ffmpeg_bin, progress_callback=progress_callback)
@@ -264,11 +296,16 @@ def concat_segments(
             f.write(f"file '{safe}'\n")
 
     args = [
-        "-f", "concat",
-        "-safe", "0",
-        "-i", list_file,
-        "-c", "copy",
-        "-movflags", "+faststart",
+        "-f",
+        "concat",
+        "-safe",
+        "0",
+        "-i",
+        list_file,
+        "-c",
+        "copy",
+        "-movflags",
+        "+faststart",
         output_path,
     ]
     pipe = FFmpegPipe(binary=ffmpeg_bin, progress_callback=progress_callback)
@@ -289,13 +326,20 @@ def embed_thumbnail(
     """将 jpg/png 封面嵌入 MP4。"""
     output_path = output_path or video_path
     args = [
-        "-i", video_path,
-        "-i", thumbnail_path,
-        "-map", "0",
-        "-map", "1",
-        "-c", "copy",
-        "-disposition:v:1", "attached_pic",
-        "-movflags", "+faststart",
+        "-i",
+        video_path,
+        "-i",
+        thumbnail_path,
+        "-map",
+        "0",
+        "-map",
+        "1",
+        "-c",
+        "copy",
+        "-disposition:v:1",
+        "attached_pic",
+        "-movflags",
+        "+faststart",
         output_path,
     ]
     pipe = FFmpegPipe(binary=ffmpeg_bin)
@@ -329,12 +373,18 @@ def burn_subtitle(
     """将字幕硬烧到视频上。"""
     # 需要重新编码视频
     args = [
-        "-i", video_path,
-        "-vf", f"subtitles={subtitle_path}",
-        "-c:v", "libx264",
-        "-crf", "18",
-        "-preset", "slow",
-        "-c:a", "copy",
+        "-i",
+        video_path,
+        "-vf",
+        f"subtitles={subtitle_path}",
+        "-c:v",
+        "libx264",
+        "-crf",
+        "18",
+        "-preset",
+        "slow",
+        "-c:a",
+        "copy",
         output_path,
     ]
     pipe = FFmpegPipe(binary=ffmpeg_bin)
@@ -350,9 +400,12 @@ def extract_subtitle(
 ) -> str:
     """从视频中提取字幕轨。"""
     args = [
-        "-i", video_path,
-        "-map", f"0:s:{stream_index}",
-        "-c", "copy",
+        "-i",
+        video_path,
+        "-map",
+        f"0:s:{stream_index}",
+        "-c",
+        "copy",
         output_path,
     ]
     pipe = FFmpegPipe(binary=ffmpeg_bin)
@@ -362,4 +415,5 @@ def extract_subtitle(
 
 def get_media_info(path: str) -> Dict[str, Any]:
     from .probe import probe_media
+
     return probe_media(path).to_dict()

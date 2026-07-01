@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import re
 import time
-from pathlib import Path
 from typing import Optional
 
 import requests
@@ -24,7 +23,6 @@ from ..core.models import (
 from ..core.platform_detect import classify_url
 from ..core.utils import (
     expand_path,
-    find_executable,
     free_disk_bytes,
     human_readable_size,
     sanitize_filename,
@@ -62,17 +60,22 @@ class DirectEngine(BaseEngine):
         try:
             proxies = (
                 {"http": self.config.network.proxy, "https": self.config.network.proxy}
-                if self.config.network.proxy else None
+                if self.config.network.proxy
+                else None
             )
             resp = requests.head(
-                url, allow_redirects=True, timeout=self.config.network.connect_timeout,
+                url,
+                allow_redirects=True,
+                timeout=self.config.network.connect_timeout,
                 headers={"User-Agent": self.config.network.user_agent},
                 proxies=proxies,
             )
             if resp.status_code >= 400:
                 # HEAD 失败则尝试 GET 一次拿到 headers
                 resp = requests.get(
-                    url, stream=True, timeout=self.config.network.connect_timeout,
+                    url,
+                    stream=True,
+                    timeout=self.config.network.connect_timeout,
                     headers={"User-Agent": self.config.network.user_agent},
                     proxies=proxies,
                 )
@@ -108,9 +111,7 @@ class DirectEngine(BaseEngine):
         info.extra["accept_ranges"] = accept
         return info
 
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         download_dir = expand_path(self.config.general.download_dir)
         # 估算所需空间
         size = None
@@ -124,8 +125,10 @@ class DirectEngine(BaseEngine):
                     f"剩余 {human_readable_size(free)}"
                 )
 
-        out_name = sanitize_filename(info.title or "download") + "." + (
-            (info.formats[0].ext if info.formats else "bin") or "bin"
+        out_name = (
+            sanitize_filename(info.title or "download")
+            + "."
+            + ((info.formats[0].ext if info.formats else "bin") or "bin")
         )
         out_path = download_dir / out_name
         i = 1
@@ -135,7 +138,8 @@ class DirectEngine(BaseEngine):
 
         proxies = (
             {"http": self.config.network.proxy, "https": self.config.network.proxy}
-            if self.config.network.proxy else None
+            if self.config.network.proxy
+            else None
         )
 
         # 支持断点续传
@@ -237,6 +241,7 @@ class DirectEngine(BaseEngine):
     @staticmethod
     def _title_from_url(url: str) -> str:
         from urllib.parse import urlparse, unquote
+
         p = urlparse(url)
         name = unquote(os.path.basename(p.path)) or p.netloc
         # 去掉扩展名

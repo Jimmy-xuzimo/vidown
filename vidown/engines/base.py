@@ -5,12 +5,11 @@ from __future__ import annotations
 import enum
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional
 
 from ..core.config import Config
 from ..core.models import (
     VideoInfo,
-    FormatInfo,
     DownloadTask,
     TaskProgress,
     Platform,
@@ -19,22 +18,22 @@ from ..core.models import (
 from ..core.exceptions import EngineError
 from ..core.logger import get_logger
 
-
 logger = get_logger("engines")
 
 
 class EngineCapability(enum.Enum):
-    PROBE = "probe"                # 支持信息探测
-    DOWNLOAD = "download"          # 支持下载
-    FORMAT_LIST = "format_list"    # 能列出格式
-    SUBTITLE = "subtitle"          # 支持字幕
-    THUMBNAIL = "thumbnail"        # 支持缩略图
-    POSTPROCESS = "postprocess"    # 内置后处理
+    PROBE = "probe"  # 支持信息探测
+    DOWNLOAD = "download"  # 支持下载
+    FORMAT_LIST = "format_list"  # 能列出格式
+    SUBTITLE = "subtitle"  # 支持字幕
+    THUMBNAIL = "thumbnail"  # 支持缩略图
+    POSTPROCESS = "postprocess"  # 内置后处理
 
 
 @dataclass
 class EngineContext:
     """引擎运行时的共享上下文。"""
+
     config: Config
     progress_callback: Optional[Callable[[TaskProgress], None]] = None
     cancel_flag: Optional[Callable[[], bool]] = None
@@ -90,15 +89,14 @@ class BaseEngine(ABC):
         task.info = info
         return self.download_info(task, info, ctx)
 
-    def download_info(
-        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
-    ) -> str:
+    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
         raise EngineError(f"{self.name} 未实现 download_info")
 
 
 # ----------------------------------------------------------------------
 # 引擎注册表
 # ----------------------------------------------------------------------
+
 
 class EngineRegistry:
     """引擎注册与调度中心。"""
@@ -115,31 +113,24 @@ class EngineRegistry:
     def engines(self) -> List[BaseEngine]:
         return list(self._engines)
 
-    def select(
-        self, url: str, platform: Platform, kind: MediaKind
-    ) -> Optional[BaseEngine]:
+    def select(self, url: str, platform: Platform, kind: MediaKind) -> Optional[BaseEngine]:
         """为给定 URL 选择最佳引擎。"""
         candidates = [e for e in self._engines if e.can_handle(url, platform, kind)]
         if not candidates:
             # 兜底：未声明 can_handle 但支持探测+下载的引擎
             candidates = [
-                e for e in self._engines
+                e
+                for e in self._engines
                 if EngineCapability.PROBE in e.capabilities
                 and EngineCapability.DOWNLOAD in e.capabilities
             ]
         if not candidates:
             return None
-        candidates.sort(
-            key=lambda e: e.priority(url, platform, kind), reverse=True
-        )
+        candidates.sort(key=lambda e: e.priority(url, platform, kind), reverse=True)
         return candidates[0]
 
-    def fallback_chain(
-        self, url: str, platform: Platform, kind: MediaKind
-    ) -> List[BaseEngine]:
+    def fallback_chain(self, url: str, platform: Platform, kind: MediaKind) -> List[BaseEngine]:
         """获取可用的 fallback 链（含主引擎）。"""
         all_handlers = [e for e in self._engines if e.can_handle(url, platform, kind)]
-        all_handlers.sort(
-            key=lambda e: e.priority(url, platform, kind), reverse=True
-        )
+        all_handlers.sort(key=lambda e: e.priority(url, platform, kind), reverse=True)
         return all_handlers

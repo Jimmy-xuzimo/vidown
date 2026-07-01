@@ -21,8 +21,8 @@ jobs:
           ruff check vidown tests
       - name: Run black --check
         run: |
-          pip install black
-          black --check vidown tests
+          pip install "black>=24.0.0"
+          black --check --target-version py310 vidown tests
 
   mypy:
     runs-on: ubuntu-latest

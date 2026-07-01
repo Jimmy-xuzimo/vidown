@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
 
 from vidown.core.platform_detect import (
     canonicalize_url,
@@ -116,18 +115,22 @@ class TestClassifyUrl:
 
 class TestFilterUrls:
     def test_drops_unknown(self):
-        urls = filter_urls([
-            "https://example.com",
-            "https://www.youtube.com/watch?v=abc",
-        ])
+        urls = filter_urls(
+            [
+                "https://example.com",
+                "https://www.youtube.com/watch?v=abc",
+            ]
+        )
         assert "https://example.com" not in urls
         assert any("youtube" in u for u in urls)
 
     def test_dedup(self):
-        urls = filter_urls([
-            "https://a.com/video.mp4",
-            "https://a.com/video.mp4",
-        ])
+        urls = filter_urls(
+            [
+                "https://a.com/video.mp4",
+                "https://a.com/video.mp4",
+            ]
+        )
         assert urls.count("https://a.com/video.mp4") == 1
 
     def test_filters_by_kind(self):
@@ -158,7 +161,9 @@ class TestDouyinJingxuan:
         assert p == Platform.DOUYIN
 
     def test_extract_urls_rewrites_jingxuan(self):
-        result = extract_urls("看看这个 https://www.douyin.com/jingxuan?modal_id=7656363857279012134 视频")
+        result = extract_urls(
+            "看看这个 https://www.douyin.com/jingxuan?modal_id=7656363857279012134 视频"
+        )
         assert "https://www.douyin.com/video/7656363857279012134" in result
 
 

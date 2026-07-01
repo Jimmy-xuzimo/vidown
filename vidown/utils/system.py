@@ -2,13 +2,8 @@
 
 from __future__ import annotations
 
-import platform
-import shutil
 import subprocess
 import sys
-from typing import Optional
-
-from ..core.utils import find_executable
 
 
 def detect_platform() -> str:

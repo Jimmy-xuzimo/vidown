@@ -20,8 +20,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from .. import __version__
-from ..core.config import load_config, save_config
-from ..core.exceptions import VidownError
+from ..core.config import load_config
 from ..core.logger import get_logger, setup_logging
 from ..core.models import DownloadStatus
 from ..core.platform_detect import classify_url, filter_urls
@@ -33,6 +32,7 @@ logger = get_logger("cli")
 # ----------------------------------------------------------------------
 # 进度展示
 # ----------------------------------------------------------------------
+
 
 class ProgressPrinter:
     def __init__(self, use_tty: bool = True):
@@ -51,8 +51,10 @@ class ProgressPrinter:
         self._print(line)
 
     def on_status(self, task) -> None:
-        self._print(f"[{task.id}] 状态 -> {task.status.value}"
-                    f"{(': ' + task.error_message) if task.error_message else ''}")
+        self._print(
+            f"[{task.id}] 状态 -> {task.status.value}"
+            f"{(': ' + task.error_message) if task.error_message else ''}"
+        )
 
     def on_log(self, task, level: str, msg: str) -> None:
         if level in ("error", "warning"):
@@ -93,6 +95,7 @@ def _hr_eta(secs: Optional[int]) -> str:
 # ----------------------------------------------------------------------
 # 子命令
 # ----------------------------------------------------------------------
+
 
 def cmd_download(args: argparse.Namespace) -> int:
     config = load_config(args.config)
@@ -161,6 +164,7 @@ def cmd_probe(args: argparse.Namespace) -> int:
 
 def cmd_history(args: argparse.Namespace) -> int:
     from ..data.history import HistoryRepository
+
     repo = HistoryRepository()
     entries = repo.list(limit=args.limit, search=args.search, status=args.status)
     for e in entries:
@@ -214,6 +218,7 @@ def cmd_config_set(args: argparse.Namespace) -> int:
 
 def cmd_check(args: argparse.Namespace) -> int:
     from ..core.utils import check_ffmpeg, check_yt_dlp, check_optional_tool
+
     print(f"Vidown v{__version__}\n")
 
     print("核心依赖:")
@@ -236,6 +241,7 @@ def cmd_check(args: argparse.Namespace) -> int:
 
 def cmd_gui(args: argparse.Namespace) -> int:
     from ..gui import run_server
+
     run_server(host=args.host, port=args.port, open_browser=not args.no_browser)
     return 0
 
@@ -243,6 +249,7 @@ def cmd_gui(args: argparse.Namespace) -> int:
 # ----------------------------------------------------------------------
 # 入口
 # ----------------------------------------------------------------------
+
 
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
@@ -280,8 +287,9 @@ def build_parser() -> argparse.ArgumentParser:
     cfg_show = cfg_sub.add_parser("show", help="显示配置")
     cfg_show.set_defaults(func=cmd_config_show)
     cfg_set = cfg_sub.add_parser("set", help="设置配置项")
-    cfg_set.add_argument("--set", action="append", default=[],
-                         help="形如 general.download_dir=~/Downloads")
+    cfg_set.add_argument(
+        "--set", action="append", default=[], help="形如 general.download_dir=~/Downloads"
+    )
     cfg_set.set_defaults(func=cmd_config_set)
 
     ck = sub.add_parser("check", help="检查依赖")
@@ -301,10 +309,26 @@ def main(argv: Optional[List[str]] = None) -> int:
     if not argv:
         argv = sys.argv[1:]
     # 兼容：vidown <URL> 直接当 download
-    if argv and not argv[0].startswith("-") and argv[0] not in {
-        "download", "dl", "d", "probe", "p", "history", "h",
-        "config", "check", "gui", "help", "-h", "--help",
-    }:
+    if (
+        argv
+        and not argv[0].startswith("-")
+        and argv[0]
+        not in {
+            "download",
+            "dl",
+            "d",
+            "probe",
+            "p",
+            "history",
+            "h",
+            "config",
+            "check",
+            "gui",
+            "help",
+            "-h",
+            "--help",
+        }
+    ):
         argv = ["download", *argv]
     args = parser.parse_args(argv)
     if not hasattr(args, "func"):

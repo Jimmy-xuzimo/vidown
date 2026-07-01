@@ -4,17 +4,15 @@ from __future__ import annotations
 
 import threading
 import time
-from concurrent.futures import Future, ThreadPoolExecutor
-from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Set
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Callable, Dict, List, Optional
 
-from .config import Config, load_config
+from .config import Config
 from .exceptions import (
     VidownError,
     EngineError,
     DRMRestrictedError,
     FormatNotFoundError,
-    NetworkError,
 )
 from .format_selector import select_formats
 from .logger import get_logger
@@ -27,7 +25,6 @@ from .models import (
     VideoInfo,
 )
 from .platform_detect import classify_url
-from .utils import sanitize_filename
 
 logger = get_logger("scheduler")
 
@@ -54,7 +51,7 @@ class DownloadScheduler:
 
         # 任务管理
         self._tasks: Dict[str, DownloadTask] = {}
-        self._task_order: List[str] = []       # FIFO
+        self._task_order: List[str] = []  # FIFO
         self._task_lock = threading.Lock()
 
         # 取消标记
@@ -78,7 +75,6 @@ class DownloadScheduler:
         with self._engine_lock:
             if self._registry_initialized:
                 return
-            from ..engines import EngineRegistry
             if self.engine_factory:
                 self._registry = self.engine_factory(self.config)
             else:
@@ -96,6 +92,7 @@ class DownloadScheduler:
             LuxEngine,
             GalleryDLEngine,
         )
+
         registry = EngineRegistry(config)
         if config.engines.ytdlp.enabled:
             try:
@@ -127,8 +124,9 @@ class DownloadScheduler:
             except Exception as e:
                 logger.warning(f"备用引擎 {name} 加载失败: {e}")
 
-        logger.info(f"已注册 {len(registry.engines)} 个引擎: "
-                    f"{[e.name for e in registry.engines]}")
+        logger.info(
+            f"已注册 {len(registry.engines)} 个引擎: " f"{[e.name for e in registry.engines]}"
+        )
         return registry
 
     # ------------------------------------------------------------------
@@ -159,6 +157,7 @@ class DownloadScheduler:
         # 平台特定规范化（如抖音 jingxuan?modal_id → douyin.com/video/...）
         # 让 yt-dlp 等下游引擎拿到可识别的标准链接。
         from .platform_detect import canonicalize_url
+
         url = canonicalize_url(url)
         # 自动检测
         if platform is None or kind is None:
@@ -229,9 +228,15 @@ class DownloadScheduler:
     def clear_finished(self) -> None:
         with self._task_lock:
             done_ids = [
-                tid for tid, t in self._tasks.items()
-                if t.status in (DownloadStatus.COMPLETED, DownloadStatus.FAILED,
-                                DownloadStatus.CANCELLED, DownloadStatus.SKIPPED)
+                tid
+                for tid, t in self._tasks.items()
+                if t.status
+                in (
+                    DownloadStatus.COMPLETED,
+                    DownloadStatus.FAILED,
+                    DownloadStatus.CANCELLED,
+                    DownloadStatus.SKIPPED,
+                )
             ]
         for tid in done_ids:
             self.remove_task(tid)
@@ -249,9 +254,9 @@ class DownloadScheduler:
         # 派发所有未完成任务
         with self._task_lock:
             pending_ids = [
-                tid for tid in self._task_order
-                if self._tasks[tid].status in (DownloadStatus.QUEUED,
-                                               DownloadStatus.PENDING)
+                tid
+                for tid in self._task_order
+                if self._tasks[tid].status in (DownloadStatus.QUEUED, DownloadStatus.PENDING)
             ]
         for tid in pending_ids:
             self._executor.submit(self._run_task, tid)
@@ -343,9 +348,12 @@ class DownloadScheduler:
                 elif sel.single:
                     task.selected_format_id = sel.single.format_id
                     task.selected_resolution = sel.single.resolution
-            self._log(task, "info",
-                      f"标题: {info.title} | 平台: {info.platform.value} | "
-                      f"格式: {task.selected_format_id}")
+            self._log(
+                task,
+                "info",
+                f"标题: {info.title} | 平台: {info.platform.value} | "
+                f"格式: {task.selected_format_id}",
+            )
 
             # 检查暂停
             while not pause_evt.is_set():
@@ -375,8 +383,7 @@ class DownloadScheduler:
 
         except VidownError as e:
             task.error_message = str(e)
-            task.status = (DownloadStatus.CANCELLED
-                           if cancel_check() else DownloadStatus.FAILED)
+            task.status = DownloadStatus.CANCELLED if cancel_check() else DownloadStatus.FAILED
             task.finished_at = time.time()
             self._persist(task)
             self._log(task, "error", f"任务失败: {e}")
@@ -397,9 +404,7 @@ class DownloadScheduler:
         exclude: str,
     ) -> Optional[VideoInfo]:
         assert self._registry is not None
-        for engine in self._registry.fallback_chain(
-            task.url, task.platform, task.kind
-        ):
+        for engine in self._registry.fallback_chain(task.url, task.platform, task.kind):
             if engine.name == exclude:
                 continue
             try:
@@ -415,6 +420,7 @@ class DownloadScheduler:
     def _persist(self, task: DownloadTask) -> None:
         try:
             from ..data.history import HistoryRepository
+
             HistoryRepository().upsert_task(task)
         except Exception as e:
             logger.debug(f"历史记录写入失败: {e}")
@@ -434,10 +440,7 @@ class DownloadScheduler:
                 logger.debug(f"status cb error: {e}")
 
     def _log(self, task: DownloadTask, level: str, msg: str) -> None:
-        logger.log(
-            getattr(__import__("logging"), level.upper(), 20),
-            f"[{task.id}] {msg}"
-        )
+        logger.log(getattr(__import__("logging"), level.upper(), 20), f"[{task.id}] {msg}")
         for cb in self._log_callbacks:
             try:
                 cb(task, level, msg)
