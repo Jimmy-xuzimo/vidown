@@ -1,0 +1,80 @@
+{
+  "$schema": "https://vidown.example.com/schema/config-v1.json",
+  "version": 1,
+  "general": {
+    "download_dir": "~/.vidown/downloads",
+    "max_concurrent_downloads": 3,
+    "max_concurrent_fragments": 16,
+    "enable_clipboard_watcher": true,
+    "language": "auto",
+    "theme": "system"
+  },
+  "quality": {
+    "preference": "best",
+    "max_resolution": 4320,
+    "min_resolution": 144,
+    "force_codec": "h264",
+    "allow_hevc": false,
+    "allow_av1": false,
+    "allow_vp9": false,
+    "video_crf": 18,
+    "video_preset": "slow",
+    "audio_codec": "aac",
+    "audio_bitrate": "320k",
+    "prefer_lossless_audio": false
+  },
+  "naming": {
+    "template": "%(title)s [%(uploader)s] %(resolution)s.%(ext)s",
+    "sanitize_windows": true,
+    "max_length": 200
+  },
+  "network": {
+    "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
+    "proxy": null,
+    "connect_timeout": 30,
+    "read_timeout": 60,
+    "retry_max": 5,
+    "retry_backoff": 1.5,
+    "speed_limit_kbps": 0,
+    "use_sponsorblock": true,
+    "sponsorblock_categories": ["sponsor", "intro", "outro", "selfpromo"]
+  },
+  "engines": {
+    "ytdlp": {
+      "enabled": true,
+      "format_selector": "bestvideo*+bestaudio/best",
+      "h264_format_selector": "bv*[vcodec~='^((he|a)vc|h26[45])']+ba/bv*+ba/b",
+      "extra_args": []
+    },
+    "m3u8dl": {
+      "enabled": true,
+      "binary_path": null,
+      "threads": 16,
+      "retry_count": 3,
+      "auto_select_best": true
+    },
+    "fallbacks": {
+      "you_get": {"enabled": true, "timeout": 120},
+      "lux": {"enabled": false, "timeout": 120},
+      "gallery_dl": {"enabled": false, "timeout": 120}
+    }
+  },
+  "postprocess": {
+    "embed_metadata": true,
+    "embed_thumbnail": true,
+    "embed_subtitles": true,
+    "subtitle_languages": ["zh-Hans", "zh-Hant", "en", "ja"],
+    "auto_convert_to_mp4": true,
+    "preserve_original": false
+  },
+  "cookies": {
+    "auto_import_from_browsers": [],
+    "manual_cookies_file": null
+  },
+  "ui": {
+    "show_format_preview": true,
+    "default_view": "queue",
+    "show_notifications": true,
+    "minimize_to_tray": true
+  }
+}

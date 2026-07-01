@@ -1,0 +1,7 @@
+# Vidown —— 核心运行时依赖
+# 这些是 Vidown 启动所必需的包。
+yt-dlp>=2025.5.22
+requests>=2.31.0
+m3u8>=5.0.0
+beautifulsoup4>=4.12.0
+PyYAML>=6.0

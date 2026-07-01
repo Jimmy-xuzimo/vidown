@@ -1,0 +1,76 @@
+# Vidown 配置文件示例
+# 该文件使用 YAML 格式，是 JSON 配置的等价表述
+# 可通过 vidown config init / vidown config show 查看与修改
+
+general:
+  download_dir: "~/.vidown/downloads"     # 默认下载目录
+  max_concurrent_downloads: 3            # 并行下载任务数
+  max_concurrent_fragments: 16            # M3U8/分段下载并发数
+  enable_clipboard_watcher: true          # 监听剪贴板
+  language: "auto"                        # UI 语言
+  theme: "system"                         # 主题: system / light / dark
+
+quality:
+  preference: "best"                      # best / 2160p / 1080p / 720p / 480p
+  max_resolution: 4320                    # 最高分辨率 (4320=8K)
+  min_resolution: 144
+  force_codec: "h264"                     # h264 / hevc / av1 / original
+  allow_hevc: false
+  allow_av1: false
+  allow_vp9: false
+  video_crf: 18                           # x264 质量 (0-51, 18 视觉无损, 23 高质量)
+  video_preset: "slow"                    # ultrafast / fast / medium / slow / veryslow
+  audio_codec: "aac"                      # aac / copy
+  audio_bitrate: "320k"
+  prefer_lossless_audio: false
+
+naming:
+  template: "%(title)s [%(uploader)s] %(resolution)s.%(ext)s"
+  sanitize_windows: true
+  max_length: 200
+
+network:
+  user_agent: "Mozilla/5.0 ..."
+  proxy: null                             # 例如 http://127.0.0.1:7890 或 socks5://...
+  connect_timeout: 30
+  read_timeout: 60
+  retry_max: 5
+  retry_backoff: 1.5
+  speed_limit_kbps: 0                     # 0=不限速
+  use_sponsorblock: true
+  sponsorblock_categories: [sponsor, intro, outro, selfpromo]
+
+engines:
+  ytdlp:
+    enabled: true
+    format_selector: "bestvideo*+bestaudio/best"
+    h264_format_selector: "bv*[vcodec~='^((he|a)vc|h26[45])']+ba/bv*+ba/b"
+    extra_args: []
+  m3u8dl:
+    enabled: true
+    binary_path: null                     # 自动检测 N_m3u8DL-RE
+    threads: 16
+    retry_count: 3
+    auto_select_best: true
+  fallbacks:
+    you_get: {enabled: true, timeout: 120}
+    lux: {enabled: false, timeout: 120}
+    gallery_dl: {enabled: false, timeout: 120}
+
+postprocess:
+  embed_metadata: true
+  embed_thumbnail: true
+  embed_subtitles: true
+  subtitle_languages: ["zh-Hans", "zh-Hant", "en", "ja"]
+  auto_convert_to_mp4: true
+  preserve_original: false
+
+cookies:
+  auto_import_from_browsers: []           # chrome / firefox / edge / safari / brave
+  manual_cookies_file: null
+
+ui:
+  show_format_preview: true
+  default_view: "queue"
+  show_notifications: true
+  minimize_to_tray: true

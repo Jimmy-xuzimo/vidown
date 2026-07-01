@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vidown — 通用视频下载器</title>
+<link rel="icon" href="/favicon.ico" type="image/svg+xml">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="app">
+  <!-- 顶部工具栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">▼</div>
+      <div class="title">Vidown</div>
+      <span class="version" id="versionTag"></span>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="download">下载</button>
+      <button class="tab" data-tab="queue">队列 <span class="badge" id="queueBadge">0</span></button>
+      <button class="tab" data-tab="history">历史</button>
+      <button class="tab" data-tab="settings">设置</button>
+    </nav>
+    <div class="topbar-right">
+      <label class="switch">
+        <input type="checkbox" id="clipboardSwitch" checked>
+        <span>剪贴板</span>
+      </label>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- 下载 Tab -->
+    <section class="panel" id="tab-download" data-panel="download">
+      <div class="url-card">
+        <div class="url-card-header">
+          <h2>添加下载链接</h2>
+          <p class="muted">支持 YouTube、Bilibili、抖音、TikTok、Twitter、Netflix、优酷、爱奇艺、腾讯视频、M3U8 / HLS、DASH、HTTP 直链……</p>
+        </div>
+        <div class="url-input-row">
+          <textarea id="urlInput" placeholder="粘贴视频链接，支持多行批量添加（每行一个 URL）"></textarea>
+        </div>
+        <div class="url-actions">
+          <label class="quality-pick">
+            质量
+            <select id="qualitySelect">
+              <option value="best">最佳</option>
+              <option value="8k">8K (4320p)</option>
+              <option value="2160p">4K (2160p)</option>
+              <option value="1440p">2K (1440p)</option>
+              <option value="1080p">1080p</option>
+              <option value="720p">720p</option>
+              <option value="480p">480p</option>
+            </select>
+          </label>
+          <label class="quality-pick">
+            编码
+            <select id="codecSelect">
+              <option value="h264">H.264 (MP4)</option>
+              <option value="hevc">HEVC / H.265</option>
+              <option value="av1">AV1</option>
+              <option value="original">保持原编码</option>
+            </select>
+          </label>
+          <button class="btn primary" id="addBtn">+ 添加到队列</button>
+        </div>
+      </div>
+
+      <div class="hint-card">
+        <div class="hint-title">💡 小贴士</div>
+        <ul>
+          <li>开启「剪贴板」后，复制链接会自动出现在队列中。</li>
+          <li>默认输出 H.264 / AAC 编码的 MP4，可在「设置」中调整 CRF / 预设。</li>
+          <li>M3U8 / DASH 优先使用 <code>N_m3u8DL-RE</code>（如已安装）。</li>
+          <li>会员 / 年龄限制内容请在「设置 → Cookie」中导入浏览器 Cookie。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 队列 Tab -->
+    <section class="panel hidden" id="tab-queue" data-panel="queue">
+      <div class="queue-toolbar">
+        <h2>下载队列</h2>
+        <div class="queue-toolbar-right">
+          <span id="queueSummary" class="muted"></span>
+          <button class="btn ghost" id="clearFinishedBtn">清理已完成</button>
+        </div>
+      </div>
+      <div class="task-list" id="taskList">
+        <div class="empty-state">
+          <div class="empty-icon">📥</div>
+          <div>暂无任务，添加一个链接试试</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 历史 Tab -->
+    <section class="panel hidden" id="tab-history" data-panel="history">
+      <div class="queue-toolbar">
+        <h2>下载历史</h2>
+        <div class="queue-toolbar-right">
+          <input type="text" id="historySearch" placeholder="搜索标题或 URL…">
+        </div>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-state">
+          <div class="empty-icon">📚</div>
+          <div>暂无历史</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置 Tab -->
+    <section class="panel hidden" id="tab-settings" data-panel="settings">
+      <h2>设置</h2>
+
+      <div class="settings-group">
+        <h3>常规</h3>
+        <div class="setting-row">
+          <label>下载目录</label>
+          <input type="text" id="setDownloadDir" placeholder="~/Downloads">
+        </div>
+        <div class="setting-row">
+          <label>并发下载数</label>
+          <input type="number" id="setConcurrent" min="1" max="10" value="3">
+        </div>
+        <div class="setting-row">
+          <label>分段并发数 (M3U8)</label>
+          <input type="number" id="setFragments" min="1" max="64" value="16">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>质量与编码</h3>
+        <div class="setting-row">
+          <label>默认质量</label>
+          <select id="setQuality">
+            <option value="best">最佳</option>
+            <option value="2160p">4K</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>强制视频编码</label>
+          <select id="setCodec">
+            <option value="h264">H.264</option>
+            <option value="hevc">HEVC</option>
+            <option value="av1">AV1</option>
+            <option value="original">原始</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>CRF (x264 质量)</label>
+          <input type="number" id="setCrf" min="0" max="51" value="18">
+        </div>
+        <div class="setting-row">
+          <label>编码预设</label>
+          <select id="setPreset">
+            <option value="ultrafast">ultrafast</option>
+            <option value="fast">fast</option>
+            <option value="medium">medium</option>
+            <option value="slow" selected>slow</option>
+            <option value="veryslow">veryslow</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>音频编码</label>
+          <select id="setAudioCodec">
+            <option value="aac">AAC</option>
+            <option value="copy">保持原始</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <label>音频码率</label>
+          <input type="text" id="setAudioBitrate" value="320k">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>网络</h3>
+        <div class="setting-row">
+          <label>代理 (http://host:port 或 socks5://...)</label>
+          <input type="text" id="setProxy" placeholder="留空表示不使用">
+        </div>
+        <div class="setting-row">
+          <label>User-Agent</label>
+          <input type="text" id="setUserAgent">
+        </div>
+        <div class="setting-row">
+          <label>重试次数</label>
+          <input type="number" id="setRetry" min="0" max="10" value="5">
+        </div>
+        <div class="setting-row">
+          <label>
+            <input type="checkbox" id="setSponsorBlock" checked>
+            启用 SponsorBlock (YouTube 跳过赞助片段)
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Cookie / 会员</h3>
+        <p class="muted small">支持 Chrome / Firefox / Edge / Safari / Brave 浏览器。</p>
+        <div class="cookie-row">
+          <button class="btn ghost" data-browser="chrome">导入 Chrome</button>
+          <button class="btn ghost" data-browser="firefox">导入 Firefox</button>
+          <button class="btn ghost" data-browser="edge">导入 Edge</button>
+          <button class="btn ghost" data-browser="brave">导入 Brave</button>
+        </div>
+      </div>
+
+      <div class="settings-actions">
+        <button class="btn primary" id="saveSettingsBtn">保存设置</button>
+        <span class="save-status muted" id="saveStatus"></span>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部状态栏 -->
+  <footer class="statusbar">
+    <div class="status-section">
+      <span class="status-label">活动任务</span>
+      <span id="statusActive">0</span>
+    </div>
+    <div class="status-section">
+      <span class="status-label">总速度</span>
+      <span id="statusSpeed">0 B/s</span>
+    </div>
+    <div class="status-section">
+      <span class="status-label">完成 / 总数</span>
+      <span id="statusDone">0 / 0</span>
+    </div>
+    <div class="status-section right">
+      <span id="statusConn" class="status-dot connected">●</span>
+      <span id="statusConnText">已连接</span>
+    </div>
+  </footer>
+</div>
+
+<!-- 通知 -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
