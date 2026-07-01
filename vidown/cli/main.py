@@ -19,13 +19,19 @@ import time
 from pathlib import Path
 from typing import List, Optional
 
-from .. import __version__
+# Windows cp1252 兼容：必须在第一次写 stdout 之前钉住环境变量，
+# 这是子进程（如 test_cli.py 启动 `python -m vidown`）能拿到 utf-8
+# stdout 的最稳方式。
 from ..compat import configure_utf8_stdout
-from ..core.config import load_config
-from ..core.logger import get_logger, setup_logging
-from ..core.models import DownloadStatus
-from ..core.platform_detect import classify_url, filter_urls
-from ..core.scheduler import DownloadScheduler
+
+configure_utf8_stdout()
+
+from .. import __version__  # noqa: E402  必须在 configure_utf8_stdout 之后
+from ..core.config import load_config  # noqa: E402
+from ..core.logger import get_logger, setup_logging  # noqa: E402
+from ..core.models import DownloadStatus  # noqa: E402
+from ..core.platform_detect import classify_url, filter_urls  # noqa: E402
+from ..core.scheduler import DownloadScheduler  # noqa: E402
 
 logger = get_logger("cli")
 

@@ -2,7 +2,7 @@
 
 from .compat import configure_utf8_stdout
 
-# 必须先于所有 CLI / argparse 相关 import 执行，
+# 必须在所有 CLI / argparse 相关 import 之前执行，
 # 否则 argparse 在解析 --help 之前就会尝试打印中文。
 configure_utf8_stdout()
 
