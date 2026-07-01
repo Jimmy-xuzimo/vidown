@@ -1,335 +1,342 @@
-# 发布到 GitHub —— 手动操作清单
+# 发布到 GitHub —— Windows 完整指南
 
-> 目标：把 `/workspace/vidown` 推送到 `https://github.com/Jimmy-xuzimo/vidown`，并发布 `v0.1.0` Release。
-
-本清单**不需要 GitHub CLI**，只用 `git` 和 `curl`（Release 阶段用 curl 调用 REST API）。
+> 目标：把 `vidown` 推送到 `https://github.com/Jimmy-xuzimo/vidown`，并发布 `v0.1.0` Release。
+>
+> 你的 PowerShell 报错说明：**没有装 git**，并且 PowerShell 自带的 `curl` 是 `Invoke-WebRequest` 的别名，不能用。本指南从**装 git** 开始讲。
 
 ---
 
-## 〇、前提检查
+## 第一步：安装 Git for Windows
 
-在你本机的终端里执行：
+1. 打开 <https://git-scm.com/download/win>
+2. 下载 64-bit Git for Windows Setup（文件名类似 `Git-2.45.2-64-bit.exe`）
+3. 双击运行 → 一路 **Next**（推荐勾选 *"Add Git to PATH"* 这一项，默认就会勾）
+4. 装完**关掉旧的 PowerShell 窗口，重新打开一个新的**（PATH 不会自动应用到旧窗口）
 
-```bash
-git --version    # 需要 >= 2.30
-curl --version   # 任何版本都行
+验证安装：
+
+```powershell
+git --version
+# 期望看到：git version 2.45.2.windows.1 （或类似版本号）
 ```
 
-如果你用的是本机已安装的 GitHub CLI（`gh`），可以跳过第 4 步的 curl 写法，直接用 `gh release create`。
+> 不需要装 GitHub CLI（`gh`），本指南用 `git` + PowerShell 的 `Invoke-RestMethod` 完成所有操作。
 
 ---
 
-## 一、生成 Personal Access Token（PAT）
+## 第二步：生成 Personal Access Token（PAT）
 
-1. 打开 <https://github.com/settings/tokens/new>
+1. 浏览器打开 <https://github.com/settings/tokens/new>
 2. **Note** 填：`vidown-publish`
-3. **Expiration** 选：`No expiration` 或 `90 days`
-4. **Scopes** 至少勾选：
-   - `repo`（创建仓库、推送代码）
-   - `workflow`（可选；仅当你后续要写 GitHub Actions 触发 release 时需要）
-5. 点 **Generate token** → 复制 `ghp_xxxxxxxxxxxxxxxxxxxx`
+3. **Expiration** 选：`No expiration`（或 `90 days`）
+4. **Scopes** 只勾选 **`repo`** 这一项就够
+5. 点页面最下方绿色按钮 **Generate token**
+6. 立即复制显示的 `ghp_xxxxxxxxxxxxxxxxxxxx`（**关掉页面就再也看不到**）
 
-> ⚠️ **token 只显示一次**，关掉页面就再也看不到。请保存到密码管理器或本机密钥环。
+把 token 保存到本机一个**普通文本文件**里（例如 `D:\vidown-token.txt`），后面要用 —— 这样不用每次重新生成。文件内容就是 token 本身（一行字符串），**不要**提交到任何 git 仓库。
 
 ---
 
-## 二、把代码搬到本机
+## 第三步：把代码搬到本机
 
-由于当前代码在 TRAE 沙箱里，你需要把它导出到本机。两种方式任选：
+在 TRAE 沙箱里，文件都在 `/workspace/vidown`。两种方式搬出来：
 
-### 方式 A：用 TRAE 的"下载"功能
+### 方式 A：通过 TRAE 文件树下载
 
-1. 在 TRAE 界面里打开文件树，定位到 `/workspace/vidown`
-2. 整目录下载为 zip
-3. 在本机解压到任意目录，例如 `~/projects/vidown`
+1. 在 TRAE 左侧文件树里展开 `workspace/vidown`
+2. 选中 `vidown` 整个目录 → 右键 → **Download**（如果支持）
+3. 浏览器会下载一个 zip，解压到本机 `D:\projects\vidown`
 
-### 方式 B：自己重新做一次（最快）
+### 方式 B：在 PowerShell 里手动重建（最稳）
+
+**只在沙箱里执行下面命令**，把整个仓库打包成一个自解压的 PowerShell 脚本：
 
 ```bash
-mkdir -p ~/projects/vidown && cd ~/projects/vidown
-# 把当前在沙箱里的 77 个已提交文件复制过来，或从 TRAE 的产物面板导出
-# 关键路径：vidown/  scripts/  tests/  configs/  docs/  assets/  .github/  .gitignore
-#          pyproject.toml  requirements*.txt  README.md  CHANGELOG.md  LICENSE
+cd /workspace/vidown
+# 在沙箱里把整个仓库打包成 base64
+tar -czf - --exclude=__pycache__ --exclude=build --exclude=dist --exclude=.git . | base64 -w0 > /tmp/vidown.tar.b64
 ```
 
+然后用 TRAE 的文件查看器把 `/tmp/vidown.tar.b64` 打开 → 全选复制。**注意：内容会很大（几 MB）**，但能一次到位。
+
+到本机 `D:\projects\` 下执行：
+
+```powershell
+mkdir D:\projects\vidown
+cd D:\projects\vidown
+
+# 把上面复制的一大段 base64 粘到 $B64 变量里
+$B64 = '...一大段base64...'
+
+# 解码并解压
+[IO.File]::WriteAllBytes('vidown.tar.gz', [Convert]::FromBase64String($B64))
+tar -xzf vidown.tar.gz
+del vidown.tar.gz
+```
+
+> 嫌 base64 太大？更省事的 B 方案是直接用 TRAE 提供的"下载工作区"功能，下载整个 `/workspace/vidown` 目录。
+
 ---
 
-## 三、配置本地 Git 身份
+## 第四步：初始化本地 Git 仓库
 
-提交需要署名。如果用占位身份也行（**但 GitHub 会显示"unverified"标记**），建议用真实信息：
+打开 **PowerShell**（不是 CMD）：
 
-```bash
-cd ~/projects/vidown
+```powershell
+cd D:\projects\vidown
 
-# 替换成你自己的 GitHub 用户名和验证邮箱
+# 确认这里是仓库根（应该看到 pyproject.toml、README.md、vidown/ 等）
+dir
+```
+
+**如果第三步搬过来时 `.git` 也一起搬了**（包含隐藏的 `.git` 目录），直接跳到第五步。
+
+**如果 `.git` 没搬过来**（目录里没有 `.git`），重新初始化：
+
+```powershell
+cd D:\projects\vidown
+
+# 1) 初始化
+git init -b main
+
+# 2) 配置身份（用你 GitHub 已验证的邮箱，commit 才会显示绿勾）
 git config user.name  "Jimmy-xuzimo"
 git config user.email "your-verified-email@example.com"
 
-# 检查 remote 配置（应当为空，因为我们用 HTTPS + token 推）
-git remote -v
-```
+# 3) 清理掉搬过来时残留的 __pycache__ / build / dist（这些本来就不该进 git）
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue `
+  (Get-ChildItem -Recurse -Directory -Filter "__pycache__" | % { $_.FullName })
+Remove-Item -Recurse -Force -ErrorAction SilentlyContinue build, dist
 
-> 想让 GitHub 显示 **"Verified"** 绿勾，邮箱必须是你 GitHub 账号下已验证的邮箱：<https://github.com/settings/emails>。
+# 4) 全量提交
+git add -A
+git commit -m "feat: initial release v0.1.0"
+```
 
 ---
 
-## 四、推送代码到新仓库
+## 第五步：在 GitHub 创建空仓库
 
-### 4.1 在 GitHub 网页上创建空仓库
+浏览器打开 <https://github.com/new>：
 
-1. 打开 <https://github.com/new>
-2. **Owner**：`Jimmy-xuzimo`
-3. **Repository name**：`vidown`
-4. **Description**：`通用视频下载器 —— 类 Downie4 的全能流媒体下载工具`
-5. 选择 **Public**（如需私有选 Private）
-6. **不要**勾选 `Add a README` / `Add .gitignore` / `Add a license`（避免与本地冲突）
-7. 点 **Create repository**
+- **Owner**：`Jimmy-xuzimo`
+- **Repository name**：`vidown`
+- **Description**：`通用视频下载器 —— 类 Downie4 的全能流媒体下载工具`
+- **Public / Private**：按需
+- ❌ **不要勾选** `Add a README` / `Add .gitignore` / `Add a license`（会和本地冲突）
+- 点 **Create repository**
 
-### 4.2 推送 main 分支
+---
 
-页面跳转到 `https://github.com/Jimmy-xuzimo/vidown` 后会显示一段命令。在本机执行：
+## 第六步：推送代码
 
-```bash
-cd ~/projects/vidown
+回到 PowerShell：
 
-# 设置 remote（HTTPS 形式，token 在第 5 步推送时再提供）
+```powershell
+cd D:\projects\vidown
+
+# 1) 关联远程仓库
 git remote add origin https://github.com/Jimmy-xuzimo/vidown.git
 
-# 推送 main
+# 2) 推送（PowerShell 会弹窗或提示输入凭据）
 git push -u origin main
 ```
 
-执行 `git push` 时会要求输入凭据：
+**凭据输入：**
 
 - **Username**：`Jimmy-xuzimo`
-- **Password**：粘贴 PAT（**不是 GitHub 登录密码**）
+- **Password**：粘贴第二步生成的 PAT（**不是 GitHub 登录密码**）
 
-如果不想每次都输入，可改用以下任一方式（任选其一）：
+> **避免每次输入密码**（推荐）：用 Windows 凭据管理器
+> ```powershell
+> git config --global credential.helper manager
+> ```
+> 第一次 push 后，Windows 会弹窗让你确认把 PAT 存进凭据管理器。以后就不用再输了。
 
-```bash
-# 方式 1：把 token 写入 remote URL（最简单）
-git remote set-url origin https://ghp_xxxxxxxxxxxx@github.com/Jimmy-xuzimo/vidown.git
+### 验证
 
-# 方式 2：使用 Git 凭据缓存（15 分钟有效）
-git config --global credential.helper cache
-
-# 方式 3：永久保存到 ~/.git-credentials
-git config --global credential.helper store
+```powershell
+git log --oneline -3
+# 应该看到：
+# d7851aa docs: add PUBLISH_TO_GITHUB manual checklist  （如果有搬过来）
+# 3d57d7b feat: initial release v0.1.0
 ```
 
-> ⚠️ 方式 1 会把 token 写入 `.git/config`，**仅在本机使用即可**，不要把 `.git/config` 分享给他人。
-
-### 4.3 验证推送成功
-
-```bash
-git log --oneline -5
-# 应能看到: 3d57d7b feat: initial release v0.1.0
-```
-
-打开 <https://github.com/Jimmy-xuzimo/vidown> 应能看到 77 个文件。
+打开 <https://github.com/Jimmy-xuzimo/vidown> 应能看到 78 个文件。
 
 ---
 
-## 五、创建 v0.1.0 Release 并上传二进制
+## 第七步：发布 v0.1.0 Release
 
-这一步会做四件事：
-1. 创建一个 git tag `v0.1.0`
-2. 把 24 MB 的 `dist/vidown` 上传到 Release assets
-3. 生成 SHA256 校验和文件
-4. 自动写好 Release Notes（从 CHANGELOG.md 复制）
+### 7.1 在本地打 tag
 
-### 5.1 给本地仓库打 tag
+```powershell
+cd D:\projects\vidown
 
-```bash
-cd ~/projects/vidown
-
-# annotated tag（带作者与时间戳，GitHub 推荐）
 git tag -a v0.1.0 -m "v0.1.0 - 首次发布
 
-Vidown —— 通用视频下载器类 Downie4 的全能流媒体下载工具。
+Vidown - 通用视频下载器类 Downie4 的全能流媒体下载工具。
 
-- 支持 1700+ 站点（yt-dlp 主引擎）
+- 1700+ 站点支持（yt-dlp 主引擎）
 - M3U8/HLS/DASH 流媒体处理
 - 统一输出 H.264/AAC MP4（CRF 18 / preset slow）
 - Web GUI（Downie4 风格，单页 + SSE 实时进度）
 - 跨平台：Linux 单文件 / macOS .app / Windows .exe"
 
-# 把 tag 推上去
 git push origin v0.1.0
 ```
 
-### 5.2 上传二进制到 Release
+### 7.2 把 token 读进来
 
-把 PAT 临时放进环境变量（**不要写到任何文件里**）：
+```powershell
+# 从文件读取 token（不写入 git）
+$env:VIDOWN_GH_TOKEN = Get-Content "D:\vidown-token.txt" -Raw
+$env:VIDOWN_GH_TOKEN = $env:VIDOWN_GH_TOKEN.Trim()
 
-```bash
-export VIDOWN_GH_TOKEN="ghp_xxxxxxxxxxxx"
-export VIDOWN_GH_USER="Jimmy-xuzimo"
+# 确认
+Write-Host "Token length: $($env:VIDOWN_GH_TOKEN.Length)"   # 应该是 40
 ```
 
-#### 方式 A：用 `gh` CLI（如果你装了）
+### 7.3 上传二进制（dist/vidown 是 24 MB 的 Linux 版本）
 
-```bash
-# 校验和
-cd ~/projects/vidown
-sha256sum dist/vidown > dist/SHA256SUMS
-cat dist/SHA256SUMS
+> ⚠️ **重要提示**：沙箱里构建的 `dist/vidown` 是在 **Linux** 上跑 PyInstaller 出来的，**不能在 Windows 上运行**。它上传到 Release 后是给 Linux 用户下载的。
+>
+> 如果你希望 Windows 用户也能用，需要在 Windows 上重新跑 `scripts\build.py` 打包，得到 `dist\vidown.exe` 后再上传。下面以**先上传 Linux 版本**为例，Windows 版本的步骤会单列在 7.5。
 
-# 创建 release 并上传
-gh release create v0.1.0 \
-  --repo "$VIDOWN_GH_USER/vidown" \
-  --title "v0.1.0 - 首次发布" \
-  --notes-file CHANGELOG.md \
-  dist/vidown \
-  dist/SHA256SUMS
+```powershell
+cd D:\projects\vidown
+
+# 0) 把 Linux 版的 dist 拷贝过来
+Copy-Item "D:\path\to\vidown" "D:\projects\vidown\dist\vidown-linux-x86_64"
+
+# 1) 计算 SHA256
+$Hash = (Get-FileHash "dist\vidown-linux-x86_64" -Algorithm SHA256).Hash.ToLower()
+"  $Hash  vidown-linux-x86_64" | Out-File -Encoding ascii dist\SHA256SUMS
+Get-Content dist\SHA256SUMS
+# 输出形如：
+#   a1b2c3...  vidown-linux-x86_64
+
+# 2) 准备 release notes
+$Notes = Get-Content CHANGELOG.md -Raw
+$JsonNotes = $Notes | ConvertTo-Json -Depth 5
+
+# 3) 创建 release
+$Body = @{
+    tag_name         = "v0.1.0"
+    target_commitish = "main"
+    name             = "v0.1.0 - 首次发布"
+    body             = $Notes
+    draft            = $false
+    prerelease       = $false
+} | ConvertTo-Json -Depth 5
+
+$Headers = @{
+    "Authorization" = "token $env:VIDOWN_GH_TOKEN"
+    "Accept"        = "application/vnd.github+json"
+    "User-Agent"    = "vidown-publish-script"
+}
+
+$Release = Invoke-RestMethod `
+    -Method Post `
+    -Uri "https://api.github.com/repos/Jimmy-xuzimo/vidown/releases" `
+    -Headers $Headers `
+    -ContentType "application/json" `
+    -Body $Body
+
+Write-Host "Release created: $($Release.html_url)"
+
+# 4) 取 upload URL（去掉 `{?name,label}` 模板）
+$UploadUrl = $Release.upload_url -replace '\{.*\}', ''
+
+# 5) 上传 vidown 二进制
+Invoke-RestMethod -Method Post `
+    -Uri "$UploadUrl?name=vidown-linux-x86_64" `
+    -Headers $Headers `
+    -ContentType "application/octet-stream" `
+    -InFile "dist\vidown-linux-x86_64"
+
+# 6) 上传 SHA256SUMS
+Invoke-RestMethod -Method Post `
+    -Uri "$UploadUrl?name=SHA256SUMS" `
+    -Headers $Headers `
+    -ContentType "text/plain" `
+    -InFile "dist\SHA256SUMS"
+
+Write-Host "Done: https://github.com/Jimmy-xuzimo/vidown/releases/tag/v0.1.0"
 ```
 
-#### 方式 B：纯 curl（不需要安装 gh）
+### 7.4 验证 Release
 
-```bash
-cd ~/projects/vidown
+打开 <https://github.com/Jimmy-xuzimo/vidown/releases/tag/v0.1.0>，应能看到两个资产：
+- `vidown-linux-x86_64`（24 MB）
+- `SHA256SUMS`（校验和）
 
-# 0) 准备校验和
-sha256sum dist/vidown > dist/SHA256SUMS
-SHA=$(awk '{print $1}' dist/SHA256SUMS)
-echo "SHA256: $SHA"
+### 7.5 同时发布 Windows 版本（可选）
 
-# 1) 读取 CHANGELOG 顶部作为 release notes
-NOTES=$(awk '/^## \[0.1.0\]/{flag=1} flag && !/^## \[0.1.0\]/{print} flag && /^## \[/{if(NR>FNR)exit}' CHANGELOG.md | sed '$d')
-# 如果上面命令没拿到内容，就用整个文件
-[ -z "$NOTES" ] && NOTES="$(cat CHANGELOG.md)"
+如果你想在 Windows 上自己打包一个 `.exe`：
 
-# 2) 调用 GitHub API 创建 release（返回 JSON 含 upload_url）
-RESP=$(curl -s -X POST \
-  -H "Authorization: token $VIDOWN_GH_TOKEN" \
-  -H "Accept: application/vnd.github+json" \
-  "https://api.github.com/repos/$VIDOWN_GH_USER/vidown/releases" \
-  -d "$(printf '{"tag_name":"v0.1.0","target_commitish":"main","name":"v0.1.0 - 首次发布","body":%s,"draft":false,"prerelease":false}' \
-      "$(printf '%s' "$NOTES" | python3 -c 'import json,sys;print(json.dumps(sys.stdin.read()))')"
-  )")
+```powershell
+# 安装 PyInstaller
+pip install -r requirements.txt
+pip install pyinstaller
 
-UPLOAD_URL=$(echo "$RESP" | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("upload_url","").split("{")[0])')
+# 用仓库自带的 spec 构建
+cd D:\projects\vidown
+pyinstaller scripts\vidown.spec --clean --noconfirm
 
-if [ -z "$UPLOAD_URL" ]; then
-  echo "创建 release 失败，响应："
-  echo "$RESP"
-  exit 1
-fi
-
-# 3) 上传 vidown 二进制
-curl -s -X POST \
-  -H "Authorization: token $VIDOWN_GH_TOKEN" \
-  -H "Content-Type: application/octet-stream" \
-  --data-binary @"dist/vidown" \
-  "$UPLOAD_URL?name=vidown-linux-x86_64"
-
-# 4) 上传 SHA256SUMS
-curl -s -X POST \
-  -H "Authorization: token $VIDOWN_GH_TOKEN" \
-  -H "Content-Type: text/plain" \
-  --data-binary @"dist/SHA256SUMS" \
-  "$UPLOAD_URL?name=SHA256SUMS"
-
-echo
-echo "完成！访问：https://github.com/$VIDOWN_GH_USER/vidown/releases/tag/v0.1.0"
+# 产物在 dist\vidown\vidown.exe（onedir 模式）或 dist\vidown.exe（onefile 模式）
+# 把产物拷贝到发布脚本能识别的地方，重跑 7.3 即可（修改文件名为 vidown-windows-x86_64.exe）
 ```
-
-> Windows PowerShell 用户请用 `scripts/publish_to_github.ps1`（如果你本机已经拉取了这份仓库的话）。
 
 ---
 
-## 六、验证发布
+## 第八步：常见问题排查
 
-打开以下链接确认一切就绪：
+### 报错 `fatal: 'origin' does not appear to be a git repository`
 
-| 检查项 | URL |
+→ 还没执行 `git remote add origin ...`，回到第六步开头。
+
+### 报错 `Permission denied` / `403 Forbidden`
+
+- 检查 PAT 是否勾选了 `repo` scope
+- Username 必须是 `Jimmy-xuzimo`（不是你的注册邮箱）
+- Password 字段粘贴的是 **PAT**，不是 GitHub 登录密码
+
+### 报错 `release not found` / 404
+
+→ 第七步里 `git push origin v0.1.0` 还没成功。回 7.1 末尾。
+
+### Commit 旁边显示"unverified"
+
+→ 你 `git config user.email` 填的不是 GitHub 账号下已验证的邮箱。改用已验证邮箱后执行：
+
+```powershell
+git commit --amend --reset-author --no-edit
+git push --force-with-lease
+```
+
+### PowerShell 报 `curl` 找不到
+
+→ PowerShell 自带的 `curl` 是 `Invoke-WebRequest` 的别名，**用不了**。本指南全程用 `Invoke-RestMethod`，不要直接打 `curl`。
+
+### 网络慢导致 Invoke-RestMethod 超时
+
+```powershell
+Invoke-WebRequest -Uri ... -TimeoutSec 600   # 加超时
+# 或用 curl.exe（git for windows 自带）
+& "C:\Program Files\Git\mingw64\bin\curl.exe" --version
+```
+
+---
+
+## 第九步：完成确认
+
+| 检查项 | 链接 |
 |---|---|
 | 仓库主页 | <https://github.com/Jimmy-xuzimo/vidown> |
-| 代码（应看到 77 个文件） | <https://github.com/Jimmy-xuzimo/vidown/tree/main> |
-| 提交历史 | <https://github.com/Jimmy-xuzimo/vidown/commits/main> |
+| 提交列表 | <https://github.com/Jimmy-xuzimo/vidown/commits/main> |
 | Release 页面 | <https://github.com/Jimmy-xuzimo/vidown/releases/tag/v0.1.0> |
-| 二进制下载 | <https://github.com/Jimmy-xuzimo/vidown/releases/download/v0.1.0/vidown-linux-x86_64> |
+| Linux 二进制 | <https://github.com/Jimmy-xuzimo/vidown/releases/download/v0.1.0/vidown-linux-x86_64> |
+| 校验和 | <https://github.com/Jimmy-xuzimo/vidown/releases/download/v0.1.0/SHA256SUMS> |
 
----
-
-## 七、收尾（可选）
-
-### 7.1 调整仓库设置
-
-访问 <https://github.com/Jimmy-xuzimo/vidown/settings>：
-
-- **General → Features**：
-  - ✅ Issues（开 issue 接收反馈）
-  - ✅ Discussions（社区讨论）
-  - ❌ Wiki（不需要）
-  - ✅ Projects（可选）
-- **General → Default branch**：保持 `main`
-- **General → Social preview**：上传 `assets/icon_512.png` 作为预览图
-- **Security → Code security and analysis**：
-  - ✅ Dependabot alerts
-  - ✅ Code scanning（已通过 `.github/workflows/codeql.yml` 启用）
-
-### 7.2 添加 Topics
-
-访问 <https://github.com/Jimmy-xuzimo/vidown> → 右侧 "About" 齿轮 → **Topics** 输入：
-
-```
-video-downloader  yt-dlp  m3u8  hls  ffmpeg  python
-cross-platform  h264  mp4  downloader  streaming
-```
-
-### 7.3 修复合并设置
-
-访问 <https://github.com/Jimmy-xuzimo/vidown/settings> → **General → Pull Requests**：
-
-- ✅ Allow squash merging
-- ❌ Allow merge commits（保持线性历史）
-- ❌ Allow rebase merging
-- ✅ Automatically delete head branches
-
-### 7.4 设置 GitHub Pages（可选）
-
-如果想用 `docs/` 目录作为文档站点：
-
-1. <https://github.com/Jimmy-xuzimo/vidown/settings/pages>
-2. Source：`Deploy from a branch`
-3. Branch：`main` / `docs/`
-
----
-
-## 八、常见问题
-
-**Q1: `git push` 报 `Permission denied` / `403`**  
-→ 检查 PAT 是否勾选了 `repo` scope；Username 是否填了 `Jimmy-xuzimo`（不是邮箱）。
-
-**Q2: Release 报 `Bad credentials`**  
-→ token 复制时漏了字符；重新生成一个。
-
-**Q3: 提交邮箱显示"unverified"**  
-→ 在 <https://github.com/settings/emails> 添加并验证该邮箱。
-
-**Q4: 想撤销刚 push 的提交**  
-→ 先看 <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/removing-sensitive-data-from-a-repository>。本地已 push 的代码**永远会留在 GitHub 事件日志里**，所以发布前**不要把 token 提交进代码**。
-
-**Q5: Release 资产超过 2 GB 限制？**  
-→ `dist/vidown` 仅 24 MB，远低于限制。
-
-**Q6: macOS / Windows 二进制？**  
-→ 当前 `dist/vidown` 是在 **Linux** 上构建的，**不能在 macOS / Windows 上运行**。要发布多平台二进制，请在各自平台的 runner 上跑 `scripts/build.py`，或借助 GitHub Actions 矩阵（`.github/workflows/build.yml` 已配置好）。
-
----
-
-## 九、下次更新流程（备忘）
-
-```bash
-cd ~/projects/vidown
-# 修改代码...
-git add -A
-git commit -m "feat: 新功能描述"
-git push
-git tag -a v0.1.1 -m "v0.1.1 描述"
-git push origin v0.1.1
-gh release create v0.1.1 --title "v0.1.1" --notes-file CHANGELOG.md dist/vidown
-```
-
-完成。
+四个链接都点开确认无误，就完成了 🎉
