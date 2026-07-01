@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from vidown.core.platform_detect import (
+    canonicalize_url,
     classify_url,
     extract_urls,
     filter_urls,
@@ -135,6 +136,30 @@ class TestFilterUrls:
             kinds=[MediaKind.VIDEO],
         )
         assert all("mp4" in u for u in urls)
+
+
+class TestDouyinJingxuan:
+    """抖音 jingxuan?modal_id 链接应被改写为标准 /video/ 形式。"""
+
+    def test_canonicalize_modal_id_query(self):
+        url = "https://www.douyin.com/jingxuan?modal_id=7656363857279012134"
+        assert canonicalize_url(url) == "https://www.douyin.com/video/7656363857279012134"
+
+    def test_canonicalize_modal_id_with_other_params(self):
+        url = "https://www.douyin.com/jingxuan?foo=bar&modal_id=7656363857279012134&baz=1"
+        assert canonicalize_url(url) == "https://www.douyin.com/video/7656363857279012134"
+
+    def test_canonicalize_passthrough_for_normal_url(self):
+        url = "https://www.douyin.com/video/123"
+        assert canonicalize_url(url) == url
+
+    def test_classify_after_canonicalize(self):
+        p, _ = classify_url("https://www.douyin.com/jingxuan?modal_id=7656363857279012134")
+        assert p == Platform.DOUYIN
+
+    def test_extract_urls_rewrites_jingxuan(self):
+        result = extract_urls("看看这个 https://www.douyin.com/jingxuan?modal_id=7656363857279012134 视频")
+        assert "https://www.douyin.com/video/7656363857279012134" in result
 
 
 class TestPlatformDisplayName:

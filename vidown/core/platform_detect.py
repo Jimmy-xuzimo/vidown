@@ -69,12 +69,47 @@ def normalize_url(text: str) -> str:
     return text
 
 
+# ----------------------------------------------------------------------
+# 平台特定 URL 规范化
+# ----------------------------------------------------------------------
+
+# 抖音精选页 / Modal 链接 → 标准 video 链接
+# 例: https://www.douyin.com/jingxuan?modal_id=7656363857279012134
+#   → https://www.douyin.com/video/7656363857279012134
+_DOUYIN_MODAL_RE = re.compile(
+    r"^https?://(?:www\.)?douyin\.com/jingxuan/?\?(?:.*&)?modal_id=(\d+).*$",
+    re.IGNORECASE,
+)
+# 兼容 modal_id 作为路径段的另一种写法
+_DOUYIN_MODAL_PATH_RE = re.compile(
+    r"^https?://(?:www\.)?douyin\.com/jingxuan/(?:[^?]*\?)?(?:.*&)?modal_id=(\d+).*$",
+    re.IGNORECASE,
+)
+
+
+def canonicalize_url(url: str) -> str:
+    """将各平台的非标准/分享链接改写为标准链接。
+
+    目的：让 yt-dlp 提取器能直接识别。
+    """
+    if not url:
+        return url
+    u = url.strip()
+
+    m = _DOUYIN_MODAL_RE.match(u) or _DOUYIN_MODAL_PATH_RE.match(u)
+    if m:
+        vid = m.group(1)
+        return f"https://www.douyin.com/video/{vid}"
+
+    return u
+
+
 def extract_urls(text: str) -> List[str]:
     """从一段文本中提取全部 URL。"""
     if not text:
         return []
     urls = _URL_RE.findall(text)
-    return [normalize_url(u) for u in urls]
+    return [canonicalize_url(normalize_url(u)) for u in urls]
 
 
 def classify_url(url: str) -> Tuple[Platform, MediaKind]:
@@ -82,6 +117,9 @@ def classify_url(url: str) -> Tuple[Platform, MediaKind]:
     if not url:
         return Platform.UNKNOWN, MediaKind.VIDEO
 
+    # 先做平台特定规范化（如抖音 jingxuan → video 路径），
+    # 否则 yt-dlp 不会认这些分享/落地页链接。
+    url = canonicalize_url(url)
     url_lower = url.lower()
     parsed = urlparse(url_lower)
     host = parsed.hostname or ""

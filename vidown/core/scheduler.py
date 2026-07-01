@@ -156,6 +156,10 @@ class DownloadScheduler:
     ) -> DownloadTask:
         if not url:
             raise VidownError("URL 不能为空")
+        # 平台特定规范化（如抖音 jingxuan?modal_id → douyin.com/video/...）
+        # 让 yt-dlp 等下游引擎拿到可识别的标准链接。
+        from .platform_detect import canonicalize_url
+        url = canonicalize_url(url)
         # 自动检测
         if platform is None or kind is None:
             p, k = classify_url(url)

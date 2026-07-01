@@ -150,16 +150,18 @@ class YtDlpEngine(BaseEngine):
             opts["proxy"] = self.config.network.proxy
 
         # SponsorBlock
+        # 兼容性说明：yt-dlp 较新版本中 ModifyChaptersPP 不再接受
+        # `sponsorblock_mark` 关键字（已迁移到 SponsorBlock 处理器内部
+        # 通过 `mark` 字段自动处理）。这里只注册 SponsorBlock PP，
+        # 由它自己生成/更新 chapter 标记，避免触发
+        # `ModifyChaptersPP.__init__() got an unexpected keyword argument`
+        # 错误。
         if self.config.network.use_sponsorblock:
             opts["postprocessors"] = opts.get("postprocessors", [])
             opts["postprocessors"].append({
                 "key": "SponsorBlock",
                 "categories": self.config.network.sponsorblock_categories,
                 "api": "https://sponsor.anjok.gq",
-            })
-            opts["postprocessors"].append({
-                "key": "ModifyChapters",
-                "sponsorblock_mark": self.config.network.sponsorblock_categories,
             })
 
         # 强制转 H.264
