@@ -20,6 +20,7 @@ from ..core.exceptions import (
 from ..core.format_selector import build_ytdlp_format_string
 from ..core.logger import get_logger
 from ..core.models import (
+    DownloadResult,
     DownloadTask,
     FormatInfo,
     MediaKind,
@@ -93,6 +94,17 @@ class YtDlpEngine(BaseEngine):
             Platform.TENCENT: 100,
             Platform.MANGETV: 100,
             Platform.NETFLIX: 50,  # 可能受 DRM 限制
+            # 音频流媒体默认走 yt-dlp
+            Platform.SOUNDCLOUD: 100,
+            Platform.SPOTIFY: 100,
+            Platform.BANDCAMP: 100,
+            Platform.APPLE_MUSIC: 100,
+            Platform.AMAZON_MUSIC: 100,
+            Platform.TIDAL: 100,
+            Platform.DEEZER: 100,
+            Platform.AUDIUS: 100,
+            Platform.MIXCLOUD: 100,
+            Platform.HEARTHIS: 100,
             Platform.UNKNOWN: 80,
         }
         return priority_map.get(platform, 80)
@@ -119,8 +131,10 @@ class YtDlpEngine(BaseEngine):
     # ------------------------------------------------------------------
     # 下载
     # ------------------------------------------------------------------
-    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
-        out_template = self._build_output_template(info)
+    def download_info(
+        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
+    ) -> DownloadResult:
+        out_template, work_dir = self._build_output_template(task, info)
         opts = self._build_ydl_options(ctx, download=True, outtmpl=out_template)
         # 用户指定格式
         if task.selected_format_id:
@@ -159,14 +173,8 @@ class YtDlpEngine(BaseEngine):
                 }
             )
 
-        # 强制转 H.264
-        opts["postprocessors"] = opts.get("postprocessors", [])
-        opts["postprocessors"].append(
-            {
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4",
-            }
-        )
+        # 格式统一转封装/转码由 vidown.postprocess 接管，
+        # 不再依赖 yt-dlp 的 FFmpegVideoConvertor，避免其版本兼容问题。
 
         # 嵌入元数据
         if self.config.postprocess.embed_metadata:
@@ -198,9 +206,16 @@ class YtDlpEngine(BaseEngine):
                 ydl.download([info.url or info.webpage_url or task.url])
 
             # 定位最终文件
-            output_path = self._find_final_file(out_template, info)
+            output_path = self._find_final_file(work_dir)
             ctx.log("info", f"yt-dlp 下载完成: {output_path}")
-            return output_path
+            # 仅当输出非 MP4 时才需要后处理转封装
+            needs_pp = not output_path.lower().endswith(".mp4")
+            return DownloadResult(
+                output_path=output_path,
+                needs_postprocess=needs_pp,
+                metadata=info,
+                engine_name=self.name,
+            )
         except self._yt_dlp.utils.DownloadError as e:
             msg = str(e)
             if "DRM" in msg or "Widevine" in msg:
@@ -227,6 +242,8 @@ class YtDlpEngine(BaseEngine):
             "socket_timeout": self.config.network.read_timeout,
             "ignoreerrors": False,
             "nocheckcertificate": False,
+            "continuedl": True,
+            "overwrites": False,
         }
         if outtmpl:
             opts["outtmpl"] = outtmpl
@@ -238,7 +255,14 @@ class YtDlpEngine(BaseEngine):
             opts["proxy"] = self.config.network.proxy
         return opts
 
-    def _build_output_template(self, info: VideoInfo) -> str:
+    def _build_output_template(self, task: DownloadTask, info: VideoInfo) -> tuple[str, Path]:
+        # 每个任务独立的临时工作目录，避免全局搜索最终文件
+        download_dir = Path(
+            os.path.expandvars(os.path.expanduser(self.config.general.download_dir))
+        )
+        work_dir = download_dir / ".vidown_work" / task.id
+        work_dir.mkdir(parents=True, exist_ok=True)
+
         # yt-dlp 输出模板
         tpl = self.config.naming.template
         # 将自定义模板中的字段替换为 yt-dlp 支持的占位符
@@ -249,27 +273,44 @@ class YtDlpEngine(BaseEngine):
             tpl = tpl.replace("/", "／").replace("\\", "＼")
         # 限制长度
         tpl = tpl[: self.config.naming.max_length]
-        # 强制 mp4 扩展
-        if not tpl.endswith(".%(ext)s"):
+        # 强制以 .%(ext)s 结尾；无扩展名时直接追加
+        if "." in tpl:
             tpl = tpl.rsplit(".", 1)[0] + ".%(ext)s"
-        return tpl
+        else:
+            tpl = tpl + ".%(ext)s"
+        return str(work_dir / tpl), work_dir
 
-    def _find_final_file(self, outtmpl: str, info: VideoInfo) -> str:
-        """yt-dlp 下载完成后找到产出文件。"""
-        # 由 outtmpl 推断目录
-        download_dir = self.config.general.download_dir
-        download_dir = os.path.expandvars(os.path.expanduser(download_dir))
-        # yt-dlp 会在子目录中创建平台/播放列表等结构，简单列举最近文件
+    def _find_final_file(self, work_dir: Path) -> str:
+        """yt-dlp 下载完成后在工作目录中找到产出文件并移回下载目录。"""
+        media_exts = {".mp4", ".mkv", ".webm", ".mov", ".flv", ".avi", ".m4a", ".m4v"}
         candidates = []
-        root = Path(download_dir)
-        if root.exists():
-            for p in root.rglob("*.mp4"):
+        for p in work_dir.rglob("*"):
+            if p.is_file() and p.suffix.lower() in media_exts:
                 candidates.append((p.stat().st_mtime, p))
         candidates.sort(reverse=True)
-        if candidates:
-            return str(candidates[0])
-        # 兜底：返回模板替换后的值
-        return str(root / (outtmpl.replace("%(ext)s", "mp4")))
+        if not candidates:
+            raise EngineError("yt-dlp 下载后未找到媒体文件")
+
+        src = candidates[0][1]
+        download_dir = work_dir.parent.parent  # .vidown_work/<task_id> -> download_dir
+        dest = download_dir / src.name
+        # 处理同名文件：追加序号
+        if dest.exists():
+            stem, suffix = dest.stem, dest.suffix
+            i = 1
+            while True:
+                dest = download_dir / f"{stem}-{i}{suffix}"
+                if not dest.exists():
+                    break
+                i += 1
+        src.replace(dest)
+
+        # 清理空工作目录
+        try:
+            work_dir.rmdir()
+        except OSError:
+            pass
+        return str(dest)
 
     def _to_video_info(self, data: Dict[str, Any], original_url: str) -> VideoInfo:
         # 平台

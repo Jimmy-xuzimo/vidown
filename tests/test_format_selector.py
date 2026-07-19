@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 
-from vidown.core.models import FormatInfo, VideoInfo, Platform
+from vidown.core.models import FormatInfo, MediaKind, VideoInfo, Platform
 from vidown.core.config import QualityConfig
 from vidown.core.format_selector import select_formats, build_ytdlp_format_string
 
@@ -131,6 +131,38 @@ class TestSelectFormats:
     def test_no_formats(self):
         sel = select_formats(VideoInfo(url="x"), QualityConfig())
         assert sel.video is None
+
+    def test_audio_only_selection(self):
+        """音频内容应返回最佳音频流，忽略视频格式。"""
+        info = VideoInfo(
+            url="https://soundcloud.com/artist/track",
+            platform=Platform.SOUNDCLOUD,
+            kind=MediaKind.AUDIO,
+            formats=[
+                FormatInfo(
+                    format_id="audio_low",
+                    ext="mp3",
+                    vcodec="none",
+                    acodec="mp3",
+                    abr=128,
+                    tbr=128,
+                ),
+                FormatInfo(
+                    format_id="audio_high",
+                    ext="mp3",
+                    vcodec="none",
+                    acodec="mp3",
+                    abr=320,
+                    tbr=320,
+                ),
+            ],
+        )
+        q = QualityConfig()
+        sel = select_formats(info, q, kind=MediaKind.AUDIO)
+        assert sel.audio is not None
+        assert sel.audio.format_id == "audio_high"
+        assert sel.video is None
+        assert sel.single is None
 
 
 class TestBuildYtdlpFormatString:

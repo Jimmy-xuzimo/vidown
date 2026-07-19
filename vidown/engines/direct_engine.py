@@ -7,12 +7,16 @@ import re
 import time
 from typing import Optional
 
-import requests
-
 from ..core.config import Config
-from ..core.exceptions import EngineError, NetworkError
+from ..core.exceptions import (
+    EngineError,
+    InsufficientDiskSpaceError,
+    NetworkError,
+    UserCancelledError,
+)
 from ..core.logger import get_logger
 from ..core.models import (
+    DownloadResult,
     DownloadTask,
     FormatInfo,
     MediaKind,
@@ -20,13 +24,10 @@ from ..core.models import (
     TaskProgress,
     VideoInfo,
 )
+from ..core.network import http_get, http_head
+from ..core.path_utils import get_download_dir, unique_path
 from ..core.platform_detect import classify_url
-from ..core.utils import (
-    expand_path,
-    free_disk_bytes,
-    human_readable_size,
-    sanitize_filename,
-)
+from ..core.utils import free_disk_bytes, human_readable_size, sanitize_filename
 from .base import BaseEngine, EngineCapability, EngineContext
 
 logger = get_logger("engines.direct")
@@ -58,31 +59,15 @@ class DirectEngine(BaseEngine):
 
     def probe(self, url: str, ctx: EngineContext) -> VideoInfo:
         try:
-            proxies = (
-                {"http": self.config.network.proxy, "https": self.config.network.proxy}
-                if self.config.network.proxy
-                else None
-            )
-            resp = requests.head(
-                url,
-                allow_redirects=True,
-                timeout=self.config.network.connect_timeout,
-                headers={"User-Agent": self.config.network.user_agent},
-                proxies=proxies,
-            )
-            if resp.status_code >= 400:
-                # HEAD 失败则尝试 GET 一次拿到 headers
-                resp = requests.get(
-                    url,
-                    stream=True,
-                    timeout=self.config.network.connect_timeout,
-                    headers={"User-Agent": self.config.network.user_agent},
-                    proxies=proxies,
-                )
+            resp = http_head(url, self.config, allow_redirects=True)
+        except NetworkError:
+            raise
         except Exception as e:
             raise NetworkError(f"探测直链失败: {e}") from e
 
-        size = int(resp.headers.get("Content-Length") or 0) or None
+        # 某些服务器对 HEAD 返回 200 但无 Content-Length，
+        # 这里尽量从已有 headers 中读取；必要时 download_info 再补一次。
+        size = self._parse_content_length(resp.headers.get("Content-Length"))
         accept = resp.headers.get("Accept-Ranges", "").lower() == "bytes"
         ext = self._ext_from_url(url) or self._ext_from_content_type(
             resp.headers.get("Content-Type", "")
@@ -111,8 +96,10 @@ class DirectEngine(BaseEngine):
         info.extra["accept_ranges"] = accept
         return info
 
-    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
-        download_dir = expand_path(self.config.general.download_dir)
+    def download_info(
+        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
+    ) -> DownloadResult:
+        download_dir = get_download_dir(self.config)
         # 估算所需空间
         size = None
         if info.formats:
@@ -120,7 +107,7 @@ class DirectEngine(BaseEngine):
         if size:
             free = free_disk_bytes(str(download_dir))
             if free and free < size * 1.2:
-                raise EngineError(
+                raise InsufficientDiskSpaceError(
                     f"磁盘空间不足：需要约 {human_readable_size(size)}，"
                     f"剩余 {human_readable_size(free)}"
                 )
@@ -130,49 +117,51 @@ class DirectEngine(BaseEngine):
             + "."
             + ((info.formats[0].ext if info.formats else "bin") or "bin")
         )
-        out_path = download_dir / out_name
-        i = 1
-        while out_path.exists():
-            out_path = download_dir / f"{out_path.stem}-{i}{out_path.suffix}"
-            i += 1
+        base_path = download_dir / out_name
 
-        proxies = (
-            {"http": self.config.network.proxy, "https": self.config.network.proxy}
-            if self.config.network.proxy
-            else None
-        )
-
-        # 支持断点续传
+        # 支持断点续传：仅当服务器支持 Range 且目标文件已存在时复用原文件名
         existing = 0
         mode = "wb"
-        if out_path.exists():
-            existing = out_path.stat().st_size
+        out_path = base_path
+        if base_path.exists() and info.extra.get("accept_ranges"):
+            existing = base_path.stat().st_size
             mode = "ab"
+        elif base_path.exists():
+            # 不续传但文件已存在：生成唯一文件名
+            out_path = unique_path(base_path)
 
-        headers = {
-            "User-Agent": self.config.network.user_agent,
-        }
+        headers = {}
         if existing > 0 and info.extra.get("accept_ranges"):
             headers["Range"] = f"bytes={existing}-"
 
-        ctx.log("info", f"开始下载直链: {info.url} -> {out_path}")
+        ctx.log(
+            "info",
+            f"开始下载直链: {info.url} -> {out_path}, "
+            f"existing={existing}, accept_ranges={info.extra.get('accept_ranges')}, "
+            f"mode={mode}",
+        )
         try:
-            with requests.get(
+            with http_get(
                 info.url,
+                self.config,
                 stream=True,
-                timeout=(self.config.network.connect_timeout, self.config.network.read_timeout),
                 headers=headers,
-                proxies=proxies,
             ) as resp:
-                resp.raise_for_status()
                 total = int(resp.headers.get("Content-Length") or 0) + existing
                 downloaded = existing
                 start = time.time()
                 last_report = start
+                ctx.log(
+                    "info",
+                    f"HTTP 响应: status={resp.status_code}, "
+                    f"content_length={resp.headers.get('Content-Length')}, "
+                    f"total={total}",
+                )
                 with open(out_path, mode) as f:
                     for chunk in resp.iter_content(chunk_size=64 * 1024):
                         if ctx.cancel_flag and ctx.cancel_flag():
-                            raise EngineError("用户取消")
+                            ctx.log("warning", "用户取消直链下载")
+                            raise UserCancelledError("用户取消")
                         if not chunk:
                             continue
                         f.write(chunk)
@@ -182,23 +171,30 @@ class DirectEngine(BaseEngine):
                             last_report = now
                             speed = (downloaded - existing) / max(1e-3, now - start)
                             eta = (total - downloaded) / speed if speed > 0 and total else None
+                            percent = (downloaded * 100.0 / total) if total else 0.0
+                            ctx.log(
+                                "debug",
+                                f"直链进度: downloaded={downloaded}, total={total}, "
+                                f"percent={percent:.2f}%, speed={human_readable_size(int(speed))}/s",
+                            )
                             ctx.update_progress(
                                 TaskProgress(
                                     downloaded_bytes=downloaded,
                                     total_bytes=total or None,
                                     speed_bps=speed,
                                     eta_seconds=int(eta) if eta else None,
-                                    percent=(downloaded * 100.0 / total) if total else 0,
+                                    percent=percent,
                                     state="downloading",
                                 )
                             )
-        except requests.exceptions.RequestException as e:
-            raise NetworkError(f"直链下载失败: {e}") from e
-        except EngineError:
+        except UserCancelledError:
+            raise
+        except NetworkError:
             raise
         except Exception as e:
             raise EngineError(f"直链下载失败: {e}") from e
 
+        ctx.log("info", f"直链下载完成: {out_path}, size={downloaded}")
         ctx.update_progress(
             TaskProgress(
                 downloaded_bytes=downloaded,
@@ -207,7 +203,21 @@ class DirectEngine(BaseEngine):
                 state="finished",
             )
         )
-        return str(out_path)
+        return DownloadResult(
+            output_path=str(out_path),
+            needs_postprocess=False,
+            metadata=info,
+            engine_name=self.name,
+        )
+
+    @staticmethod
+    def _parse_content_length(value: Optional[str]) -> Optional[int]:
+        if not value:
+            return None
+        try:
+            return int(value)
+        except ValueError:
+            return None
 
     @staticmethod
     def _ext_from_url(url: str) -> Optional[str]:
@@ -240,7 +250,7 @@ class DirectEngine(BaseEngine):
 
     @staticmethod
     def _title_from_url(url: str) -> str:
-        from urllib.parse import urlparse, unquote
+        from urllib.parse import unquote, urlparse
 
         p = urlparse(url)
         name = unquote(os.path.basename(p.path)) or p.netloc

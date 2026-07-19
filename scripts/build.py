@@ -20,6 +20,7 @@
     python scripts/build.py --sign               # macOS 代码签名
     python scripts/build.py --appimage            # Linux: 生成 AppImage
 """
+
 from __future__ import annotations
 
 import argparse
@@ -39,7 +40,7 @@ APP_DIR = PROJECT_DIR / "app"
 ASSETS_DIR = PROJECT_DIR / "assets"
 
 PLATFORM = platform.system().lower()  # windows / darwin / linux
-ARCH = platform.machine().lower()     # x86_64 / arm64 / amd64
+ARCH = platform.machine().lower()  # x86_64 / arm64 / amd64
 IS_WINDOWS = PLATFORM == "windows"
 IS_MACOS = PLATFORM == "darwin"
 IS_LINUX = PLATFORM == "linux"
@@ -49,12 +50,12 @@ IS_LINUX = PLATFORM == "linux"
 # 工具
 # ----------------------------------------------------------------------
 
+
 def log(msg: str) -> None:
     print(f"==> {msg}", flush=True)
 
 
-def run(cmd: list, cwd: Path | None = None, check: bool = True,
-        env: dict | None = None) -> int:
+def run(cmd: list, cwd: Path | None = None, check: bool = True, env: dict | None = None) -> int:
     """运行子命令并打印输出。"""
     print(f"    $ {' '.join(str(c) for c in cmd)}", flush=True)
     e = os.environ.copy()
@@ -80,14 +81,17 @@ def ensure_dependencies() -> None:
         import PyInstaller  # noqa
     except ImportError:
         log("PyInstaller 未安装，正在安装...")
-        run([sys.executable, "-m", "pip", "install", "pyinstaller", "pyinstaller-hooks-contrib"],
-            env={"PIP_BREAK_SYSTEM_PACKAGES": "1"})
+        run(
+            [sys.executable, "-m", "pip", "install", "pyinstaller", "pyinstaller-hooks-contrib"],
+            env={"PIP_BREAK_SYSTEM_PACKAGES": "1"},
+        )
 
     # 验证 vidown 可正常导入
     sys.path.insert(0, str(PROJECT_DIR))
     try:
         import vidown  # noqa
         from vidown import __version__
+
         log(f"Vidown v{__version__} 可正常导入")
     except Exception as e:
         log(f"⚠️  vidown 导入失败: {e}")
@@ -109,7 +113,9 @@ def run_pyinstaller(onedir: bool = False, no_upx: bool = False) -> int:
         upx_args = ["--noupx"]
 
     cmd = [
-        sys.executable, "-m", "PyInstaller",
+        sys.executable,
+        "-m",
+        "PyInstaller",
         str(SPEC_FILE),
         "--noconfirm",
         "--clean",
@@ -121,6 +127,7 @@ def run_pyinstaller(onedir: bool = False, no_upx: bool = False) -> int:
 # ----------------------------------------------------------------------
 # macOS .app 打包
 # ----------------------------------------------------------------------
+
 
 def build_macos_app() -> int:
     """在 macOS 上将 vidown 可执行文件包装为 .app bundle。"""
@@ -203,24 +210,30 @@ def build_macos_app() -> int:
         for size in [16, 32, 64, 128, 256, 512]:
             for scale in [1, 2]:
                 actual = size * scale
-                target = iconset / (
-                    f"icon_{size}x{size}{'@2x' if scale == 2 else ''}.png"
-                )
+                target = iconset / (f"icon_{size}x{size}{'@2x' if scale == 2 else ''}.png")
                 # 使用 sips 缩放
                 try:
-                    subprocess.run([
-                        "sips", "-z", str(actual), str(actual),
-                        str(icon_png), "--out", str(target)
-                    ], check=True, capture_output=True)
+                    subprocess.run(
+                        [
+                            "sips",
+                            "-z",
+                            str(actual),
+                            str(actual),
+                            str(icon_png),
+                            "--out",
+                            str(target),
+                        ],
+                        check=True,
+                        capture_output=True,
+                    )
                 except Exception:
                     # 退化：直接复制
                     shutil.copy2(icon_png, target)
         # 打包为 icns
         try:
-            subprocess.run([
-                "iconutil", "-c", "icns", str(iconset),
-                "-o", str(icon_icns)
-            ], check=True)
+            subprocess.run(
+                ["iconutil", "-c", "icns", str(iconset), "-o", str(icon_icns)], check=True
+            )
             shutil.rmtree(iconset)
         except Exception as e:
             log(f"⚠️  iconutil 失败: {e}")
@@ -234,6 +247,7 @@ def build_macos_app() -> int:
 # Linux AppImage
 # ----------------------------------------------------------------------
 
+
 def build_appimage() -> int:
     """在 Linux 上生成 AppImage。"""
     if not IS_LINUX:
@@ -244,7 +258,9 @@ def build_appimage() -> int:
     appimagetool = shutil.which("appimagetool")
     if not appimagetool:
         log("❌ 未找到 appimagetool，请先下载：")
-        log("   wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage")
+        log(
+            "   wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+        )
         log("   chmod +x appimagetool-x86_64.AppImage")
         log("   sudo mv appimagetool-x86_64.AppImage /usr/local/bin/appimagetool")
         return 1
@@ -262,8 +278,8 @@ def build_appimage() -> int:
 
     # AppRun
     apprun = appdir / "AppRun"
-    apprun.write_text(f"""#!/bin/bash
-HERE="$(dirname "$(readlink -f "${{0}}")")"
+    apprun.write_text("""#!/bin/bash
+HERE="$(dirname "$(readlink -f "${0}")")"
 export PATH="$HERE/usr/bin:$PATH"
 exec "$HERE/usr/bin/vidown/vidown" "$@"
 """)
@@ -297,6 +313,7 @@ MimeType=text/uri-list;x-scheme-handler/http;x-scheme-handler/https;
             scaled = appdir / f"vidown_{size}x{size}.png"
             try:
                 from PIL import Image
+
                 img = Image.open(icon_png)
                 img.thumbnail((size, size))
                 img.save(scaled)
@@ -304,7 +321,7 @@ MimeType=text/uri-list;x-scheme-handler/http;x-scheme-handler/https;
                 shutil.copy2(icon_png, scaled)
 
     # 运行 appimagetool
-    out = DIST_DIR / f"Vidown-x86_64.AppImage"
+    out = DIST_DIR / "Vidown-x86_64.AppImage"
     if (out).exists():
         out.unlink()
     rc = run([appimagetool, str(appdir), str(out)])
@@ -317,6 +334,7 @@ MimeType=text/uri-list;x-scheme-handler/http;x-scheme-handler/https;
 # ----------------------------------------------------------------------
 # 验证产出
 # ----------------------------------------------------------------------
+
 
 def verify_binary() -> int:
     """运行产出的可执行文件进行冒烟测试。"""
@@ -341,6 +359,7 @@ def verify_binary() -> int:
 # ----------------------------------------------------------------------
 # 主入口
 # ----------------------------------------------------------------------
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Vidown 跨平台打包")
@@ -379,8 +398,7 @@ def main() -> int:
 
     # 4. macOS 代码签名
     if args.sign and IS_MACOS:
-        run(["codesign", "--force", "--deep", "--sign", "-",
-             str(APP_DIR / "Vidown.app")])
+        run(["codesign", "--force", "--deep", "--sign", "-", str(APP_DIR / "Vidown.app")])
 
     # 5. 验证
     if args.verify:

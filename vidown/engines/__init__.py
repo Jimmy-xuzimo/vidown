@@ -3,7 +3,9 @@
 from .base import BaseEngine, EngineRegistry, EngineCapability
 from .ytdlp_engine import YtDlpEngine
 from .m3u8_engine import M3U8Engine
+from .dash_engine import DashEngine
 from .direct_engine import DirectEngine
+from .rtmp_engine import RtmpEngine
 from .fallback_engines import (
     YouGetEngine,
     LuxEngine,
@@ -16,7 +18,9 @@ __all__ = [
     "EngineCapability",
     "YtDlpEngine",
     "M3U8Engine",
+    "DashEngine",
     "DirectEngine",
+    "RtmpEngine",
     "YouGetEngine",
     "LuxEngine",
     "GalleryDLEngine",

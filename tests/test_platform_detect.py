@@ -108,6 +108,36 @@ class TestClassifyUrl:
         assert p == Platform.DIRECT
         assert k == MediaKind.AUDIO
 
+    def test_soundcloud(self):
+        p, k = classify_url("https://soundcloud.com/artist/track")
+        assert p == Platform.SOUNDCLOUD
+        assert k == MediaKind.AUDIO
+
+    def test_spotify(self):
+        p, k = classify_url("https://open.spotify.com/track/abc123")
+        assert p == Platform.SPOTIFY
+        assert k == MediaKind.AUDIO
+
+    def test_bandcamp(self):
+        p, k = classify_url("https://artist.bandcamp.com/track/song")
+        assert p == Platform.BANDCAMP
+        assert k == MediaKind.AUDIO
+
+    def test_apple_music(self):
+        p, k = classify_url("https://music.apple.com/us/album/song/123")
+        assert p == Platform.APPLE_MUSIC
+        assert k == MediaKind.AUDIO
+
+    def test_tidal(self):
+        p, k = classify_url("https://tidal.com/browse/track/123")
+        assert p == Platform.TIDAL
+        assert k == MediaKind.AUDIO
+
+    def test_mixcloud(self):
+        p, k = classify_url("https://www.mixcloud.com/user/mix/")
+        assert p == Platform.MIXCLOUD
+        assert k == MediaKind.AUDIO
+
     def test_unknown(self):
         p, k = classify_url("https://example.com/some/page")
         assert p == Platform.UNKNOWN

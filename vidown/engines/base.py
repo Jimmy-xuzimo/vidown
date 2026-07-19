@@ -12,6 +12,7 @@ from ..core.models import (
     VideoInfo,
     DownloadTask,
     TaskProgress,
+    DownloadResult,
     Platform,
     MediaKind,
 )
@@ -83,13 +84,15 @@ class BaseEngine(ABC):
     def probe(self, url: str, ctx: EngineContext) -> VideoInfo:
         """探测视频元数据。"""
 
-    def download(self, task: DownloadTask, ctx: EngineContext) -> str:
-        """下载并返回最终文件路径。默认实现 = probe + 自身 download_info。"""
+    def download(self, task: DownloadTask, ctx: EngineContext) -> DownloadResult:
+        """下载并返回统一结果。默认实现 = probe + 自身 download_info。"""
         info = self.probe(task.url, ctx)
         task.info = info
         return self.download_info(task, info, ctx)
 
-    def download_info(self, task: DownloadTask, info: VideoInfo, ctx: EngineContext) -> str:
+    def download_info(
+        self, task: DownloadTask, info: VideoInfo, ctx: EngineContext
+    ) -> DownloadResult:
         raise EngineError(f"{self.name} 未实现 download_info")
 
 

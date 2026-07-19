@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from .models import FormatInfo, VideoInfo
+from .models import FormatInfo, MediaKind, VideoInfo
 from .config import QualityConfig
 
 # ----------------------------------------------------------------------
@@ -99,11 +99,23 @@ def select_formats(
     info: VideoInfo,
     quality: QualityConfig,
     prefer_separate: bool = True,
+    kind: MediaKind = MediaKind.VIDEO,
 ) -> SelectionResult:
     """根据质量偏好从 formats 列表挑选最佳视频+音频（或单条流）。"""
     formats = list(info.formats)
     if not formats:
         return SelectionResult(reason="无可用格式")
+
+    # 音频内容：直接选最佳音频格式
+    if kind == MediaKind.AUDIO:
+        audios = [f for f in formats if _has_audio(f)]
+        if not audios:
+            return SelectionResult(reason="无可用音频格式")
+        audios.sort(key=lambda f: (f.abr or f.tbr or 0), reverse=True)
+        return SelectionResult(
+            audio=audios[0],
+            reason=f"audio={audios[0].format_id}",
+        )
 
     # 过滤掉纯图片/纯音频且无视频的格式（用户期望视频）
     videos = [f for f in formats if _has_video(f)]
@@ -148,8 +160,8 @@ def select_formats(
     best_audio = audios[0] if audios else None
 
     # 如果 best_audio 和 best_video 其实是同一条流（即没有独立音频轨道），
-    # 不要把它当作需要合并的两条流。
-    if best_audio is best_video:
+    # 不要把它当作需要合并的两条流。通过 format_id 判断，而非对象身份。
+    if best_audio and best_audio.format_id == best_video.format_id:
         best_audio = None
 
     # 如果 best_video 自身已含音频且非 video-only，优先单文件

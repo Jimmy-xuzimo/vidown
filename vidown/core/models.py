@@ -46,7 +46,19 @@ class Platform(str, enum.Enum):
     M3U8 = "m3u8"  # 通用 HLS 流
     DASH = "dash"  # 通用 DASH 流
     DIRECT = "direct"  # 直链 .mp4/.webm 等
+    RTMP = "rtmp"  # RTMP / RTMPS / RTSP 直播流
     IMAGE = "image"  # gallery-dl 类型
+    # 音频流媒体平台
+    SOUNDCLOUD = "soundcloud"
+    SPOTIFY = "spotify"
+    BANDCAMP = "bandcamp"
+    APPLE_MUSIC = "apple_music"
+    AMAZON_MUSIC = "amazon_music"
+    TIDAL = "tidal"
+    DEEZER = "deezer"
+    AUDIUS = "audius"
+    MIXCLOUD = "mixcloud"
+    HEARTHIS = "hearthis"
 
 
 class MediaKind(str, enum.Enum):
@@ -80,6 +92,7 @@ class FormatInfo:
     filesize_approx: Optional[int] = None
     format_note: str = ""
     protocol: str = ""
+    extra: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -119,6 +132,23 @@ class VideoInfo:
         data = asdict(self)
         data["platform"] = self.platform.value
         data["kind"] = self.kind.value
+        return data
+
+
+@dataclass
+class DownloadResult:
+    """引擎下载完成后的统一返回结果。"""
+
+    output_path: str
+    needs_postprocess: bool = False
+    metadata: Optional[VideoInfo] = None
+    engine_name: str = ""
+    extra: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        data = asdict(self)
+        if self.metadata:
+            data["metadata"] = self.metadata.to_dict()
         return data
 
 

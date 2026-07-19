@@ -33,6 +33,7 @@
     "proxy": null,
     "connect_timeout": 30,
     "read_timeout": 60,
+    "probe_timeout": 60,
     "retry_max": 5,
     "retry_backoff": 1.5,
     "speed_limit_kbps": 0,

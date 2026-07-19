@@ -40,6 +40,14 @@ htmlcov/
 *.bak
 *.swp
 core.*
+ruff_output.txt
+test_output.txt
+
+# 缓存
+.ruff_cache/
+
+# 测试下载产物
+test_downloads/
 
 # 用户配置
 .vidown/

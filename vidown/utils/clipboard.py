@@ -107,7 +107,14 @@ class ClipboardWatcher:
         import subprocess
 
         try:
-            proc = subprocess.run(cmd, capture_output=True, text=True, timeout=2)
+            proc = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=2,
+            )
         except FileNotFoundError:
             raise
         except Exception:

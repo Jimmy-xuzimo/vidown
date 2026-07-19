@@ -37,6 +37,17 @@ _PLATFORM_SIGNATURES: List[Tuple[str, Platform, MediaKind]] = [
     ("iq.com", Platform.IQIYI, MediaKind.VIDEO),
     ("v.qq.com", Platform.TENCENT, MediaKind.VIDEO),
     ("mgtv.com", Platform.MANGETV, MediaKind.VIDEO),
+    # 音频流媒体
+    ("soundcloud.com", Platform.SOUNDCLOUD, MediaKind.AUDIO),
+    ("spotify.com", Platform.SPOTIFY, MediaKind.AUDIO),
+    ("bandcamp.com", Platform.BANDCAMP, MediaKind.AUDIO),
+    ("music.apple.com", Platform.APPLE_MUSIC, MediaKind.AUDIO),
+    ("music.amazon", Platform.AMAZON_MUSIC, MediaKind.AUDIO),
+    ("tidal.com", Platform.TIDAL, MediaKind.AUDIO),
+    ("deezer.com", Platform.DEEZER, MediaKind.AUDIO),
+    ("audius.co", Platform.AUDIUS, MediaKind.AUDIO),
+    ("mixcloud.com", Platform.MIXCLOUD, MediaKind.AUDIO),
+    ("hearthis.at", Platform.HEARTHIS, MediaKind.AUDIO),
 ]
 
 # 直接后缀 / 内容类型
@@ -139,7 +150,11 @@ def classify_url(url: str) -> Tuple[Platform, MediaKind]:
     if ".mpd" in path or "manifest" in full and ".mpd" in full:
         return Platform.DASH, MediaKind.VIDEO
 
-    # 4. 直接视频/音频/图片
+    # 4. RTMP / RTSP 直播流
+    if full.startswith("rtmp://") or full.startswith("rtmps://") or full.startswith("rtsp://"):
+        return Platform.RTMP, MediaKind.VIDEO
+
+    # 5. 直接视频/音频/图片
     for ext in _DIRECT_VIDEO_EXTS:
         if path.endswith(ext):
             return Platform.DIRECT, MediaKind.VIDEO
@@ -204,6 +219,17 @@ def platform_display_name(platform: Platform) -> str:
         Platform.M3U8: "HLS / M3U8",
         Platform.DASH: "DASH / MPD",
         Platform.DIRECT: "直链",
+        Platform.RTMP: "RTMP / RTSP 直播",
         Platform.IMAGE: "图片",
+        Platform.SOUNDCLOUD: "SoundCloud",
+        Platform.SPOTIFY: "Spotify",
+        Platform.BANDCAMP: "Bandcamp",
+        Platform.APPLE_MUSIC: "Apple Music",
+        Platform.AMAZON_MUSIC: "Amazon Music",
+        Platform.TIDAL: "Tidal",
+        Platform.DEEZER: "Deezer",
+        Platform.AUDIUS: "Audius",
+        Platform.MIXCLOUD: "Mixcloud",
+        Platform.HEARTHIS: "HearThis.at",
         Platform.UNKNOWN: "未知",
     }.get(platform, platform.value)

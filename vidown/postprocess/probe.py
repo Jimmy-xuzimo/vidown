@@ -75,7 +75,9 @@ def probe_media(path: str, ffprobe_bin: str = "ffprobe") -> MediaInfo:
         "-show_streams",
         path,
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+    proc = subprocess.run(
+        cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=60
+    )
     if proc.returncode != 0:
         raise RuntimeError(f"ffprobe 调用失败: {proc.stderr}")
     data = json.loads(proc.stdout or "{}")

@@ -2,7 +2,7 @@
 
 hiddenimports = [
     "browser_cookie3",
-    "Crypto",                # pycryptodome
+    "Crypto",  # pycryptodome
     "Cryptodome",
     "Cryptodome.Cipher",
     "Cryptodome.Cipher.DES",

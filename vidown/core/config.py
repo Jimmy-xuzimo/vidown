@@ -55,6 +55,7 @@ class NetworkConfig:
     proxy: Optional[str] = None
     connect_timeout: int = 30
     read_timeout: int = 60
+    probe_timeout: int = 60
     retry_max: int = 5
     retry_backoff: float = 1.5
     speed_limit_kbps: int = 0

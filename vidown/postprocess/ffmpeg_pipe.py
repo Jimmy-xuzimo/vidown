@@ -60,7 +60,9 @@ def run_ffmpeg(
     cmd = [binary, "-hide_banner", "-loglevel", "error", "-y", *args]
     logger.debug(f"ffmpeg cmd: {' '.join(cmd)}")
     try:
-        return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+        return subprocess.run(
+            cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout
+        )
     except subprocess.TimeoutExpired as e:
         raise TimeoutError(f"ffmpeg 执行超时: {' '.join(cmd[:6])}...") from e
 
@@ -96,6 +98,8 @@ class FFmpegPipe:
                 stderr=subprocess.PIPE,
                 stdout=subprocess.DEVNULL,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 bufsize=1,
             )
         except FileNotFoundError as e:

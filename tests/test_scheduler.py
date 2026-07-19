@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from vidown.core.config import Config
 from vidown.core.models import DownloadStatus, Platform
+from vidown.core.platform_detect import classify_url
 from vidown.core.scheduler import DownloadScheduler
 
 
@@ -57,3 +58,26 @@ def test_shutdown_does_not_block_indefinitely():
     sched.add_task("https://example.com", platform=Platform.UNKNOWN)
     sched.shutdown(wait=True)
     assert sched._executor is None
+
+
+def test_rtmp_engine_registered():
+    cfg = Config()
+    cfg.engines.ytdlp.enabled = False
+    cfg.engines.m3u8dl.enabled = False
+    sched = DownloadScheduler(cfg)
+    sched._ensure_registry()
+    engine_names = [e.name for e in sched._registry.engines]
+    assert "rtmp" in engine_names
+
+
+def test_engine_selects_rtmp_for_live_stream():
+    cfg = Config()
+    cfg.engines.ytdlp.enabled = False
+    cfg.engines.m3u8dl.enabled = False
+    sched = DownloadScheduler(cfg)
+    sched._ensure_registry()
+    url = "rtmp://example.com/live/stream"
+    p, k = classify_url(url)
+    engine = sched._registry.select(url, p, k)
+    assert engine is not None
+    assert engine.name == "rtmp"

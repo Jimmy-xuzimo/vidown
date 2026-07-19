@@ -4,6 +4,7 @@
   1. 修复 __file__ 与冻结包资源查找路径
   2. 设置默认配置目录
 """
+
 import os
 import sys
 from pathlib import Path
