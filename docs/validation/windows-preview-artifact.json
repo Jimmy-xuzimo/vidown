@@ -2,7 +2,7 @@
   "name": "Vidown Preview 1.0.0-alpha.1.exe",
   "stage": "M0 local experimental preview",
   "signature": "NotSigned",
-  "sha256": "c00426a7a7991b2a43479372e8ed82e10b529bc209465bc9be9d1ff4dc6cbb6b",
-  "size": 182341050,
-  "runtimeSourceCommit": "348a41221345beb7940f0f2dc6b0b49b8cef9252"
+  "sha256": "aa2a8d79952ff36b9b719124f664f6b800a6dcfcec80e08accc489f1759c5039",
+  "size": 182337669,
+  "runtimeSourceCommit": "fc79a311095dc7eabc99c9fa565f21383509d2c8"
 }

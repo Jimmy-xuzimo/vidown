@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T18:05:38.569Z",
+  "generatedAt": "2026-10-16T18:20:23.057Z",
   "packaged": true,
   "portable": true,
   "results": [
@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/portable-verification/downloads/master.m3u8 [541ebc92].mp4"
+      "output": "work/portable-verification/downloads/master.m3u8 [a86bd974].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",

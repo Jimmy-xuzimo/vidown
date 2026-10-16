@@ -2,6 +2,8 @@
 
 2026-10-17，Windows x64。本页用于回来检查进度；完整证据见 [验证记录](VALIDATION.md)，全部重建目标见 [路线图](ROADMAP.md)。
 
+启动和格式选择步骤见 [预览版试用说明](PREVIEW_GUIDE.md)。
+
 已完成的新验证：
 
 - B 站 4K 杜比视界＋Atmos、8K SDR＋AAC、独立 4K HDR10＋AAC：实际下载及无损合并，完整视频／音频编码码流哈希一致。8K 与 HDR10 是独立选择。
@@ -13,6 +15,7 @@
 - 分片接收量与速度、30 秒停滞超时、正常关闭时停止子进程、重启显示中断任务。
 - 数据库原子迁移、任务状态约束、阶段事件顺序和重启提示；实际暂停／恢复／排队取消检查通过。
 - 23 项单元／本地集成检查；受控引擎、桌面与便携包验证另见各份报告。
+- 本轮运行时代码的 Windows／macOS／Linux 源码 CI 均已通过，见 [CI 记录](validation/source-ci.json)。这不等同三端应用实机验收。
 
 预览包位于本机仓库的 `release/Vidown Preview 1.0.0-alpha.1.exe`，最终大小、SHA-256 与对应源码提交见 [构建记录](validation/windows-preview-artifact.json)。这是未签名的 M0 实验预览。源码检查 CI 覆盖三端；三端应用安装与实机支持仍未验收。
 
