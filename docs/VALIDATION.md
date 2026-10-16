@@ -12,6 +12,8 @@
 | 已打包 Windows 应用    | 4 项通过            | 包内 TDLib 加载；真实沙箱浏览器登录和请求发现；跨源页面／媒体端口＋HttpOnly Cookie 的界面→工作进程→下载→合并→成品检查；界面无运行时错误且无请求机密暴露                                          |
 | 生产 npm 依赖审计      | 0 个已知漏洞        | `npm audit --omit=dev`；构建工具链仍有 8 项中等严重性通告，正式发行前处理，不对其作“零漏洞”声明                                                                                                  |
 
+Windows 便携 EXE 也已直接启动并通过同样 4 项完整桌面检查，包含自解压启动、包内 TDLib／工具、跨源 Cookie 与音视频合并；已检查字节统计包含两轨。见 [便携版报告](validation/windows-portable.json) 及 [预览包大小与 SHA-256](validation/windows-preview-artifact.json)。这是未签名的本地实验预览包。
+
 上述媒体测试由本地 FFmpeg 生成真实片段，通过真实 HTTP 服务、N_m3u8DL-RE、FFmpeg、ffprobe 执行，不使用下载成功的模拟返回值。对应 [协议报告](validation/controlled-media.json)、[Windows 打包报告](validation/windows-packaged.json)、[组件版本与 SHA-256](validation/tools-windows-x64.json)。受控套件内的真实平台条目标为 pending，真实平台结果单独记录于下节。
 
 ## 用户提供的 B 站真实样本

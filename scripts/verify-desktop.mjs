@@ -1,12 +1,14 @@
-import { _electron } from "playwright";
+import { _electron, chromium } from "playwright";
 import { resolve, join } from "node:path";
-import { mkdir, writeFile, stat } from "node:fs/promises";
+import { mkdir, writeFile, stat, readFile } from "node:fs/promises";
+import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
 import { createFixtures } from "./fixtures.ts";
 const packaged = process.env.VIDOWN_VERIFY_EXECUTABLE;
 const root = resolve(
-  packaged ? "work/packaged-verification" : "work/desktop-verification",
+  process.env.VIDOWN_VERIFY_REPORT_DIR ||
+    (packaged ? "work/packaged-verification" : "work/desktop-verification"),
 );
 await mkdir(root, { recursive: true });
 const exe = process.platform === "win32" ? ".exe" : "";
@@ -21,6 +23,8 @@ const tools = {
 const fixture = await createFixtures(join(root, "fixtures"), tools);
 const results = [];
 let application;
+let cdpBrowser;
+const portable = process.env.VIDOWN_VERIFY_PORTABLE === "1";
 const watchdog = setTimeout(() => {
   application?.process().kill();
 }, 120000);
@@ -40,14 +44,52 @@ try {
     VIDOWN_HEADLESS: packaged ? "" : "1",
   };
   delete env.ELECTRON_RUN_AS_NODE;
-  application = await _electron.launch({
-    ...(packaged
-      ? { executablePath: resolve(packaged), args: [] }
-      : { args: ["."] }),
-    cwd: resolve("."),
-    env,
-    timeout: 60000,
-  });
+  if (portable) {
+    const child = spawn(resolve(packaged), ["--remote-debugging-port=0"], {
+      cwd: resolve("."),
+      env,
+      stdio: "ignore",
+      windowsHide: false,
+    });
+    application = {
+      process: () => child,
+      windows: () => cdpBrowser?.contexts().flatMap((c) => c.pages()) ?? [],
+      firstWindow: () =>
+        until(() =>
+          application.windows().find((p) => p.url().startsWith("file:")),
+        ),
+      close: async () => {
+        const page = application
+          .windows()
+          .find((p) => p.url().startsWith("file:"));
+        if (page && !page.isClosed())
+          await page.evaluate(() => window.close()).catch(() => {});
+        await cdpBrowser?.close().catch(() => {});
+        child.kill();
+      },
+    };
+    const port = await until(async () => {
+      try {
+        return (
+          await readFile(
+            join(env.VIDOWN_TEST_DATA, "DevToolsActivePort"),
+            "utf8",
+          )
+        ).split(/\r?\n/)[0];
+      } catch {
+        return undefined;
+      }
+    }, 60000);
+    cdpBrowser = await chromium.connectOverCDP(`http://127.0.0.1:${port}`);
+  } else
+    application = await _electron.launch({
+      ...(packaged
+        ? { executablePath: resolve(packaged), args: [] }
+        : { args: ["."] }),
+      cwd: resolve("."),
+      env,
+      timeout: 60000,
+    });
   const page = await application.firstWindow();
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -80,14 +122,20 @@ try {
     );
   });
   await page.screenshot({ path: join(root, "02-browser-detection.png") });
-  const isolation = await application.evaluate(async ({ webContents }) => {
-    const remote = webContents
-      .getAllWebContents()
-      .find((w) => w.getURL().includes("/player"));
-    return remote?.executeJavaScript(
-      "({appAPI:typeof window.vidown,node:typeof require})",
-    );
-  });
+  const isolation = portable
+    ? await (
+        await until(() =>
+          application.windows().find((p) => p.url().includes("/player")),
+        )
+      ).evaluate(() => ({ appAPI: typeof window.vidown, node: typeof require }))
+    : await application.evaluate(async ({ webContents }) => {
+        const remote = webContents
+          .getAllWebContents()
+          .find((w) => w.getURL().includes("/player"));
+        return remote?.executeJavaScript(
+          "({appAPI:typeof window.vidown,node:typeof require})",
+        );
+      });
   assert.deepEqual(isolation, { appAPI: "undefined", node: "undefined" });
   results.push({
     name: "sandboxed-browser-session-and-real-network-capture",
@@ -147,7 +195,12 @@ try {
   await writeFile(
     join(root, "report.json"),
     JSON.stringify(
-      { generatedAt: new Date().toISOString(), packaged: !!packaged, results },
+      {
+        generatedAt: new Date().toISOString(),
+        packaged: !!packaged,
+        portable,
+        results,
+      },
       null,
       2,
     ),

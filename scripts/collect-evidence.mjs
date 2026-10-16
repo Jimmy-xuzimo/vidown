@@ -16,6 +16,7 @@ function portable(value) {
 for (const [name, source] of [
   ["controlled-media", "work/media-verification/report.json"],
   ["windows-packaged", "work/packaged-verification/report.json"],
+  ["windows-portable", "work/portable-verification/report.json"],
   ["bilibili-preservation", "work/platform-verification/preservation.json"],
   ["tools-windows-x64", "resources/tools/tools.lock.json"],
 ]) {
