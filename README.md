@@ -2,7 +2,7 @@
 
 基于 Electron、React 和 TypeScript 从零编写的本地视频下载器。旧 Python 工程未复用，历史保留在 Git 中。默认保留源编码，视频和音频分别选择，可靠时封装 MP4，否则使用 MKV。
 
-**当前交付阶段是 M0，不是完成全部计划的 1.0。** 受控媒体、Windows 打包应用闭环，以及一个真实 B 站登录后的 4K 杜比视界＋Dolby Atmos 样本已验证。8K／Hi-Res、X 登录、Telegram 私有内容等仍待验收。详见 [验证记录](docs/VALIDATION.md) 和 [后续里程碑](docs/ROADMAP.md)。
+**当前交付阶段是 M0，不是完成全部计划的 1.0。** 受控媒体、Windows 打包应用闭环，以及一个真实 B 站登录后的 4K 杜比视界＋Dolby Atmos 样本已验证。用户提供的 X 公开链接已验证实际下载及短片段音视频合并，按用户要求停止长视频完整下载。8K／Hi-Res、X 登录、Telegram 私有内容等仍待验收。详见 [验证记录](docs/VALIDATION.md) 和 [后续里程碑](docs/ROADMAP.md)。
 
 ![Windows 重建工作台](docs/images/workbench.png)
 
@@ -14,11 +14,12 @@
 - 直链暂停／继续：检查 ETag 与 Content-Range；源身份变化时重新下载，避免错误追加。
 - HDR10 10-bit 视频＋96 kHz／24-bit FLAC 的生成样本无损封装；首帧 HDR 元数据及成品参数检查。
 - 用户提供的 B 站 4K Dolby Vision Profile 8＋Dolby Atmos 5.1 实际下载；源／成品完整编码码流哈希一致。真实平台能力以该样本范围为准。
+- X 公开长视频的 1080p HLS 实际分片下载；9 秒 H.264＋AAC 样本无损合并与解码。缺少编码字段的音轨和 HTTP 变体仍可选择，未知参数明确显示。
 - SQLite 任务记录、历史搜索、独立下载工作进程、失败诊断；已知中断不会假装完成。
 
 ## 接入但仍待实测
 
-- yt-dlp 的 B 站、X 提取器，以及 B 站高规格轨道展示与独立选择。
+- B 站其他高规格组合、X 登录内容与单帖多视频。
 - TDLib 1.8.67 原生库和独立工作进程、登录界面、私有消息权限检查及文件下载路径。
 - 其他实际会员内容的 8K／独立 HDR10／Hi-Res、番剧权限，以及杜比硬件播放。
 

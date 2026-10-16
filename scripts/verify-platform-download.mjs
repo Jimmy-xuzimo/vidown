@@ -2,7 +2,9 @@ import { chromium } from "playwright";
 import { resolve, join } from "node:path";
 import { readFile, writeFile } from "node:fs/promises";
 
-const root = resolve("work/platform-verification");
+const root = resolve(
+  process.env.VIDOWN_PLATFORM_ROOT || "work/platform-verification",
+);
 const port = (
   await readFile(join(root, "profile/DevToolsActivePort"), "utf8")
 ).split(/\r?\n/)[0];
@@ -17,6 +19,9 @@ const { asset } = JSON.parse(
 );
 const video =
   asset.tracks.find((track) => track.dynamicRange === "DV") ||
+  asset.tracks.find(
+    (track) => track.kind === "video" && track.protocol === "hls",
+  ) ||
   asset.tracks.find((track) => track.kind === "video");
 const audio =
   asset.tracks.find(
@@ -47,6 +52,16 @@ while (Date.now() < end) {
   const snapshot = await page.evaluate(() => window.vidown.snapshot());
   const task = snapshot.tasks.find((task) => task.id === currentId);
   if (task?.state === "failed") throw new Error(task.error);
+  if (task?.state === "cancelled") {
+    console.log(
+      JSON.stringify({
+        state: task.state,
+        id: task.id,
+        fullDownloadVerified: false,
+      }),
+    );
+    process.exit(0);
+  }
   if (task?.bytes && task.bytes - lastBytes > 16 * 1024 * 1024) {
     lastBytes = task.bytes;
     console.log(JSON.stringify({ state: task.state, bytes: task.bytes }));

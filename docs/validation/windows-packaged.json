@@ -1,6 +1,7 @@
 {
-  "generatedAt": "2026-10-16T17:10:46.544Z",
+  "generatedAt": "2026-10-16T17:29:07.011Z",
   "packaged": true,
+  "portable": false,
   "results": [
     {
       "name": "native-tdlib-worker-loads-and-reports-version",
@@ -13,7 +14,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/packaged-verification/downloads/master.m3u8 [1003e4db].mp4"
+      "output": "work/packaged-verification/downloads/master.m3u8 [23f3d1af].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",

@@ -1,13 +1,17 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, readdir, stat } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import assert from "node:assert/strict";
 import { command } from "../src/core/process";
 import { mediaInfo, verifyMedia, type Tools } from "../src/core/engine";
 
-const root = resolve("work/platform-verification");
-const { task, page } = JSON.parse(
-  await readFile(join(root, "download.json"), "utf8"),
+const root = resolve(
+  process.env.VIDOWN_PLATFORM_ROOT || "work/platform-verification",
 );
+const {
+  task,
+  page,
+  video: selectedVideo,
+} = JSON.parse(await readFile(join(root, "download.json"), "utf8"));
 const dir = resolve("resources/tools");
 const tools: Tools = {
   ffmpeg: join(dir, "ffmpeg.exe"),
@@ -17,14 +21,46 @@ const tools: Tools = {
   runtime: process.execPath,
 };
 const trackDir = join(root, "profile/work", task.id);
-const sourceVideo = join(trackDir, "track-0.source"),
-  sourceAudio = join(trackDir, "track-1.source");
+async function sourcePath(index: number): Promise<string> {
+  const direct = join(trackDir, `track-${index}.source`);
+  try {
+    await stat(direct);
+    return direct;
+  } catch (error: any) {
+    if (error.code !== "ENOENT") throw error;
+  }
+  const folder = join(trackDir, `stream-${index}`);
+  const files = (await readdir(folder, { withFileTypes: true })).filter(
+    (f) => f.isFile() && !/\.(json|log|txt|tmp)$/i.test(f.name),
+  );
+  assert.equal(files.length, 1, "Expected exactly one saved source track");
+  return join(folder, files[0].name);
+}
+const sourceVideo = await sourcePath(0),
+  sourceAudio = await sourcePath(1);
 const [video, audio, output] = await Promise.all([
   mediaInfo(sourceVideo, tools),
   mediaInfo(sourceAudio, tools),
   mediaInfo(task.output, tools),
 ]);
 verifyMedia([video, audio], output);
+const { asset } = JSON.parse(
+  await readFile(join(root, "formats.json"), "utf8"),
+);
+if (asset.duration)
+  assert(
+    Math.abs(Number(output.format.duration) - asset.duration) < 2,
+    "Saved duration differs from the platform's full video duration",
+  );
+const videoCodec = video.streams.find(
+  (s: any) => s.codec_type === "video",
+).codec_name;
+const annexB =
+  videoCodec === "hevc"
+    ? "hevc_mp4toannexb"
+    : videoCodec === "h264"
+      ? "h264_mp4toannexb"
+      : undefined;
 async function streamHash(path: string, type: "v" | "a") {
   return (
     await command(
@@ -38,14 +74,14 @@ async function streamHash(path: string, type: "v" | "a") {
         `0:${type}:0`,
         "-c",
         "copy",
-        ...(type === "v" ? ["-bsf:v", "hevc_mp4toannexb"] : []),
+        ...(type === "v" && annexB ? ["-bsf:v", annexB] : []),
         "-f",
         "hash",
         "-hash",
         "sha256",
         "-",
       ],
-      { timeout: 120000 },
+      { timeout: 300000 },
     )
   ).trim();
 }
@@ -58,7 +94,7 @@ const hashes = {
 assert.equal(
   hashes.sourceVideo,
   hashes.savedVideo,
-  "Encoded HEVC bitstream changed",
+  "Encoded video bitstream changed",
 );
 assert.equal(
   hashes.sourceAudio,
@@ -66,19 +102,56 @@ assert.equal(
   "Encoded audio bitstream changed",
 );
 const stream = output.streams.find((s: any) => s.codec_type === "video");
-assert(
-  stream.side_data_list?.some(
-    (s: any) => /DOVI/i.test(s.side_data_type) && s.rpu_present_flag === 1,
-  ),
-  "No DOVI RPU configuration",
-);
+if (selectedVideo.dynamicRange === "DV")
+  assert(
+    stream.side_data_list?.some(
+      (s: any) => /DOVI/i.test(s.side_data_type) && s.rpu_present_flag === 1,
+    ),
+    "No DOVI RPU configuration",
+  );
+const duration = Number(output.format.duration);
+const decodedSampleSeconds = [
+  0,
+  Math.floor(duration / 2),
+  Math.max(0, Math.floor(duration) - 5),
+];
+for (const position of decodedSampleSeconds) {
+  await command(
+    tools.ffmpeg,
+    [
+      "-v",
+      "error",
+      "-xerror",
+      "-threads",
+      "2",
+      "-ss",
+      String(position),
+      "-i",
+      task.output,
+      "-map",
+      "0:v:0",
+      "-map",
+      "0:a:0",
+      "-t",
+      "3",
+      "-f",
+      "null",
+      "-",
+    ],
+    { timeout: 120000 },
+  );
+}
 const report = {
   generatedAt: new Date().toISOString(),
   page,
   status: "passed",
-  scope:
-    "Exact full encoded HEVC Annex-B and audio bitstream hashes; DOVI configuration and media metadata. Hardware playback remains pending.",
+  scope: `Exact full encoded ${videoCodec}${annexB ? " Annex-B" : ""} and audio bitstream hashes; media metadata and full platform duration. ${selectedVideo.dynamicRange === "DV" ? "DOVI configuration checked; hardware playback remains pending." : "No hardware playback claim."}`,
   hashes,
+  decodedSamples: {
+    positionsSeconds: decodedSampleSeconds,
+    durationSeconds: 3,
+    status: "passed",
+  },
   video: stream,
   audio: output.streams.find((s: any) => s.codec_type === "audio"),
   duration: output.format.duration,

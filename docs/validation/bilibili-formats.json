@@ -2,6 +2,7 @@
   "page": "https://www.bilibili.com/video/BV1NGZtBwELa/",
   "title": "【4K限免】你的新设备能顶住吗？影视飓风年度样片",
   "duration": 218.592,
+  "loginDetected": true,
   "tracks": [
     {
       "kind": "video",

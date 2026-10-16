@@ -1,13 +1,22 @@
 {
-  "generatedAt": "2026-10-16T17:04:44.649Z",
+  "generatedAt": "2026-10-16T17:29:39.887Z",
   "page": "https://www.bilibili.com/video/BV1NGZtBwELa/",
   "status": "passed",
-  "scope": "Exact full encoded HEVC Annex-B and audio bitstream hashes; DOVI configuration and media metadata. Hardware playback remains pending.",
+  "scope": "Exact full encoded hevc Annex-B and audio bitstream hashes; media metadata and full platform duration. DOVI configuration checked; hardware playback remains pending.",
   "hashes": {
     "sourceVideo": "SHA256=ee07ee37e92e4e6bfc46bbdc7ceec5f73d880ce0414efe45cf3e85cd32d6ed64",
     "savedVideo": "SHA256=ee07ee37e92e4e6bfc46bbdc7ceec5f73d880ce0414efe45cf3e85cd32d6ed64",
     "sourceAudio": "SHA256=0a559c627dc3c4364d644d76302efa45569a823e03bafc8b9c21a7e4e14539fb",
     "savedAudio": "SHA256=0a559c627dc3c4364d644d76302efa45569a823e03bafc8b9c21a7e4e14539fb"
+  },
+  "decodedSamples": {
+    "positionsSeconds": [
+      0,
+      109,
+      213
+    ],
+    "durationSeconds": 3,
+    "status": "passed"
   },
   "video": {
     "index": 0,

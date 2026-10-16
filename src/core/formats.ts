@@ -22,8 +22,17 @@ export function fromYtdlp(info: any, context: RequestContextRef): PrivateAsset {
       /mhtml|storyboard/.test(f.protocol ?? "")
     )
       continue;
-    const video = f.vcodec && f.vcodec !== "none";
-    const audio = f.acodec && f.acodec !== "none";
+    const video = f.vcodec
+      ? f.vcodec !== "none"
+      : Boolean(f.width || f.height || (f.video_ext && f.video_ext !== "none"));
+    const audio = f.acodec
+      ? f.acodec !== "none"
+      : f.vcodec === "none" &&
+        Boolean(
+          f.abr ||
+          (f.audio_ext && f.audio_ext !== "none") ||
+          f.resolution === "audio only",
+        );
     if (!video && !audio) continue;
     const protocol = /m3u8/.test(f.protocol ?? "")
       ? "hls"
@@ -32,7 +41,9 @@ export function fromYtdlp(info: any, context: RequestContextRef): PrivateAsset {
         : "http";
     // Fragment-based platform formats need a manifest selector; never pretend the manifest itself is a complete file.
     if (protocol === "dash") continue;
-    const kind = video ? (audio ? "muxed" : "video") : "audio";
+    // HTTP variants without codec metadata may contain both streams; inspect the saved source before mapping.
+    const unknownMuxed = video && !f.vcodec && !f.acodec && protocol === "http";
+    const kind = video ? (audio || unknownMuxed ? "muxed" : "video") : "audio";
     const range =
       f.dynamic_range && f.dynamic_range !== "SDR"
         ? f.dynamic_range
@@ -41,7 +52,7 @@ export function fromYtdlp(info: any, context: RequestContextRef): PrivateAsset {
       f.height ? `${f.height}p` : "音频",
       f.fps ? `${f.fps}fps` : "",
       range ?? "",
-      f.vcodec === "none" ? f.acodec : f.vcodec,
+      (f.vcodec === "none" ? f.acodec : f.vcodec) || "编码未知",
       f.format_note ?? "",
       f.language ?? "",
     ];

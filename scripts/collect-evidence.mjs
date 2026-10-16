@@ -18,6 +18,7 @@ for (const [name, source] of [
   ["windows-packaged", "work/packaged-verification/report.json"],
   ["windows-portable", "work/portable-verification/report.json"],
   ["bilibili-preservation", "work/platform-verification/preservation.json"],
+  ["x-download-smoke", "work/x-verification/smoke.json"],
   ["tools-windows-x64", "resources/tools/tools.lock.json"],
 ]) {
   const data = JSON.parse(await readFile(source, "utf8"));
@@ -26,23 +27,29 @@ for (const [name, source] of [
     JSON.stringify(portable(data), null, 2) + "\n",
   );
 }
-const { asset } = JSON.parse(
-  await readFile("work/platform-verification/formats.json", "utf8"),
-);
-await writeFile(
-  join(destination, "bilibili-formats.json"),
-  JSON.stringify(
-    {
-      page: asset.pageUrl,
-      title: asset.title,
-      duration: asset.duration,
-      tracks: asset.tracks.map(({ id, ...track }) => track),
-      warnings: asset.warnings,
-    },
-    null,
-    2,
-  ) + "\n",
-);
+for (const [name, source] of [
+  ["bilibili", "work/platform-verification"],
+  ["x", "work/x-verification"],
+]) {
+  const { asset, loginDetected } = JSON.parse(
+    await readFile(join(source, "formats.json"), "utf8"),
+  );
+  await writeFile(
+    join(destination, `${name}-formats.json`),
+    JSON.stringify(
+      {
+        page: asset.pageUrl,
+        title: asset.title,
+        duration: asset.duration,
+        loginDetected,
+        tracks: asset.tracks.map(({ id, ...track }) => track),
+        warnings: asset.warnings,
+      },
+      null,
+      2,
+    ) + "\n",
+  );
+}
 await mkdir("docs/images", { recursive: true });
 await copyFile(
   "work/packaged-verification/01-workbench.png",

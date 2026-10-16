@@ -1,0 +1,102 @@
+{
+  "page": "https://x.com/AlanShao111/status/2108406850727076182/video/1",
+  "title": "邵艾伦Alan（薄肌版） - 对话孙宇晨：年轻人如何抓住AI时代的机会？",
+  "duration": 15749.336,
+  "loginDetected": false,
+  "tracks": [
+    {
+      "kind": "muxed",
+      "protocol": "http",
+      "label": "1080p · 编码未知",
+      "width": 1922,
+      "height": 1080,
+      "bitrate": 10368000
+    },
+    {
+      "kind": "video",
+      "protocol": "hls",
+      "label": "1080p · avc1.640032",
+      "width": 1922,
+      "height": 1080,
+      "fps": null,
+      "codec": "avc1.640032",
+      "bitrate": 1902929
+    },
+    {
+      "kind": "muxed",
+      "protocol": "http",
+      "label": "720p · 编码未知",
+      "width": 1280,
+      "height": 720,
+      "bitrate": 2176000
+    },
+    {
+      "kind": "video",
+      "protocol": "hls",
+      "label": "720p · avc1.64001F",
+      "width": 1280,
+      "height": 720,
+      "fps": null,
+      "codec": "avc1.64001F",
+      "bitrate": 506745
+    },
+    {
+      "kind": "muxed",
+      "protocol": "http",
+      "label": "360p · 编码未知",
+      "width": 640,
+      "height": 360,
+      "bitrate": 832000
+    },
+    {
+      "kind": "video",
+      "protocol": "hls",
+      "label": "360p · avc1.4D401E",
+      "width": 640,
+      "height": 360,
+      "fps": null,
+      "codec": "avc1.4D401E",
+      "bitrate": 195178
+    },
+    {
+      "kind": "muxed",
+      "protocol": "http",
+      "label": "270p · 编码未知",
+      "width": 480,
+      "height": 270,
+      "bitrate": 256000
+    },
+    {
+      "kind": "video",
+      "protocol": "hls",
+      "label": "270p · avc1.4D4015",
+      "width": 480,
+      "height": 270,
+      "fps": null,
+      "codec": "avc1.4D4015",
+      "bitrate": 79563
+    },
+    {
+      "kind": "audio",
+      "protocol": "hls",
+      "label": "音频 · 编码未知 · Audio, high",
+      "bitrate": 128000,
+      "language": null
+    },
+    {
+      "kind": "audio",
+      "protocol": "hls",
+      "label": "音频 · 编码未知 · Audio",
+      "bitrate": 64000,
+      "language": null
+    },
+    {
+      "kind": "audio",
+      "protocol": "hls",
+      "label": "音频 · 编码未知 · Audio, low",
+      "bitrate": 32000,
+      "language": null
+    }
+  ],
+  "warnings": []
+}

@@ -6,7 +6,9 @@ const url = new URL(process.argv[2]);
 if (!/^https?:$/.test(url.protocol)) throw new Error("HTTP URL required");
 url.search = "";
 url.hash = "";
-const root = resolve("work/platform-verification");
+const root = resolve(
+  process.env.VIDOWN_PLATFORM_ROOT || "work/platform-verification",
+);
 await mkdir(root, { recursive: true });
 const env = {
   ...process.env,
@@ -30,14 +32,28 @@ await page.evaluate(
   (url) => window.vidown.browser({ action: "new", url }),
   url.href,
 );
+const requiresLocalLogin = /(^|\.)bilibili\.com$/.test(url.hostname);
+let loginDetected = false;
 console.log(
-  "Vidown opened the supplied page. Sign in locally in the embedded browser.",
+  requiresLocalLogin
+    ? "Vidown opened the supplied page. Sign in locally in the embedded browser."
+    : "Vidown opened the supplied page. Probing publicly available formats.",
 );
 await writeFile(
   join(root, "status.json"),
-  JSON.stringify({ page: url.href, state: "awaiting-local-login" }, null, 2),
+  JSON.stringify(
+    {
+      page: url.href,
+      state: requiresLocalLogin
+        ? "awaiting-local-login"
+        : "probing-public-source",
+    },
+    null,
+    2,
+  ),
 );
-if (/(^|\.)bilibili\.com$/.test(url.hostname)) {
+let readyToProbe = !requiresLocalLogin;
+if (!readyToProbe) {
   let loggedIn = false;
   for (let i = 0; i < 600 && !loggedIn; i++) {
     if (page.isClosed()) break;
@@ -52,44 +68,58 @@ if (/(^|\.)bilibili\.com$/.test(url.hostname)) {
     if (!loggedIn) await new Promise((resolve) => setTimeout(resolve, 2000));
   }
   if (loggedIn) {
-    console.log(
-      "Local login detected. Probing available formats without exporting session credentials.",
+    readyToProbe = true;
+    loginDetected = true;
+  }
+}
+if (readyToProbe) {
+  console.log(
+    loginDetected
+      ? "Local login detected. Probing available formats without exporting session credentials."
+      : "Probing public source; no account login was required by this verification.",
+  );
+  try {
+    const asset = await page.evaluate(
+      (url) => window.vidown.probe({ url }),
+      url.href,
     );
-    try {
-      const asset = await page.evaluate(
-        (url) => window.vidown.probe({ url }),
-        url.href,
-      );
-      await writeFile(
-        join(root, "formats.json"),
-        JSON.stringify(
-          { generatedAt: new Date().toISOString(), loginDetected: true, asset },
-          null,
-          2,
-        ),
-      );
-      console.log(
-        JSON.stringify(
-          {
-            title: asset.title,
-            tracks: asset.tracks,
-            warnings: asset.warnings,
-          },
-          null,
-          2,
-        ),
-      );
-    } catch (error) {
-      await writeFile(
-        join(root, "status.json"),
-        JSON.stringify(
-          { page: url.href, state: "probe-failed", error: String(error) },
-          null,
-          2,
-        ),
-      );
-      console.error(String(error));
-    }
+    await writeFile(
+      join(root, "formats.json"),
+      JSON.stringify(
+        { generatedAt: new Date().toISOString(), loginDetected, asset },
+        null,
+        2,
+      ),
+    );
+    await writeFile(
+      join(root, "status.json"),
+      JSON.stringify(
+        { page: url.href, state: "formats-ready", loginDetected },
+        null,
+        2,
+      ),
+    );
+    console.log(
+      JSON.stringify(
+        {
+          title: asset.title,
+          tracks: asset.tracks,
+          warnings: asset.warnings,
+        },
+        null,
+        2,
+      ),
+    );
+  } catch (error) {
+    await writeFile(
+      join(root, "status.json"),
+      JSON.stringify(
+        { page: url.href, state: "probe-failed", error: String(error) },
+        null,
+        2,
+      ),
+    );
+    console.error(String(error));
   }
 }
 // Keep the user's login browser open for manual playback and resource selection.

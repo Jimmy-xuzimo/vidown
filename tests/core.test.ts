@@ -10,6 +10,53 @@ import { redact, safeName, httpUrl } from "../src/core/safety";
 import { verifyMedia } from "../src/core/engine";
 const context = { id: "test", profile: "browser" };
 describe("source-quality track contracts", () => {
+  it("keeps X audio-only HLS and HTTP variants when codec names are unknown", () => {
+    const asset = fromYtdlp(
+      {
+        title: "X long video",
+        webpage_url: "https://x.com/example/status/1",
+        formats: [
+          {
+            format_id: "hls-audio-128",
+            url: "https://cdn.example/audio.m3u8",
+            protocol: "m3u8_native",
+            vcodec: "none",
+            audio_ext: "mp4",
+            abr: 128,
+            resolution: "audio only",
+          },
+          {
+            format_id: "http-1080",
+            url: "https://cdn.example/video.mp4",
+            protocol: "https",
+            width: 1922,
+            height: 1080,
+            video_ext: "mp4",
+          },
+          {
+            format_id: "hls-1080",
+            url: "https://cdn.example/video.m3u8",
+            protocol: "m3u8_native",
+            vcodec: "avc1.640032",
+            acodec: "none",
+            height: 1080,
+          },
+        ],
+      },
+      context,
+    );
+    const audio = asset.tracks.find((t) => t.kind === "audio");
+    expect(audio).toBeDefined();
+    expect(audio?.codec).toBeUndefined();
+    expect(audio?.label).toContain("编码未知");
+    expect(asset.tracks.find((t) => t.protocol === "http")?.kind).toBe("muxed");
+    expect(
+      chooseTracks(asset, [
+        asset.tracks.find((t) => t.kind === "video")!.id,
+        audio!.id,
+      ]),
+    ).toHaveLength(2);
+  });
   it("preserves Bilibili 8K, DV and FLAC as independent choices and strips private URLs", () => {
     const a = fromYtdlp(
       {

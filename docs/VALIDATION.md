@@ -7,7 +7,7 @@
 | 验证                   | 结果                | 范围                                                                                                                                                                                             |
 | ---------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 类型检查及生产代码构建 | 通过                | `npm run build`                                                                                                                                                                                  |
-| 单元／本地集成测试     | 14 项通过，3 个文件 | 格式转换与组合、机密字段隔离、HLS／DASH 元数据、DRM／直播识别、成品参数拒绝、缓存与重定向凭据范围、SQLite 中断状态                                                                               |
+| 单元／本地集成测试     | 15 项通过，3 个文件 | 格式转换与组合、X 缺失编码字段的音轨与 HTTP 变体、机密字段隔离、HLS／DASH 元数据、DRM／直播识别、成品参数拒绝、缓存与重定向凭据范围、SQLite 中断状态                                             |
 | 实际引擎受控媒体       | 11 项通过           | HLS 分离音频、AES-128 密钥轮换、fMP4、Byte Range、DASH 模板／时间线、生成 HDR10＋FLAC、直链暂停恢复、源验证器变化、HLS 停进程恢复且 5 个已完成片段不从源重取、清单变化拒绝续接、TDLib 原生库查询 |
 | 已打包 Windows 应用    | 4 项通过            | 包内 TDLib 加载；真实沙箱浏览器登录和请求发现；跨源页面／媒体端口＋HttpOnly Cookie 的界面→工作进程→下载→合并→成品检查；界面无运行时错误且无请求机密暴露                                          |
 | 生产 npm 依赖审计      | 0 个已知漏洞        | `npm audit --omit=dev`；构建工具链仍有 8 项中等严重性通告，正式发行前处理，不对其作“零漏洞”声明                                                                                                  |
@@ -30,9 +30,20 @@ Windows 便携 EXE 也已直接启动并通过同样 4 项完整桌面检查，�
 
 此样本发现并修复了真实跨域 Referer 导致的 `net::ERR_BLOCKED_BY_CLIENT`。修复前提取成功但下载失败；修复后使用同一登录会话实际下载完成。回归夹具采用不同页面／媒体源端口，不再只测同源情况。
 
+## 用户提供的 X 公开长视频
+
+链接：[AlanShao111 / 2108406850727076182](https://x.com/AlanShao111/status/2108406850727076182/video/1)。源时长 15749.336 秒，约 4 小时 22 分钟；此次无需登录。首次接口连接超时，重试成功，未归因为权限问题。
+
+- 桌面应用提取到 1080p／720p／360p／270p HLS 与 HTTP 变体，以及 32／64／128 kbps 音轨。修复了编码名称缺失时音轨、HTTP 变体被丢弃的问题；未知编码不靠猜测填充。
+- 在已打包的应用内选择 1922×1080 HLS 与 128 kbps 音轨，视频通过 Chromium 会话桥及 N_m3u8DL-RE 实际传输。停止前保留 4591 个完整视频片段，3054743802 字节；只统计完整片段，不包含缓存副本。
+- 用户认为视频过长，要求确认能下载即可，因此主动取消任务，任务状态为 `cancelled`。未将其标为完成，未验证整个长视频或桌面任务第二条音轨的完整下载。
+- 从实际桌面下载保留的前三个视频片段，加上使用 FFmpeg 限时获取的公开 HLS 音频，生成约 9 秒 MP4：H.264 High、1922×1080、30 fps；AAC-LC、44.1 kHz、双声道、约 128 kbps。无损合并、参数检查及整个短样本的音视频解码通过。这是有限样本检查，音频限时获取没有经过桌面任务传输桥。
+
+见 [格式清单](validation/x-formats.json) 与 [有界下载检查报告](validation/x-download-smoke.json)。没有对完整 X 成品、登录内容或单帖多视频作通过声明。原始提取结果与媒体留在本机忽略目录，不随报告上传。
+
 ## 尚未通过的验收
 
-B 站真实 8K、独立 HDR10、FLAC／Hi-Res、番剧会员权限及试看边界；X 公开／登录、多视频；Telegram 真实应用身份、登录、私有消息、取消及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。
+B 站真实 8K、独立 HDR10、FLAC／Hi-Res、番剧会员权限及试看边界；X 短视频完整桌面成品、登录内容、单帖多视频；Telegram 真实应用身份、登录、私有消息、取消及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。
 
 已打包程序在当前 Windows 机器上通过测试，并不等同于干净系统、三端及所有平台验收。应用目前是本地 M0 实验预览，发行状态以 [路线图](ROADMAP.md) 为准。
 
@@ -48,4 +59,6 @@ $env:VIDOWN_VERIFY_EXECUTABLE = (Resolve-Path 'release/win-unpacked/Vidown Previ
 npm run verify:desktop
 ```
 
-真实 B 站验证：`npm run verify:platform -- https://www.bilibili.com/video/BV1NGZtBwELa/`，在打开的应用中登录；另一终端执行 `npm run verify:platform-download`、`npm run verify:preservation`。后两条是当前 Dolby 样本的开发验收工具，不是通用的自动最高规格批量下载入口。登录档案在被 Git 忽略的 `work/platform-verification/profile` 内，不能随报告上传。
+真实 B 站验证：`npm run verify:platform -- https://www.bilibili.com/video/BV1NGZtBwELa/`，在打开的应用中登录；另一终端执行 `npm run verify:platform-download`、`npm run verify:preservation`。这些是指定音视频分轨样本的开发验收工具，不是通用的自动最高规格批量下载入口。保真脚本支持 HTTP 或 HLS 保留源文件，校验平台完整时长、H.264／HEVC 完整码流哈希及开头／中间／结尾各 3 秒解码；Dolby 样本额外检查 DOVI 配置。登录档案在被 Git 忽略的 `work/platform-verification/profile` 内，不能随报告上传。
+
+X 开发验收使用 `VIDOWN_PLATFORM_ROOT=work/x-verification` 隔离报告与档案；本次手动取消后执行 `node --import tsx scripts/verify-x-smoke.ts`，仅使用已完成的前三个视频片段与限时音频验证。该脚本明确依赖此次任务保留的分片目录结构，不能视为通用下载功能。
