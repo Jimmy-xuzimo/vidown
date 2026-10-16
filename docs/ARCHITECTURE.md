@@ -1,96 +1,33 @@
-# Architecture
+# 重建架构（M0 实现）
 
-Vidown 的整体架构图：
+旧 Python 工程只保留在 Git 历史中。新源码不导入旧调度器、HLS 下载器或页面扫描器。
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      GUI 前端层 (Web/Tauri/Wails)            │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐   │
-│  │ URL 输入  │ │ 下载队列  │ │ 格式选择  │ │   设置面板    │   │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────┘   │
-└──────────────────────┬──────────────────────────────────────┘
-                       │ REST + SSE
-┌──────────────────────▼──────────────────────────────────────┐
-│                   核心调度引擎 (Python)                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              DownloadScheduler                       │   │
-│  │  - 任务队列 / 并发池 / 暂停-恢复-取消                │   │
-│  │  - 引擎注册表 (EngineRegistry)                       │   │
-│  └──────────────────────┬───────────────────────────────┘   │
-│                         │                                   │
-│  ┌──────────────┐  ┌────▼─────┐  ┌──────────┐  ┌────────┐ │
-│  │  yt-dlp 引擎  │  │M3U8/DASH │  │ 直链下载  │  │备用引擎 │ │
-│  │ (1700+ 站点) │  │  处理器   │  │          │  │(lux等) │ │
-│  └──────────────┘  └────┬─────┘  └──────────┘  └────────┘ │
-│                         │                                   │
-│  ┌──────────────────────▼───────────────────────────────┐   │
-│  │              FFmpegPostProcessor                     │   │
-│  │  合并 → 转码(H.264) → 嵌入元数据 → 输出 MP4          │   │
-│  └──────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart LR
+  UI[本地 React 界面] --> IPC[受限 preload / IPC]
+  IPC --> Main[Electron 主进程：会话与队列]
+  Main --> DB[(SQLite：任务与设置)]
+  Main --> Browser[沙箱 WebContentsView]
+  Browser --> Discovery[webRequest / CDP 媒体发现]
+  Discovery --> Main
+  Main --> Worker[独立媒体工作进程]
+  Worker --> Extractor[yt-dlp 提取]
+  Worker --> Protocol[N_m3u8DL-RE / HTTP]
+  Protocol --> Bridge[任务传输桥]
+  Bridge --> Session[原 Chromium 会话请求]
+  Worker --> FF[FFmpeg 合并 / ffprobe 检查]
+  FF --> File[验证后提交成品]
+  Main --> TG[独立 TDLib 工作进程]
 ```
 
-## 核心模块
+`SourceCandidate` 是媒体发现记录；`RequestContextRef` 引用本机会话；`MediaAsset` 展示轨道；`DownloadPlan` 固定具体选择及引擎所需执行信息；`TaskEvent` 描述状态变化。平台格式 ID 不作为另一引擎的选择参数，DASH 有独立 selector。渲染进程拿不到原始媒体 URL、请求头或 Cookie。
 
-### 1. `vidown.core` —— 核心层
-- `models.py`：数据模型（`DownloadTask`、`VideoInfo`、`FormatInfo`、`TaskProgress`）
-- `config.py`：配置加载（JSON/YAML 双向）
-- `scheduler.py`：任务调度核心
-- `platform_detect.py`：URL 平台识别
-- `format_selector.py`：格式选择策略
-- `utils.py`：通用工具（FFmpeg 探测、文件名清理等）
-- `exceptions.py`：异常体系
-- `logger.py`：统一日志
+任务从 queued 进入 downloading、merging、verifying，验证通过后才成为 completed；也可进入 paused、cancelled、failed。SQLite 启动时把意外遗留的活动任务标为 interrupted。当前敏感计划加密保存，但重启不会重用旧授权，需重新探测。事件完整排序、自动重新匹配及稳定服务迁移属于 M1／M3。
 
-### 2. `vidown.engines` —— 下载引擎
-所有引擎继承自 `BaseEngine`：
-- `ytdlp_engine.py`：主引擎，1700+ 站点
-- `m3u8_engine.py`：M3U8/HLS/DASH 引擎
-- `direct_engine.py`：HTTP 直链引擎
-- `fallback_engines.py`：you-get / lux / gallery-dl
+远程页面无应用 preload、Node 权限或应用 IPC；启用沙箱、上下文隔离，拒绝设备等权限。只有本地窗口的主 frame 可调用应用接口。浏览器与下载使用相同代理策略。临时 Cookie 文件仅用于隔离提取器，正常结束删除，启动时也清除中断遗留文件；诊断不包含凭据正文。
 
-### 3. `vidown.postprocess` —— FFmpeg 后处理
-- `ffmpeg_pipe.py`：转码 / 合并 / 拼接 / 嵌入
-- `probe.py`：ffprobe 媒体信息
+传输桥绑定 127.0.0.1，每任务有随机 capability，只允许已登记资源和已解析的分片模板。跨域跳转按目标地址重新选择请求头。Chromium 负责域匹配 Cookie；显式 referrer policy 保留已观察的页面来源。仅清单引用的片段／初始化文件／密钥使用完整响应缓存，直链不从片段缓存读取。HLS 恢复检查原清单 SHA-256；HTTP 恢复验证强 ETag、If-Range、Content-Range。身份不确定就重新下载或拒绝继续。
 
-### 4. `vidown.data` —— 持久化
-- `database.py`：SQLite 连接管理
-- `history.py`：下载历史仓储
-- `cookie_store.py`：Cookie 导入（支持浏览器）
+媒体执行器调用真实组件。FFmpeg 默认 `-c copy`；先检查源轨及输出轨的编码、尺寸、帧率、音频参数、时长、色彩和相关元数据，然后在目标文件系统内提交成品。兼容导出是独立选项，M0 明确拒绝没有显式色彩转换的 HDR／杜比降级。完整码流哈希验证另由真实样本验收脚本执行，常规完成检查不声称逐帧完整验证。
 
-### 5. `vidown.gui` —— Web 图形界面
-- `server.py`：嵌入式 HTTP Server + SSE
-- `templates/index.html`：前端页面
-- `static/`：CSS / JS
-
-### 6. `vidown.cli` —— 命令行
-- `main.py`：argparse 入口
-
-### 7. `vidown.utils` —— 辅助工具
-- `clipboard.py`：跨平台剪贴板监听
-- `download_enhancer.py`：页面 m3u8 自动发现
-- `system.py`：系统平台检测
-
-## 数据流
-
-```
-用户输入 URL
-    ↓
-[URL 解析] classify_url → (Platform, MediaKind)
-    ↓
-[任务入队] DownloadScheduler.add_task
-    ↓
-[引擎选择] EngineRegistry.select(URL)
-    ↓
-[探测] engine.probe() → VideoInfo + Formats
-    ↓
-[格式选择] format_selector.select_formats(VideoInfo, QualityConfig)
-    ↓
-[下载] engine.download_info() → raw file
-    ↓
-[后处理] FFmpegPostProcessor → H.264 MP4
-    ↓
-[完成] HistoryRepository.upsert_task
-    ↓
-[SSE 推送] progress / status → Web GUI
-```
+M0 的 SQLite 和队列协调仍在 Electron 主进程，协议和媒体处理在 utility process。Telegram FFI 单独运行。当前 Windows x64 包自带 Chromium 与所有工具；其余平台、干净系统、完整异常恢复及发行合规以路线图验收门槛为准。

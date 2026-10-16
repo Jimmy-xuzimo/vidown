@@ -1,0 +1,43 @@
+{
+  "platform": "win32",
+  "arch": "x64",
+  "receipts": [
+    {
+      "name": "yt-dlp",
+      "version": "2026.08.19",
+      "source": "https://github.com/yt-dlp/yt-dlp/releases/download/2026.08.19/yt-dlp.exe",
+      "sha256": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a",
+      "checksum": "upstream SHA2-256SUMS",
+      "license": "GPL-3.0-or-later (bundled binary)"
+    },
+    {
+      "name": "N_m3u8DL-RE",
+      "version": "v0.6.0-beta",
+      "source": "https://github.com/nilaoda/N_m3u8DL-RE/releases/download/v0.6.0-beta/N_m3u8DL-RE_v0.6.0-beta_win-x64_20260629.zip",
+      "sha256": "35e7c16983f0315bba2a3f37dc392fdfa074be614c8effb642b78376b18ba272",
+      "archiveSha256": "3825fd42ee502f98a9378f6fdddb2f7822709f521806214f466db6935c950f1a",
+      "license": "MIT"
+    },
+    {
+      "name": "FFmpeg archive",
+      "version": "9.0.2",
+      "source": "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/ffmpeg-9.0.2-essentials_build.zip",
+      "sha256": "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba",
+      "license": "GPL-3.0-or-later"
+    },
+    {
+      "name": "ffmpeg",
+      "sha256": "3256173f3f8bffd7df12227c68adf68025edb1832273a9530688a7bb1ed8edec",
+      "source": "GyanD/codexffmpeg 9.0.2",
+      "version": "ffmpeg version 9.0.2-essentials_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers",
+      "license": "GPL-3.0-or-later"
+    },
+    {
+      "name": "ffprobe",
+      "sha256": "f0d36ecbbdd3bcfac3efa078c96c7271c2e68b3810595552ac3b7f17e9a65c52",
+      "source": "GyanD/codexffmpeg 9.0.2",
+      "version": "ffprobe version 9.0.2-essentials_build-www.gyan.dev Copyright (c) 2007-2026 the FFmpeg developers",
+      "license": "GPL-3.0-or-later"
+    }
+  ]
+}

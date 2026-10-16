@@ -1,0 +1,231 @@
+{
+  "page": "https://www.bilibili.com/video/BV1NGZtBwELa/",
+  "title": "【4K限免】你的新设备能顶住吗？影视飓风年度样片",
+  "duration": 218.592,
+  "tracks": [
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "2160p · 29.97fps · DV · hvc1.2.4.H150.90",
+      "width": 3840,
+      "height": 2160,
+      "fps": 29.97,
+      "codec": "hvc1.2.4.H150.90",
+      "bitrate": 14672604,
+      "dynamicRange": "DV"
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "2160p · 29.965fps · avc1.640033",
+      "width": 3840,
+      "height": 2160,
+      "fps": 29.965,
+      "codec": "avc1.640033",
+      "bitrate": 12598290
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "2160p · 29.963fps · hev1.1.6.L153.90",
+      "width": 3840,
+      "height": 2160,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L153.90",
+      "bitrate": 7031493
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "2160p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 3840,
+      "height": 2160,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 5567674
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.966fps · avc1.640032",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.966,
+      "codec": "avc1.640032",
+      "bitrate": 4173992
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.966fps · avc1.640032",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.966,
+      "codec": "avc1.640032",
+      "bitrate": 2672908
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.963fps · hev1.1.6.L150.90",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L150.90",
+      "bitrate": 2633203
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 2550912
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.963fps · hev1.1.6.L150.90",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L150.90",
+      "bitrate": 1344543
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "1080p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 1920,
+      "height": 1080,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 1271146
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "720p · 29.966fps · avc1.640028",
+      "width": 1280,
+      "height": 720,
+      "fps": 29.966,
+      "codec": "avc1.640028",
+      "bitrate": 1174038
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "720p · 29.963fps · hev1.1.6.L120.90",
+      "width": 1280,
+      "height": 720,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L120.90",
+      "bitrate": 587277
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "720p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 1280,
+      "height": 720,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 543307
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "480p · 29.966fps · avc1.64001F",
+      "width": 852,
+      "height": 480,
+      "fps": 29.966,
+      "codec": "avc1.64001F",
+      "bitrate": 603785
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "480p · 29.963fps · hev1.1.6.L120.90",
+      "width": 852,
+      "height": 480,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L120.90",
+      "bitrate": 307193
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "480p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 852,
+      "height": 480,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 285223
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "360p · 29.966fps · avc1.64001E",
+      "width": 640,
+      "height": 360,
+      "fps": 29.966,
+      "codec": "avc1.64001E",
+      "bitrate": 379748
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "360p · 29.963fps · hev1.1.6.L120.90",
+      "width": 640,
+      "height": 360,
+      "fps": 29.963,
+      "codec": "hev1.1.6.L120.90",
+      "bitrate": 199994
+    },
+    {
+      "kind": "video",
+      "protocol": "http",
+      "label": "360p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0",
+      "width": 640,
+      "height": 360,
+      "fps": 29.963,
+      "codec": "av01.0.00M.10.0.110.01.01.01.0",
+      "bitrate": 184332
+    },
+    {
+      "kind": "audio",
+      "protocol": "http",
+      "label": "音频 · ec-3",
+      "codec": "ec-3",
+      "audioCodec": "ec-3",
+      "bitrate": 769173
+    },
+    {
+      "kind": "audio",
+      "protocol": "http",
+      "label": "音频 · mp4a.40.2",
+      "codec": "mp4a.40.2",
+      "audioCodec": "mp4a.40.2",
+      "bitrate": 197074
+    },
+    {
+      "kind": "audio",
+      "protocol": "http",
+      "label": "音频 · mp4a.40.2",
+      "codec": "mp4a.40.2",
+      "audioCodec": "mp4a.40.2",
+      "bitrate": 101753
+    },
+    {
+      "kind": "audio",
+      "protocol": "http",
+      "label": "音频 · mp4a.40.2",
+      "codec": "mp4a.40.2",
+      "audioCodec": "mp4a.40.2",
+      "bitrate": 65697
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,117 @@
+{
+  "name": "vidown-desktop",
+  "version": "1.0.0-alpha.1",
+  "private": true,
+  "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
+  "license": "MIT",
+  "author": "Jimmy-xuzimo",
+  "main": "dist/main/index.cjs",
+  "type": "module",
+  "engines": {
+    "node": ">=24.13"
+  },
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "tsc --noEmit && electron-vite build",
+    "start": "electron .",
+    "test": "vitest run",
+    "tools:prepare": "node scripts/prepare-tools.mjs && node scripts/prepare-licenses.mjs",
+    "verify:media": "node --import tsx scripts/verify-media.ts",
+    "verify:desktop": "node --import tsx scripts/verify-desktop.mjs",
+    "pack": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder",
+    "check": "npm run build && npm test",
+    "runtime:prepare": "node scripts/prepare-runtime.mjs",
+    "setup": "npm run runtime:prepare && npm run tools:prepare",
+    "format": "prettier --write src scripts tests *.ts *.json *.md docs",
+    "format:check": "prettier --check src scripts tests *.ts *.json *.md docs",
+    "verify:platform": "node scripts/verify-platform.mjs",
+    "verify:platform-download": "node scripts/verify-platform-download.mjs",
+    "verify:preservation": "node --import tsx scripts/verify-preservation.ts"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.11.2",
+    "koffi": "3.3.3",
+    "m3u8-parser": "7.2.0",
+    "prebuilt-tdlib": "0.1008067.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "electron": "44.8.0",
+    "electron-builder": "26.15.3",
+    "electron-vite": "6.0.0",
+    "playwright": "^1.58.0",
+    "prettier": "3.9.10",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.0",
+    "vite": "^8.0.0",
+    "vitest": "^4.1.0"
+  },
+  "build": {
+    "appId": "top.xuzimo.vidown",
+    "productName": "Vidown Preview",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/koffi/**/*",
+      "node_modules/@prebuilt-tdlib/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/tools",
+        "to": "tools",
+        "filter": [
+          "ffmpeg",
+          "ffmpeg.exe",
+          "ffprobe",
+          "ffprobe.exe",
+          "yt-dlp",
+          "yt-dlp.exe",
+          "N_m3u8DL-RE",
+          "N_m3u8DL-RE.exe",
+          "tools.lock.json",
+          "licenses/**/*"
+        ]
+      },
+      {
+        "from": "THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
+      }
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "icon": "assets/icon.ico",
+      "signAndEditExecutable": false
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Utility"
+    }
+  },
+  "allowScripts": {
+    "electron@44.8.0": true,
+    "esbuild@0.28.2": true,
+    "koffi@3.3.3": true,
+    "electron-winstaller@5.4.0": true
+  }
+}
