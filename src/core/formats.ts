@@ -102,7 +102,8 @@ export function publicAsset(asset: PrivateAsset): MediaAsset {
   return {
     ...asset,
     tracks: asset.tracks.map(
-      ({ url, selector, manifest, engineId, identity, ...track }) => track,
+      ({ url, fallbacks, selector, manifest, engineId, identity, ...track }) =>
+        track,
     ),
     context: undefined,
   } as MediaAsset;

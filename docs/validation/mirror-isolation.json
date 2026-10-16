@@ -1,0 +1,16 @@
+{
+  "generatedAt": "2026-10-16T18:00:22.126Z",
+  "status": "passed",
+  "scope": "Real HTTP origins, Chromium-compatible scoped bridge transport, real FFmpeg merge/validation. A partially retained primary with a deliberately invalid prefix is never appended to a backup with the same ETag.",
+  "checks": [
+    "actual transport stops on pause",
+    "primary 503 selects registered backup",
+    "backup starts at byte zero despite matching ETag",
+    "Authorization does not cross origins",
+    "saved backup bytes exactly match independent source",
+    "result metadata passes"
+  ],
+  "retainedPrimaryBytes": 32768,
+  "backupBytes": 1299522,
+  "output": "work/mirror-verification/Mirror isolation [0b586c31].mp4"
+}

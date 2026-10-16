@@ -15,6 +15,7 @@ import { randomUUID, randomBytes } from "node:crypto";
 import { Store } from "../core/store";
 import { TransportBridge, limitedBody } from "../core/bridge";
 import { chooseTracks, publicAsset } from "../core/formats";
+import { isBilibiliPage, addBilibiliMirrors } from "../core/bilibili";
 import {
   httpUrl,
   classifyError,
@@ -50,7 +51,9 @@ const running = new Map<
   string,
   { bridge: TransportBridge; promise: Promise<unknown>; fileId?: number }
 >();
-const stopping = new Map<string, "paused" | "cancelled">();
+const stopping = new Map<string, "paused" | "cancelled" | "interrupted">();
+let shuttingDown = false,
+  shutdownComplete = false;
 let settings: Settings,
   telegramState = { state: "未配置", detail: undefined as string | undefined };
 let engine: Electron.UtilityProcess, telegram: Electron.UtilityProcess;
@@ -90,7 +93,7 @@ function changed(): void {
   }, 150);
 }
 function task(id: string): TaskRecord {
-  const found = store.list().find((t) => t.id === id);
+  const found = store.get(id);
   if (!found) throw new Error("任务不存在");
   return found;
 }
@@ -153,6 +156,7 @@ async function cookies(): Promise<string> {
 async function bridgeFor(
   id: string,
   pageUrl: string,
+  onBytes?: (n: number) => void,
 ): Promise<TransportBridge> {
   const bridge = new TransportBridge(
     (url, init) =>
@@ -163,6 +167,7 @@ async function bridgeFor(
       }),
     join(work, id, "cache"),
     (url) => browser.headersFor(url, pageUrl),
+    onBytes,
   );
   await bridge.start();
   return bridge;
@@ -242,6 +247,23 @@ async function probeInput(input: {
     const asset: PrivateAsset = await callWorker(id, "probe", {
       input: payload,
     });
+    if (isBilibiliPage(url)) {
+      try {
+        const response = await browser.session.fetch(url, {
+          credentials: "include",
+          signal: AbortSignal.timeout(15000),
+        });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        addBilibiliMirrors(
+          asset,
+          (await limitedBody(response, 8 * 1024 * 1024)).toString("utf8"),
+        );
+      } catch {
+        asset.warnings.push(
+          "备用 CDN 信息未能补充；仍可使用提取器返回的主地址。",
+        );
+      }
+    }
     assets.set(asset.id, asset);
     if (assets.size > 100) assets.delete(assets.keys().next().value!);
     return publicAsset(asset);
@@ -250,6 +272,7 @@ async function probeInput(input: {
   }
 }
 function schedule(): void {
+  if (shuttingDown) return;
   const active = running.size;
   if (active >= settings.concurrency) return;
   for (const t of store
@@ -276,9 +299,32 @@ async function run(id: string): Promise<void> {
     fileId: undefined as number | undefined,
   };
   running.set(id, placeholder);
+  let receivedBytes = 0,
+    lastBytes = 0,
+    lastTime = Date.now(),
+    lastUpdate = 0;
   const promise = (async () => {
     try {
-      const bridge = await bridgeFor(id, plan.asset.pageUrl);
+      const bridge = await bridgeFor(id, plan.asset.pageUrl, (n) => {
+        receivedBytes += n;
+        const now = Date.now();
+        if (
+          now - lastUpdate >= 500 &&
+          !stopping.has(id) &&
+          task(id).state === "downloading"
+        ) {
+          patchTask(id, {
+            networkBytes: receivedBytes,
+            speed: Math.round(
+              ((receivedBytes - lastBytes) * 1000) /
+                Math.max(1, now - lastTime),
+            ),
+          });
+          lastUpdate = now;
+          lastTime = now;
+          lastBytes = receivedBytes;
+        }
+      });
       placeholder.bridge = bridge;
       let actual: DownloadPlan = {
         ...plan,
@@ -286,12 +332,18 @@ async function run(id: string): Promise<void> {
           ...t,
           identity: digest(t.url),
           url: t.protocol === "telegram" ? t.url : bridge.register(t.url),
+          fallbacks: t.fallbacks?.map((source) => ({
+            identity: digest(source.url),
+            url: bridge.register(source.url),
+          })),
         })),
       };
       patchTask(id, {
         state: "downloading",
         error: undefined,
         progress: undefined,
+        networkBytes: 0,
+        speed: undefined,
       });
       if (plan.tracks.some((t) => t.protocol === "telegram")) {
         const fileId = Number(plan.tracks[0].url);
@@ -313,6 +365,10 @@ async function run(id: string): Promise<void> {
               state: event.state ?? task(id).state,
               bytes: event.bytes ?? task(id).bytes,
               progress: event.progress,
+              speed:
+                event.state && event.state !== "downloading"
+                  ? undefined
+                  : task(id).speed,
             });
         },
       );
@@ -321,6 +377,8 @@ async function run(id: string): Promise<void> {
         output,
         error: undefined,
         progress: 100,
+        networkBytes: receivedBytes,
+        speed: undefined,
       });
     } catch (error) {
       patchTask(id, {
@@ -331,6 +389,8 @@ async function run(id: string): Promise<void> {
               `${error instanceof Error ? error.message : error}${placeholder.bridge?.lastError ? `；传输详情：${placeholder.bridge.lastError}` : ""}`,
             ),
         resumable: true,
+        networkBytes: receivedBytes,
+        speed: undefined,
       });
     } finally {
       await placeholder.bridge?.close();
@@ -522,6 +582,7 @@ function registerIPC(): void {
   };
   for (const [name, handler] of Object.entries(methods))
     ipcMain.handle("vidown:" + name, async (event, input) => {
+      if (shuttingDown) throw new Error("应用正在退出，请重新启动后继续。");
       if (
         event.sender !== win.webContents ||
         event.senderFrame !== win.webContents.mainFrame
@@ -675,10 +736,14 @@ async function boot(): Promise<void> {
     win.show();
     win.focus();
   });
+  win.on("close", (event) => {
+    if (!shutdownComplete) {
+      event.preventDefault();
+      app.quit();
+    }
+  });
   win.on("closed", () => {
     browser.close();
-    engine.kill();
-    telegram.kill();
   });
 }
 if (single)
@@ -687,10 +752,42 @@ if (single)
     app.exit(1);
   });
 app.on("window-all-closed", () => app.quit());
-app.on("before-quit", () => {
+app.on("before-quit", (event) => {
+  if (shutdownComplete) return;
+  event.preventDefault();
+  if (shuttingDown) return;
+  shuttingDown = true;
   if (clipboardTimer) clearInterval(clipboardTimer);
-  for (const [id, job] of running) {
+  if (updateTimer) clearTimeout(updateTimer);
+  for (const id of engineCalls.keys())
     engine?.postMessage({ id, action: "abort", payload: {} });
-    void job.bridge?.close();
+  const jobs: Promise<unknown>[] = [];
+  for (const [id, job] of running) {
+    stopping.set(id, "interrupted");
+    engine?.postMessage({ id, action: "abort", payload: {} });
+    if (job.fileId) jobs.push(callTelegram("cancel", { fileId: job.fileId }));
+    if (job.bridge) jobs.push(job.bridge.close());
+    jobs.push(job.promise);
   }
+  // Let download components receive abort and exit before terminating their parent.
+  void (async () => {
+    let timer: NodeJS.Timeout | undefined;
+    try {
+      await Promise.race([
+        Promise.allSettled(jobs),
+        new Promise<void>((r) => {
+          timer = setTimeout(r, 8000);
+        }),
+      ]);
+      const end = Date.now() + 2000;
+      while (engineCalls.size && Date.now() < end)
+        await new Promise((r) => setTimeout(r, 25));
+    } finally {
+      if (timer) clearTimeout(timer);
+      engine?.kill();
+      telegram?.kill();
+      shutdownComplete = true;
+      app.quit();
+    }
+  })();
 });

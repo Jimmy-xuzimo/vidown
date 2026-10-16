@@ -10,11 +10,7 @@
     "savedAudio": "SHA256=0a559c627dc3c4364d644d76302efa45569a823e03bafc8b9c21a7e4e14539fb"
   },
   "decodedSamples": {
-    "positionsSeconds": [
-      0,
-      109,
-      213
-    ],
+    "positionsSeconds": [0, 109, 213],
     "durationSeconds": 3,
     "status": "passed"
   },

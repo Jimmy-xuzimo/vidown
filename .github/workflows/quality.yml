@@ -1,0 +1,35 @@
+name: Source quality
+
+on:
+  pull_request:
+  push:
+    branches: [main, rebuild/v1]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-checks:
+    name: Source checks (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2025, macos-15, ubuntu-24.04]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      # Source checks do not need Electron or TDLib install-time native execution.
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+      - run: npm run check
+      - run: git diff --check

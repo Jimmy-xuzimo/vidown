@@ -33,6 +33,10 @@ export class Store {
       .all()
       .map((r) => JSON.parse(String(r.record)));
   }
+  get(id: string): TaskRecord | undefined {
+    const row = this.db.prepare("SELECT record FROM tasks WHERE id=?").get(id);
+    return row ? JSON.parse(String(row.record)) : undefined;
+  }
   sealed(id: string): string | undefined {
     const r = this.db.prepare("SELECT sealed FROM tasks WHERE id=?").get(id);
     return r?.sealed ? String(r.sealed) : undefined;

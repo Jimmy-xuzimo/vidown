@@ -33,12 +33,24 @@ export class TransportBridge {
     private cache: string,
     private headersFor: (url: string) => Record<string, string> = () => ({}),
     private onBytes: (n: number) => void = () => {},
+    private options: { stallTimeoutMs?: number } = {},
   ) {}
   async start(): Promise<void> {
     await mkdir(this.cache, { recursive: true });
     this.server = createServer((req, res) => {
       const pending = (async () => {
         const controller = new AbortController();
+        let idleTimer: NodeJS.Timeout | undefined,
+          timedOut = false;
+        const touch = () => {
+          if (idleTimer) clearTimeout(idleTimer);
+          idleTimer = setTimeout(() => {
+            timedOut = true;
+            controller.abort(
+              new Error("媒体传输停滞超时，请重试或更换可用源。"),
+            );
+          }, this.options.stallTimeoutMs ?? 30000);
+        };
         this.controllers.add(controller);
         let unlock: (() => void) | undefined;
         res.on("close", () => controller.abort());
@@ -94,6 +106,7 @@ export class TransportBridge {
           }
           let upstream: Response | undefined;
           for (let redirects = 0; redirects <= 8; redirects++) {
+            touch();
             const scoped = { ...this.headersFor(target) };
             if (headers.Range) scoped.Range = headers.Range;
             if (headers["If-Range"]) scoped["If-Range"] = headers["If-Range"];
@@ -156,6 +169,7 @@ export class TransportBridge {
           let total = 0;
           const meter = new Transform({
             transform: (chunk, _, callback) => {
+              touch();
               total += chunk.length;
               this.onBytes(chunk.length);
               if (file && !file.write(chunk))
@@ -181,13 +195,19 @@ export class TransportBridge {
             }
           } catch (error) {
             file?.destroy();
+            if (file && !file.closed)
+              await new Promise<void>((resolve) => file.once("close", resolve));
             await rm(temporary, { force: true }).catch(() => {});
             throw error;
           }
         } catch (error) {
-          if (!controller.signal.aborted)
+          if (!controller.signal.aborted || timedOut)
             this.lastError = redact(
-              error instanceof Error ? error.message : error,
+              timedOut
+                ? "媒体传输停滞超时，请重试或更换可用源。"
+                : error instanceof Error
+                  ? error.message
+                  : error,
             );
           if (!res.headersSent)
             res
@@ -195,6 +215,7 @@ export class TransportBridge {
               .end("Media transfer failed; refresh the source or sign in.");
           else res.destroy();
         } finally {
+          if (idleTimer) clearTimeout(idleTimer);
           unlock?.();
           this.controllers.delete(controller);
         }

@@ -11,6 +11,19 @@ const list = (value: any): any[] =>
   value === undefined ? [] : Array.isArray(value) ? value : [value];
 const num = (value: any): number | undefined =>
   value === undefined ? undefined : Number(value);
+export function parseIsoDuration(value: unknown): number | undefined {
+  const m =
+    /^P(?:(\d+(?:\.\d+)?)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.exec(
+      String(value ?? ""),
+    );
+  if (!m || m.slice(1).every((v) => v === undefined)) return;
+  const seconds =
+    Number(m[1] ?? 0) * 86400 +
+    Number(m[2] ?? 0) * 3600 +
+    Number(m[3] ?? 0) * 60 +
+    Number(m[4] ?? 0);
+  return seconds;
+}
 export function parseManifest(
   text: string,
   url: string,
@@ -103,6 +116,7 @@ export function parseManifest(
     }).parse(text);
     const mpd = doc.MPD;
     if (!mpd) throw new Error("不是有效的 HLS／DASH 清单");
+    asset.duration = parseIsoDuration(mpd["@_mediaPresentationDuration"]);
     if (mpd["@_type"] === "dynamic")
       asset.warnings.push("检测到 DASH 直播，本版不支持直播录制。");
     for (const period of list(mpd.Period))

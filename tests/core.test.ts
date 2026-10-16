@@ -7,9 +7,48 @@ import {
 } from "../src/core/formats";
 import { parseManifest } from "../src/core/manifest";
 import { redact, safeName, httpUrl } from "../src/core/safety";
-import { verifyMedia } from "../src/core/engine";
+import { verifyMedia, verifySelectedTrack } from "../src/core/engine";
+import { addBilibiliMirrors, isBilibiliPage } from "../src/core/bilibili";
+import { splitDashPeriods } from "../src/core/adaptive";
 const context = { id: "test", profile: "browser" };
 describe("source-quality track contracts", () => {
+  it("only attaches Bilibili mirrors to an exact media path and codec and keeps them private", () => {
+    const asset = fromYtdlp(
+      {
+        title: "Bili",
+        formats: [
+          {
+            format_id: "dv",
+            url: "https://primary.example/aid/cid-1.m4s?sig=one",
+            vcodec: "hvc1",
+            acodec: "none",
+            width: 3840,
+            height: 2160,
+          },
+          {
+            format_id: "other",
+            url: "https://primary.example/other/cid-1.m4s",
+            vcodec: "avc1",
+            acodec: "none",
+            height: 1080,
+          },
+        ],
+      },
+      context,
+    );
+    const html = `<script>window.__playinfo__=${JSON.stringify({ data: { dash: { video: [{ baseUrl: "https://primary.example/aid/cid-1.m4s?sig=two", codecs: "hvc1", backupUrl: ["https://backup.example/aid/cid-1.m4s?private=token", "javascript:bad", "https://name:password@evil.example/file"] }] } } })}</script>`;
+    expect(addBilibiliMirrors(asset, html)).toBe(1);
+    expect(asset.tracks[0].fallbacks).toHaveLength(2);
+    expect(asset.tracks[1].fallbacks).toBeUndefined();
+    expect(JSON.stringify(publicAsset(asset))).not.toContain("fallbacks");
+    expect(JSON.stringify(publicAsset(asset))).not.toContain("backup.example");
+    expect(isBilibiliPage("https://www.bilibili.com/video/BV123?p=2")).toBe(
+      true,
+    );
+    expect(
+      isBilibiliPage("https://bilibili.com.evil.example/video/BV123"),
+    ).toBe(false);
+  });
   it("keeps X audio-only HLS and HTTP variants when codec names are unknown", () => {
     const asset = fromYtdlp(
       {
@@ -117,6 +156,26 @@ describe("source-quality track contracts", () => {
   });
 });
 describe("manifest parsing", () => {
+  it("requires a selected DASH representation and unchanged configuration in every contiguous Period", () => {
+    const period = (id: number, height = 1080, rid = "v") =>
+      `<Period id="${id}" start="PT${id * 6}S" duration="PT6S"><AdaptationSet mimeType="video/mp4"><Representation id="${rid}" height="${height}" codecs="avc1.640032"/></AdaptationSet></Period>`;
+    const xml = `<MPD mediaPresentationDuration="PT12S">${period(0)}${period(1)}</MPD>`;
+    const track = parseManifest(xml, "https://example.com/a.mpd", context)
+      .tracks[0];
+    expect(splitDashPeriods(xml, track)).toHaveLength(2);
+    expect(splitDashPeriods(xml, track)[1].text).toContain(
+      'mediaPresentationDuration="PT6S"',
+    );
+    expect(() =>
+      splitDashPeriods(xml.replace(period(1), period(1, 720)), track),
+    ).toThrow("发生变化");
+    expect(() =>
+      splitDashPeriods(xml.replace(period(1), period(1, 1080, "other")), track),
+    ).toThrow("每一个");
+    expect(() =>
+      splitDashPeriods(xml.replace('start="PT6S"', 'start="PT7S"'), track),
+    ).toThrow("间隔");
+  });
   it("handles quoted CODECS and external audio groups", () => {
     const asset = parseManifest(
       '#EXTM3U\n#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="aac",NAME="English",LANGUAGE="en",URI="audio/index.m3u8"\n#EXT-X-STREAM-INF:BANDWIDTH=2000000,RESOLUTION=1920x1080,CODECS="avc1.640028,mp4a.40.2",AUDIO="aac"\nvideo/index.m3u8\n',
@@ -178,6 +237,38 @@ describe("manifest parsing", () => {
   });
 });
 describe("result verification", () => {
+  it("rejects a source with the wrong selected codec, resolution or full platform duration", () => {
+    const track = {
+      id: "video",
+      url: "",
+      label: "",
+      kind: "video" as const,
+      protocol: "http" as const,
+      codec: "avc1.640032",
+      height: 1080,
+    };
+    const info = {
+      streams: [{ codec_type: "video", codec_name: "h264", height: 1080 }],
+      format: { duration: "60" },
+    };
+    expect(() => verifySelectedTrack(track, info, 60)).not.toThrow();
+    expect(() => verifySelectedTrack(track, info, 120)).toThrow("时长");
+    expect(() => verifySelectedTrack({ ...track, height: 2160 }, info)).toThrow(
+      "分辨率",
+    );
+    expect(() =>
+      verifySelectedTrack({ ...track, codec: "hev1" }, info),
+    ).toThrow("编码");
+    expect(() =>
+      verifySelectedTrack({ ...track, kind: "muxed" }, info, 60, true),
+    ).toThrow("不含音频");
+    expect(() =>
+      verifySelectedTrack({ ...track, dynamicRange: "HDR10" }, info),
+    ).toThrow("HDR10");
+    expect(() =>
+      verifySelectedTrack({ ...track, dynamicRange: "DV" }, info),
+    ).toThrow("杜比视界");
+  });
   const source = {
     streams: [
       {

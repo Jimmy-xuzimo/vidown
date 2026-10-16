@@ -841,7 +841,14 @@ function TaskList({
             <strong>{t.title}</strong>
             <div className="task-meta">
               <span className={"state " + t.state}>{labels[t.state]}</span>
-              <span>{bytes(t.bytes)}</span>
+              <span>
+                {t.state === "downloading" && t.networkBytes
+                  ? `本次接收 ${bytes(t.networkBytes)}`
+                  : bytes(t.bytes)}
+              </span>
+              {t.state === "downloading" && !!t.speed && (
+                <span>{bytes(t.speed)}/s</span>
+              )}
               <span>
                 {new Date(t.updatedAt).toLocaleTimeString("zh-CN", {
                   hour: "2-digit",

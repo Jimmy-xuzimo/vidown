@@ -1,10 +1,46 @@
 import { describe, it, expect } from "vitest";
 import { createServer } from "node:http";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, rm, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { TransportBridge } from "../src/core/bridge";
 describe("session transport bridge", () => {
+  it("aborts a stalled response and never commits its partial bytes as a complete segment", async () => {
+    const server = createServer((_req, res) => {
+      res.writeHead(200, {
+        "content-type": "video/mp2t",
+        "content-length": "100",
+      });
+      res.write("x");
+    });
+    await new Promise<void>((r) => server.listen(0, "127.0.0.1", r));
+    const dir = await mkdtemp(join(tmpdir(), "vidown-stall-"));
+    const bridge = new TransportBridge(
+      fetch,
+      dir,
+      () => ({}),
+      () => {},
+      { stallTimeoutMs: 100 },
+    );
+    try {
+      await bridge.start();
+      const url = bridge.register(
+        `http://127.0.0.1:${(server.address() as any).port}/segment.ts`,
+        true,
+      );
+      await expect(
+        fetch(url).then((response) => response.arrayBuffer()),
+      ).rejects.toThrow();
+      await bridge.close();
+      expect(bridge.lastError).toContain("停滞超时");
+      expect(await readdir(dir)).toEqual([]);
+    } finally {
+      await bridge.close();
+      server.closeAllConnections();
+      await new Promise<void>((r) => server.close(() => r()));
+      await rm(dir, { recursive: true, force: true });
+    }
+  });
   it("rechecks direct resources instead of serving stale segment cache", async () => {
     let generation = 0;
     const server = createServer((_req, res) =>

@@ -48,6 +48,7 @@ export interface RequestContextRef {
 }
 export interface PrivateTrack extends Track {
   url: string;
+  fallbacks?: { url: string; identity?: string }[];
   selector?: string;
   manifest?: string;
   engineId?: string;
@@ -70,6 +71,7 @@ export interface TaskRecord {
   state: TaskState;
   progress?: number;
   bytes?: number;
+  networkBytes?: number;
   speed?: number;
   error?: string;
   output?: string;

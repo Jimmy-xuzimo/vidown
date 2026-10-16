@@ -20,7 +20,11 @@ const tools: Tools = {
   m3u8: join(dir, "N_m3u8DL-RE.exe"),
   runtime: process.execPath,
 };
-const trackDir = join(root, "profile/work", task.id);
+const trackDir = join(
+  resolve(process.env.VIDOWN_PLATFORM_PROFILE || join(root, "profile")),
+  "work",
+  task.id,
+);
 async function sourcePath(index: number): Promise<string> {
   const direct = join(trackDir, `track-${index}.source`);
   try {
@@ -29,6 +33,10 @@ async function sourcePath(index: number): Promise<string> {
   } catch (error: any) {
     if (error.code !== "ENOENT") throw error;
   }
+  const mirrors = (await readdir(trackDir)).filter((name) =>
+    new RegExp(`^track-${index}-mirror-\\d+\\.source$`).test(name),
+  );
+  if (mirrors.length === 1) return join(trackDir, mirrors[0]);
   const folder = join(trackDir, `stream-${index}`);
   const files = (await readdir(folder, { withFileTypes: true })).filter(
     (f) => f.isFile() && !/\.(json|log|txt|tmp)$/i.test(f.name),
@@ -153,6 +161,7 @@ const report = {
     status: "passed",
   },
   video: stream,
+  frameMetadata: output.frameMetadata,
   audio: output.streams.find((s: any) => s.codec_type === "audio"),
   duration: output.format.duration,
 };

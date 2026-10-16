@@ -1,8 +1,12 @@
 import { readFile, writeFile, mkdir, copyFile } from "node:fs/promises";
 import { resolve, join, relative } from "node:path";
+import { format } from "prettier";
 const root = resolve(".");
 const destination = resolve("docs/validation");
 await mkdir(destination, { recursive: true });
+async function writeReport(path, json) {
+  await writeFile(path, await format(json, { parser: "json" }));
+}
 function portable(value) {
   if (typeof value === "string" && value.startsWith(root))
     return relative(root, value).replaceAll("\\", "/");
@@ -19,10 +23,22 @@ for (const [name, source] of [
   ["windows-portable", "work/portable-verification/report.json"],
   ["bilibili-preservation", "work/platform-verification/preservation.json"],
   ["x-download-smoke", "work/x-verification/smoke.json"],
+  [
+    "bilibili-8k-preservation",
+    "work/high-spec-verification/8k/preservation.json",
+  ],
+  [
+    "bilibili-hdr10-preservation",
+    "work/high-spec-verification/hdr10/preservation.json",
+  ],
+  ["bilibili-backup-cdn", "work/bilibili-mirror-verification/report.json"],
+  ["mirror-isolation", "work/mirror-verification/report.json"],
+  ["protocol-edges", "work/protocol-edge-verification/report.json"],
+  ["windows-shutdown", "work/shutdown-verification/report.json"],
   ["tools-windows-x64", "resources/tools/tools.lock.json"],
 ]) {
   const data = JSON.parse(await readFile(source, "utf8"));
-  await writeFile(
+  await writeReport(
     join(destination, name + ".json"),
     JSON.stringify(portable(data), null, 2) + "\n",
   );
@@ -34,7 +50,7 @@ for (const [name, source] of [
   const { asset, loginDetected } = JSON.parse(
     await readFile(join(source, "formats.json"), "utf8"),
   );
-  await writeFile(
+  await writeReport(
     join(destination, `${name}-formats.json`),
     JSON.stringify(
       {

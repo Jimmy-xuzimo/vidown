@@ -5,7 +5,6 @@ import {
   stat,
   rename,
   rm,
-  readdir,
   open,
 } from "node:fs/promises";
 import { join, extname } from "node:path";
@@ -16,6 +15,7 @@ import { randomUUID } from "node:crypto";
 import { command } from "./process";
 import { fromYtdlp, containerFor } from "./formats";
 import { parseManifest } from "./manifest";
+import { downloadAdaptive } from "./adaptive";
 import { httpUrl, safeName, digest, publicUrl } from "./safety";
 import type {
   PrivateAsset,
@@ -203,19 +203,54 @@ export async function execute(
     if (track.protocol === "telegram") {
       input = track.url;
     } else if (track.protocol === "http") {
-      input = join(taskDir, `track-${index}.source`);
-      await direct(
-        track.url,
-        input,
-        signal,
-        (bytes) => {
-          if (Date.now() - lastProgress > 250) {
-            lastProgress = Date.now();
-            emit({ bytes: completedBytes + bytes });
-          }
-        },
-        track.identity,
-      );
+      const locations = [
+        { url: track.url, identity: track.identity },
+        ...(track.fallbacks ?? []),
+      ];
+      input = "";
+      let failure: unknown;
+      for (
+        let locationIndex = 0;
+        locationIndex < locations.length;
+        locationIndex++
+      ) {
+        const location = locations[locationIndex];
+        // Strong ETags are scoped to a resource, not interchangeable across origins.
+        // A mirror always has its own file and checkpoint, even if its ETag matches.
+        const path = join(
+          taskDir,
+          `track-${index}${locationIndex ? `-mirror-${locationIndex}` : ""}.source`,
+        );
+        try {
+          await direct(
+            location.url,
+            path,
+            signal,
+            (bytes) => {
+              if (Date.now() - lastProgress > 250) {
+                lastProgress = Date.now();
+                emit({ bytes: completedBytes + bytes });
+              }
+            },
+            location.identity,
+          );
+          input = path;
+          break;
+        } catch (error: any) {
+          if (
+            signal.aborted ||
+            /^(ENOSPC|EACCES|EPERM|EROFS|EMFILE)$/.test(error.code ?? "")
+          )
+            throw error;
+          failure = error;
+          if (locationIndex + 1 < locations.length)
+            emit({
+              message:
+                "当前地址失败，使用备用源独立下载，不拼接不同源的旧字节。",
+            });
+        }
+      }
+      if (!input) throw failure;
     } else if (track.protocol === "hls" || track.protocol === "dash") {
       const response = await fetch(track.url, { signal });
       if (!response.ok) throw new Error(`清单请求返回 ${response.status}`);
@@ -238,61 +273,19 @@ export async function execute(
       await writeFile(fingerprintPath, fingerprint);
       const folder = join(taskDir, `stream-${index}`);
       await mkdir(folder, { recursive: true });
-      const args = [
-        track.url,
-        "--save-dir",
-        folder,
-        "--tmp-dir",
-        join(folder, "parts"),
-        "--save-name",
-        `track-${index}`,
-        "--auto-select",
-        "--no-log",
-        "--log-level",
-        "WARN",
-        "--thread-count",
-        "4",
-        "--download-retry-count",
-        "3",
-        "--del-after-done",
-        "false",
-        "--disable-update-check",
-        "--use-system-proxy",
-        "false",
-        "--ffmpeg-binary-path",
-        tools.ffmpeg,
-      ];
-      if (track.protocol === "dash") {
-        if (!track.selector)
-          throw new Error("缺少 DASH 轨道选择信息，请重新探测");
-        args.push(
-          track.kind === "audio" ? "--select-audio" : "--select-video",
-          track.selector,
-          track.kind === "audio" ? "--drop-video" : "--drop-audio",
-          "all",
-          "--drop-subtitle",
-          "all",
-        );
-      }
-      await command(tools.m3u8, args, {
-        signal,
-        timeout: 24 * 3600 * 1000,
-        maxOutput: 1024 * 1024,
-      });
-      const files = (await readdir(folder, { withFileTypes: true })).filter(
-        (f) => f.isFile() && !/\.json$|\.log$|\.txt$|\.tmp$/i.test(f.name),
-      );
-      if (files.length !== 1)
-        throw new Error(
-          `下载器输出 ${files.length} 个媒体文件，不能确定所选轨道，已保留临时文件。`,
-        );
-      input = join(folder, files[0].name);
+      input = await downloadAdaptive(track, text, folder, tools, signal);
     } else throw new Error("该轨道需要 Telegram 专用下载流程");
     const info = await mediaInfo(input, tools, signal);
     if (
       !info.streams?.some((s: any) => ["video", "audio"].includes(s.codec_type))
     )
       throw new Error("下载结果不是有效音视频");
+    verifySelectedTrack(
+      track,
+      info,
+      plan.asset.duration,
+      plan.asset.tracks.some((t) => t.kind === "audio"),
+    );
     inputs.push(input);
     infos.push(info);
     completedBytes += (await stat(input)).size;
@@ -376,6 +369,68 @@ export async function execute(
   signal.throwIfAborted();
   await rename(staging, destination);
   return destination;
+}
+export function verifySelectedTrack(
+  track: PrivateTrack,
+  info: any,
+  expectedDuration?: number,
+  externalAudioAvailable = false,
+): void {
+  const type =
+    track.kind === "audio" ||
+    (track.kind === "muxed" &&
+      !track.width &&
+      !track.height &&
+      !info.streams?.some((s: any) => s.codec_type === "video"))
+      ? "audio"
+      : "video";
+  const stream = info.streams?.find((s: any) => s.codec_type === type);
+  if (!stream) throw new Error(`下载源缺少所选 ${type} 轨道`);
+  if (
+    track.kind === "muxed" &&
+    externalAudioAvailable &&
+    !info.streams.some((s: any) => s.codec_type === "audio")
+  )
+    throw new Error(
+      "该未知编码变体实际不含音频，请改选分离的视频和音轨；未保存无声成品。",
+    );
+  if (
+    track.dynamicRange === "DV" &&
+    !stream.side_data_list?.some(
+      (s: any) => /DOVI/i.test(s.side_data_type) && s.rpu_present_flag === 1,
+    )
+  )
+    throw new Error("下载源缺少所选杜比视界配置，已停止合并。");
+  if (track.dynamicRange === "HDR10" && stream.color_transfer !== "smpte2084")
+    throw new Error("下载源与所选 HDR10 规格不同，已停止合并。");
+  for (const key of ["width", "height"] as const) {
+    if (track[key] && stream[key] !== track[key])
+      throw new Error("下载源分辨率与所选轨道不同，已停止合并。");
+  }
+  const codec = track.codec?.toLowerCase() ?? "";
+  const expectedCodec = /^(avc|h264)/.test(codec)
+    ? "h264"
+    : /^(hev|hvc|dvh|hevc)/.test(codec)
+      ? "hevc"
+      : /^(av01|av1)/.test(codec)
+        ? "av1"
+        : /^(mp4a|aac)/.test(codec)
+          ? "aac"
+          : /^(ec-3|eac3)/.test(codec)
+            ? "eac3"
+            : /^(flac|opus|vorbis)$/.test(codec)
+              ? codec
+              : undefined;
+  if (expectedCodec && stream.codec_name !== expectedCodec)
+    throw new Error("下载源编码与所选轨道不同，已停止合并。");
+  if (
+    expectedDuration &&
+    Math.abs(Number(info.format?.duration) - expectedDuration) >
+      Math.max(2, expectedDuration * 0.005)
+  )
+    throw new Error(
+      "下载源时长与平台返回的完整时长不同，可能缺失分片或只有试看内容。",
+    );
 }
 export function verifyMedia(
   inputs: any[],

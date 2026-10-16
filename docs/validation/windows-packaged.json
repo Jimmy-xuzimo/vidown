@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-16T17:29:07.011Z",
+  "generatedAt": "2026-10-16T18:00:26.520Z",
   "packaged": true,
   "portable": false,
   "results": [
@@ -12,9 +12,13 @@
       "status": "passed"
     },
     {
+      "name": "hls-shows-real-received-bytes-and-speed-before-track-completion",
+      "status": "passed"
+    },
+    {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/packaged-verification/downloads/master.m3u8 [23f3d1af].mp4"
+      "output": "work/packaged-verification/downloads/master.m3u8 [c112b054].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",

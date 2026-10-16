@@ -1,0 +1,29 @@
+{
+  "generatedAt": "2026-10-16T18:00:36.187Z",
+  "page": "https://www.bilibili.com/video/BV1NGZtBwELa/",
+  "status": "passed",
+  "scope": "Packaged application, existing local login, complete Dolby audio-only track; deliberate cancellation of primary CDN requests forces a real registered backup. No browser credentials or source URLs exported.",
+  "blockedPrimaryRequests": 1,
+  "backupRequests": 1,
+  "availableBackups": 2,
+  "selectedTrack": {
+    "id": "9cf78007-fe8e-45e2-b5d0-f0c97b602de2",
+    "kind": "audio",
+    "protocol": "http",
+    "label": "音频 · ec-3",
+    "codec": "ec-3",
+    "audioCodec": "ec-3",
+    "bitrate": 769173
+  },
+  "task": {
+    "id": "22b73065-ad5c-4f75-a835-9f220b11a57a",
+    "title": "【4K限免】你的新设备能顶住吗？影视飓风年度样片",
+    "state": "completed",
+    "updatedAt": 1792173635917,
+    "resumable": true,
+    "networkBytes": 21018205,
+    "bytes": 21018205,
+    "output": "work/bilibili-mirror-verification/downloads/【4K限免】你的新设备能顶住吗？影视飓风年度样片 [22b73065].mka",
+    "progress": 100
+  }
+}

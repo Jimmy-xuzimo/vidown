@@ -150,7 +150,19 @@ try {
   assert(await page.getByLabel("视频轨道").inputValue());
   assert(await page.getByLabel("音频轨道").inputValue());
   await page.screenshot({ path: join(root, "03-track-selection.png") });
+  fixture.setSlowSegments(true);
   await page.getByRole("button", { name: "加入下载队列" }).click();
+  const transferring = await until(async () => {
+    const snap = await page.evaluate(() => window.vidown.snapshot());
+    return snap.tasks.find(
+      (t) => t.state === "downloading" && t.networkBytes > 0 && t.speed > 0,
+    );
+  });
+  assert(transferring.networkBytes > 0);
+  results.push({
+    name: "hls-shows-real-received-bytes-and-speed-before-track-completion",
+    status: "passed",
+  });
   const completed = await until(async () => {
     const snap = await page.evaluate(() => window.vidown.snapshot());
     const failed = snap.tasks.find((t) => t.state === "failed");
@@ -158,6 +170,8 @@ try {
     return snap.tasks.find((t) => t.state === "completed");
   });
   assert(completed.output?.endsWith(".mp4"));
+  assert(completed.networkBytes >= transferring.networkBytes);
+  assert.equal(completed.speed, undefined);
   assert(
     completed.bytes >= (await stat(completed.output)).size * 0.95,
     "Downloaded byte count must include both tracks",
