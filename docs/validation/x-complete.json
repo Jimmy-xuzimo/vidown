@@ -1,0 +1,12 @@
+{
+  "generatedAt": "2026-10-16T18:13:09.448Z",
+  "page": "https://x.com/CaptainAmerica/status/719944021058060289",
+  "status": "passed",
+  "loginRequired": false,
+  "desktopTracks": ["hls"],
+  "separateAudioTrack": false,
+  "taskState": "completed",
+  "fullOutputDecoded": true,
+  "fullBitstreamHashesEqual": true,
+  "scope": "Complete short public X video and audio through packaged desktop, Chromium bridge and N_m3u8DL-RE; no authenticated X claim."
+}

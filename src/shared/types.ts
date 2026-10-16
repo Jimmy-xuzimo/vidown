@@ -67,6 +67,7 @@ export interface DownloadPlan {
 }
 export interface TaskRecord {
   id: string;
+  sequence?: number;
   title: string;
   state: TaskState;
   progress?: number;
@@ -99,6 +100,7 @@ export interface Settings {
   clipboard: boolean;
 }
 export interface Snapshot {
+  revision: number;
   tasks: TaskRecord[];
   candidates: SourceCandidate[];
   tabs: BrowserTab[];

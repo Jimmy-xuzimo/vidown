@@ -22,7 +22,9 @@ flowchart LR
 
 `SourceCandidate` 是媒体发现记录；`RequestContextRef` 引用本机会话；`MediaAsset` 展示轨道；`DownloadPlan` 固定具体选择及引擎所需执行信息；`TaskEvent` 描述状态变化。平台格式 ID 不作为另一引擎的选择参数，DASH 有独立 selector。渲染进程拿不到原始媒体 URL、请求头或 Cookie。
 
-任务从 queued 进入 downloading、merging、verifying，验证通过后才成为 completed；也可进入 paused、cancelled、failed。SQLite 启动时把意外遗留的活动任务标为 interrupted。当前敏感计划加密保存，但重启不会重用旧授权，需重新探测。事件完整排序、自动重新匹配及稳定服务迁移属于 M1／M3。
+任务从 queued 进入 downloading、merging、verifying，验证通过后才成为 completed；也可进入 paused、cancelled、failed。状态迁移有明确约束，已完成或取消的任务不能重新排队。任务记录每次持久化递增 sequence；阶段事件与任务记录在同一 SQLite 事务提交，速度更新只增加记录版本，不生成重复阶段事件。Snapshot 使用递增 revision，界面拒绝晚到的旧快照。SQLite user_version=1 从早期无版本数据库原子升级，保留设置与加密计划；拒绝打开未知的更高版本数据库。
+
+SQLite 启动时把意外遗留的活动任务标为 interrupted。当前敏感计划加密保存，但重启不会重用旧授权，界面取消虚假的继续入口，明确要求重新探测。跨进程事件重放、自动重新匹配及稳定服务迁移仍属于 M1／M3。
 
 远程页面无应用 preload、Node 权限或应用 IPC；启用沙箱、上下文隔离，拒绝设备等权限。只有本地窗口的主 frame 可调用应用接口。浏览器与下载使用相同代理策略。临时 Cookie 文件仅用于隔离提取器，正常结束删除，启动时也清除中断遗留文件；诊断不包含凭据正文。
 

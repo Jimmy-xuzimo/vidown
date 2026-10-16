@@ -119,11 +119,15 @@ function App() {
   const [authValue, setAuthValue] = useState("");
   const browserArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    const acceptSnapshot = (next: Snapshot) =>
+      setSnapshot((previous) =>
+        !previous || next.revision >= previous.revision ? next : previous,
+      );
     api
       .snapshot()
-      .then(setSnapshot)
+      .then(acceptSnapshot)
       .catch((e) => setError(e.message));
-    return api.onUpdate(setSnapshot);
+    return api.onUpdate(acceptSnapshot);
   }, []);
   useEffect(() => {
     if (section !== "browser") {
@@ -857,6 +861,12 @@ function TaskList({
               </span>
             </div>
             {t.error && <p className="task-error">{t.error}</p>}
+            {!t.resumable &&
+              ["paused", "failed", "interrupted"].includes(t.state) && (
+                <p className="muted">
+                  请重新粘贴链接探测，确认登录与源规格后新建任务。
+                </p>
+              )}
             {["downloading", "merging", "verifying"].includes(t.state) && (
               <div className="progress-track">
                 <i />
@@ -882,7 +892,7 @@ function TaskList({
                     暂停
                   </button>
                 )}
-                {["paused", "failed"].includes(t.state) && (
+                {t.resumable && ["paused", "failed"].includes(t.state) && (
                   <button
                     className="secondary"
                     onClick={() => action(t.id, "resume")}

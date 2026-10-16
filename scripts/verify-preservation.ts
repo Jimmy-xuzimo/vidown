@@ -11,6 +11,7 @@ const {
   task,
   page,
   video: selectedVideo,
+  audio: selectedAudio,
 } = JSON.parse(await readFile(join(root, "download.json"), "utf8"));
 const dir = resolve("resources/tools");
 const tools: Tools = {
@@ -45,13 +46,13 @@ async function sourcePath(index: number): Promise<string> {
   return join(folder, files[0].name);
 }
 const sourceVideo = await sourcePath(0),
-  sourceAudio = await sourcePath(1);
+  sourceAudio = selectedAudio ? await sourcePath(1) : sourceVideo;
 const [video, audio, output] = await Promise.all([
   mediaInfo(sourceVideo, tools),
   mediaInfo(sourceAudio, tools),
   mediaInfo(task.output, tools),
 ]);
-verifyMedia([video, audio], output);
+verifyMedia(selectedAudio ? [video, audio] : [video], output);
 const { asset } = JSON.parse(
   await readFile(join(root, "formats.json"), "utf8"),
 );

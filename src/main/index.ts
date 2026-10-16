@@ -73,9 +73,14 @@ let clipboardTimer: NodeJS.Timeout | undefined;
 let lastClipboard = "";
 let updateTimer: NodeJS.Timeout | undefined;
 let toolsStatus: Record<string, string> = {};
+let snapshotRevision = 0;
 function snapshot(): Snapshot {
   return {
-    tasks: store.list(),
+    revision: ++snapshotRevision,
+    tasks: store.list().map((t) => ({
+      ...t,
+      resumable: t.resumable && plans.has(t.id),
+    })),
     candidates: browser.publicCandidates(),
     tabs: browser.list(),
     activeTab: browser.active,
@@ -462,6 +467,10 @@ async function taskAction(input: {
     case "resume":
     case "retry":
       if (job) throw new Error("任务仍在停止中，请稍后重试");
+      if (!["paused", "failed", "interrupted"].includes(t.state))
+        throw new Error(
+          "只有暂停、失败或中断的任务可以重试；已完成或取消请新建任务。",
+        );
       if (!plans.has(t.id))
         throw new Error(
           "重启后需要重新探测确认账号与源身份；本验证版不自动重用旧会话。",
@@ -552,10 +561,14 @@ async function diagnostics(): Promise<string | undefined> {
     platform: process.platform,
     arch: process.arch,
     tools: toolsStatus,
-    tasks: store.list().map(({ id, state, error }) => ({
+    tasks: store.list().map(({ id, sequence, state, error }) => ({
       id,
+      sequence,
       state,
       error: redact(error ?? ""),
+      phases: store
+        .events(id)
+        .map(({ sequence, state }) => ({ sequence, state })),
     })),
     stage: "M0 preview",
     accountTests: "pending",

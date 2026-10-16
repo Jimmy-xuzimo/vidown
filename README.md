@@ -2,7 +2,7 @@
 
 基于 Electron、React 和 TypeScript 从零编写的本地视频下载器。旧 Python 工程未复用，历史保留在 Git 中。默认保留源编码，视频和音频分别选择，可靠时封装 MP4，否则使用 MKV。
 
-**当前交付阶段是 M0，不是完成全部计划的 1.0。** 已验证受控媒体、Windows 应用闭环，B 站真实 4K 杜比视界＋Atmos、8K SDR、独立 4K HDR10，以及备用 CDN。X 公开长视频已验证实际下载及短片段音视频合并，按用户要求停止完整下载。真实 Hi-Res、X 登录、Telegram 私有内容等仍待验收。详见 [验证记录](docs/VALIDATION.md) 和 [后续里程碑](docs/ROADMAP.md)。
+**当前交付阶段是 M0，不是完成全部计划的 1.0。** 已验证受控媒体、Windows 应用闭环，B 站真实 4K 杜比视界＋Atmos、8K SDR、独立 4K HDR10、48 kHz／24-bit FLAC，以及备用 CDN。X 公开短视频已完整下载并验证保真；用户提供的长视频按要求停止，仅验证实际传输及短样本。X 登录、Telegram 私有内容等仍待验收。详见 [验证记录](docs/VALIDATION.md) 和 [后续里程碑](docs/ROADMAP.md)。
 
 ![Windows 重建工作台](docs/images/workbench.png)
 
@@ -18,14 +18,16 @@
 - 另一个 B 站短样本的 7680×4320 SDR＋AAC、3840×2160 10-bit HDR10＋AAC，均完成完整下载、无损合并和码流哈希检查；这是两种独立组合。
 - B 站主 CDN 被主动阻断后，完整杜比音轨从备用源下载成功；不同源的检查点与保留字节隔离。
 - X 公开长视频的 1080p HLS 实际分片下载；9 秒 H.264＋AAC 样本无损合并与解码。缺少编码字段的音轨和 HTTP 变体仍可选择，未知参数明确显示。
+- 独立公开 X 短视频完整下载、全片音视频解码及码流哈希一致；B 站真实 48 kHz／24-bit FLAC 与视频无损封装为 MKV。
 - SQLite 任务记录、历史搜索、独立下载工作进程、失败诊断；已知中断不会假装完成。
+- 任务状态迁移约束、阶段事件与单调版本号、原子数据库升级；重启缺少计划的任务明确要求重新探测。
 - 分片下载的实际接收字节／速度、传输停滞超时，以及正常关闭时终止下载子进程。
 
 ## 接入但仍待实测
 
 - B 站其他高规格组合、X 登录内容与单帖多视频。
 - TDLib 1.8.67 原生库和独立工作进程、登录界面、私有消息权限检查及文件下载路径。
-- 真实 FLAC／Hi-Res、番剧会员权限，以及杜比硬件播放。
+- 其他真实 FLAC／Hi-Res 采样率组合、番剧会员权限，以及杜比硬件播放。
 
 Chrome／Edge 扩展、自动刷新失效签名、跨重启安全续传、引擎更新回滚与正式跨平台发行尚未实现。当前重启后需重新探测。没有直播录制、合集／频道抓取，也不处理 DRM 绕过。
 
@@ -48,6 +50,7 @@ npm run verify:desktop   # 启动真实 Electron，执行浏览器登录到保�
 npm run verify:protocol-edges # 时间轴切换、多 Period、中文及引号路径
 npm run verify:mirrors   # 跨源检查点隔离和备用地址
 npm run verify:shutdown  # 下载中关闭应用及重启状态
+npm run verify:tasks     # 真实暂停、恢复、排队取消与重启事件顺序
 npm run pack             # 生成 Windows 应用目录
 npm run dist             # 生成 Windows 便携验证包
 ```

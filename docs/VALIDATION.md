@@ -7,12 +7,13 @@
 | 验证                   | 结果                | 范围                                                                                                                                                                                             |
 | ---------------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 类型检查及生产代码构建 | 通过                | `npm run build`                                                                                                                                                                                  |
-| 单元／本地集成测试     | 19 项通过，3 个文件 | 格式转换与组合、B 站备用地址匹配／私有字段隔离、X 缺失编码字段、DASH Period 轨道与时间范围检查、下载源规格拒绝、停滞超时及不完整缓存清理、既有协议和 SQLite 检查                                 |
+| 单元／本地集成测试     | 23 项通过，4 个文件 | 格式转换与组合、备用源、X 未知编码、DASH Period、规格拒绝、停滞超时、缓存清理；数据库升级、阶段顺序、无效状态迁移拒绝、事件写入失败时事务回滚及高版本数据库保护                                  |
 | 实际引擎受控媒体       | 11 项通过           | HLS 分离音频、AES-128 密钥轮换、fMP4、Byte Range、DASH 模板／时间线、生成 HDR10＋FLAC、直链暂停恢复、源验证器变化、HLS 停进程恢复且 5 个已完成片段不从源重取、清单变化拒绝续接、TDLib 原生库查询 |
 | 已打包 Windows 应用    | 5 项通过            | 包内 TDLib；沙箱浏览器登录／捕获；分片完成前真实接收字节及速度；跨源 Cookie 的界面→工作进程→合并→检查；界面无运行时错误且无请求机密暴露                                                          |
 | 协议边界真实媒体       | 2 项通过            | HLS 时间戳重置的 discontinuity；相同轨道与实际编码配置的两个连续 DASH Period，完整解码及总时长正确；中文／引号路径                                                                               |
 | 备用源隔离             | 通过                | 主源保留部分故意损坏的字节后发生 503；即使备用源 ETag 相同，也从零开始、不继承 Authorization，源文件字节哈希一致                                                                                 |
 | 下载中正常关闭         | 通过                | 真实 N_m3u8DL-RE 子进程退出，源请求停止，重启状态 interrupted；未覆盖操作系统强制杀进程                                                                                                          |
+| 桌面任务控制           | 3 项通过            | 并发 1 的排队取消、实际下载暂停后停止源请求、恢复后完整成品、终态不能重新入队、阶段事件持久化、重启隐藏无效继续入口                                                                              |
 | 生产 npm 依赖审计      | 0 个已知漏洞        | `npm audit --omit=dev`；构建工具链仍有 8 项中等严重性通告，正式发行前处理，不对其作“零漏洞”声明                                                                                                  |
 
 Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启动、包内 TDLib／工具、跨源 Cookie 与音视频合并。最终结果见 [便携版报告](validation/windows-portable.json) 及 [预览包大小与 SHA-256](validation/windows-preview-artifact.json)。这是未签名的本地实验预览包。
@@ -59,9 +60,17 @@ Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启�
 
 见 [格式清单](validation/x-formats.json) 与 [有界下载检查报告](validation/x-download-smoke.json)。没有对完整 X 成品、登录内容或单帖多视频作通过声明。原始提取结果与媒体留在本机忽略目录，不随报告上传。
 
+## 新增 X 完整短视频与 B 站 FLAC
+
+从 yt-dlp 的公开测试列表选择 [CaptainAmerica / 719944021058060289](https://x.com/CaptainAmerica/status/719944021058060289)。使用全新本地档案，无需账号，实际通过已打包桌面应用、Chromium 传输桥与 N_m3u8DL-RE 保存完整约 3.18 秒 HLS 音视频：1280×720 H.264、AAC 48 kHz 双声道。这个源的音频内嵌于视频清单，没有伪称为独立音轨测试。完整视频／音频编码码流哈希各自与源相同，整个成品解码通过。见 [完整下载报告](validation/x-complete.json) 和 [保真报告](validation/x-complete-preservation.json)。这补充了公开短视频完整成品证据，不改变用户长视频的 cancelled 状态，也没有验证登录 X。
+
+通过 [JiJiDown/Tracker 公开问题中的样本](https://github.com/JiJiDown/Tracker/issues/3) 找到 [BV1J8411F7QG](https://www.bilibili.com/video/BV1J8411F7QG/)。只使用公开 BV 号及用户已有的本机登录会话，没有使用他人日志中的账号凭据或签名地址。当前实际返回 FLAC **48 kHz、24-bit、双声道**，完整时长约 353 秒；为专门验证音轨，搭配 360p AVC 视频，无损封装为 MKV，源与输出的完整音视频编码码流哈希一致，开头／中间／末尾解码通过。另建纯音频任务，完整保存 `.flac`，编码音频哈希一致且全曲解码通过。见 [视频＋FLAC 保真](validation/bilibili-flac-preservation.json) 和 [纯 FLAC 报告](validation/bilibili-flac-only.json)。没有把它扩大为真实 96 kHz 或所有高规格组合均已验收。
+
+任务生命周期的实际桌面检查见 [任务控制报告](validation/task-controls.json)。数据库版本由早期无版本迁移至 user_version=1，任务、加密计划和设置保留；任务状态与阶段事件在同一事务内写入。恢复前已完成阶段不会因为旧事件回退，已完成／取消任务不能原地重新排队；跨重启安全续传仍未实现。
+
 ## 尚未通过的验收
 
-B 站真实 FLAC／Hi-Res、番剧会员权限及试看边界；X 短视频完整桌面成品、登录内容、单帖多视频；Telegram 真实应用身份、登录、私有消息、取消及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period 变体／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。Hi-Res 样本搜索收到平台 412，未反复请求或把普通 AAC 宣称为 Hi-Res。
+B 站其他真实 FLAC 采样率组合、番剧会员权限及试看边界；X 登录内容、单帖多视频；Telegram 真实应用身份、登录、私有消息、取消及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period 变体／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。早期站内 Hi-Res 搜索收到平台 412 后未反复请求，后来通过公开项目问题记录找到并验证上述 FLAC 样本。
 
 已打包程序在当前 Windows 机器上通过测试，并不等同于干净系统、三端及所有平台验收。应用目前是本地 M0 实验预览，发行状态以 [路线图](ROADMAP.md) 为准。
 
@@ -78,6 +87,9 @@ npm run pack
 $env:VIDOWN_VERIFY_EXECUTABLE = (Resolve-Path 'release/win-unpacked/Vidown Preview.exe').Path
 npm run verify:desktop
 npm run verify:shutdown
+npm run verify:tasks
+npm run verify:x-complete
+npm run verify:bilibili-flac # 需要此前用户在本机留下的登录档案
 ```
 
 真实 B 站验证：`npm run verify:platform -- https://www.bilibili.com/video/BV1NGZtBwELa/`，在打开的应用中登录；另一终端执行 `npm run verify:platform-download`、`npm run verify:preservation`。这些是指定音视频分轨样本的开发验收工具，不是通用的自动最高规格批量下载入口。保真脚本支持 HTTP 或 HLS 保留源文件，校验平台完整时长、H.264／HEVC 完整码流哈希及开头／中间／结尾各 3 秒解码；Dolby 样本额外检查 DOVI 配置。登录档案在被 Git 忽略的 `work/platform-verification/profile` 内，不能随报告上传。

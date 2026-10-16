@@ -23,6 +23,14 @@ for (const [name, source] of [
   ["windows-portable", "work/portable-verification/report.json"],
   ["bilibili-preservation", "work/platform-verification/preservation.json"],
   ["x-download-smoke", "work/x-verification/smoke.json"],
+  ["x-complete", "work/x-complete-verification/report.json"],
+  ["x-complete-preservation", "work/x-complete-verification/preservation.json"],
+  [
+    "bilibili-flac-preservation",
+    "work/bilibili-flac-verification/preservation.json",
+  ],
+  ["bilibili-flac-only", "work/bilibili-flac-verification/audio-only.json"],
+  ["task-controls", "work/task-controls-verification/report.json"],
   [
     "bilibili-8k-preservation",
     "work/high-spec-verification/8k/preservation.json",
