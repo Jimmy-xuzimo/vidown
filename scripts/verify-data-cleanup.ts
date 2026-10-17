@@ -1,8 +1,7 @@
 import { _electron, type ElectronApplication } from "playwright";
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
-import { randomUUID } from "node:crypto";
 import { tmpdir } from "node:os";
 import assert from "node:assert/strict";
 import { Store } from "../src/core/store";
@@ -12,7 +11,7 @@ const backend =
   (process.platform === "win32" ? "webview2" : "chromium");
 const root = resolve(`work/data-cleanup-${backend}`);
 // CacheStorage appends several hash directories; keep Windows fixture paths short.
-const profile = join(tmpdir(), "vidown-cleanup-" + randomUUID());
+const profile = await mkdtemp(join(tmpdir(), "vidown-cleanup-"));
 await mkdir(profile, { recursive: true });
 const file = join(profile, "keep.mp4");
 await writeFile(file, "controlled-file-must-survive-record-cleanup");
@@ -219,7 +218,6 @@ try {
     .getByRole("button", { name: "确认清除", exact: true })
     .click();
   await until(async () => !(await page.getByRole("dialog").isVisible()));
-  let snapshot = await page.evaluate(() => window.vidown.snapshot());
   await app.evaluate(
     async (_, input) => {
       const browser = (globalThis as any).__vidownBrowser;
@@ -247,7 +245,7 @@ try {
     },
     { id, origin: origins[0] },
   );
-  snapshot = await page.evaluate(() => window.vidown.snapshot());
+  let snapshot = await page.evaluate(() => window.vidown.snapshot());
   assert.equal(snapshot.tabs.length, 0);
   assert.equal(snapshot.candidates.length, 0);
   assert.equal(snapshot.tasks.length, 1);

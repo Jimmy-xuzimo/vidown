@@ -605,7 +605,9 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   if (clipboardChanged && settings.clipboard) {
     lastClipboard = "";
     const readClipboard = async () => {
+      if (!settings.clipboard || shuttingDown) return;
       const text = (await clipboard.readText()).trim();
+      if (!settings.clipboard || shuttingDown) return;
       if (text !== lastClipboard) {
         lastClipboard = text;
         if (

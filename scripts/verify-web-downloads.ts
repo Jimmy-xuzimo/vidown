@@ -54,7 +54,7 @@ try {
   const page = await app.firstWindow();
   await page.getByRole("heading", { name: "把精彩，完整保存。" }).waitFor();
   await page.evaluate(
-    (downloadDir) => window.vidown.settings({ downloadDir }),
+    (downloadDir) => window.vidown.settings({ downloadDir, clipboard: false }),
     join(root, "downloads"),
   );
   // An isolated protocol fixture uses the same DOM contract as Web A, with real MP4 bytes and blob download.
@@ -452,6 +452,16 @@ try {
     name: "pasted-message-link-reuses-existing-webk-client-origin-and-exact-message",
     status: "passed",
   });
+} catch (error) {
+  const page = await app.firstWindow();
+  await page
+    .screenshot({ path: join(root, "failure.png"), animations: "disabled" })
+    .catch(() => {});
+  const message = await page
+    .getByRole("alert")
+    .textContent({ timeout: 1000 })
+    .catch(() => "");
+  throw new Error(`${String(error)}; UI: ${message}`);
 } finally {
   await app.close().catch(() => {});
   await fixture.close();
