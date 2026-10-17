@@ -2,7 +2,7 @@ name: Build and publish installers
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["v*", "!v*-materials"]
   workflow_dispatch:
     inputs:
       tag:
@@ -233,7 +233,7 @@ jobs:
           pattern: release-*
           path: release/publish
           merge-multiple: true
-      - name: Verify and publish assets together
+      - name: Verify and publish installers with linked source materials
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag || github.ref_name }}

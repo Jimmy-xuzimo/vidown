@@ -3,12 +3,12 @@
 本次新增原生 GitHub Actions 多平台构建与 Release 附件发布。
 
 - Windows x64：安装版 `Setup.exe` 与便携自解压 `Portable.exe`。
-- macOS 15+：Intel x64 与 Apple Silicon arm64，分别提供 DMG 和 ZIP。
-- Linux：x64 与 ARM64，分别提供 AppImage、DEB 和 tar.gz；在 Ubuntu 24.04 构建。
+- macOS 15+：Intel x64 与 Apple Silicon arm64，分别提供 DMG。
+- Linux：x64 与 ARM64，分别提供 AppImage 和 DEB；在 Ubuntu 24.04 构建。
 - Windows 网页使用系统 WebView2，macOS／Linux 网页使用包内 Chromium。外部浏览器 Cookie 导入已移除；需要登录时在内置浏览器操作。
 - 安装包自带媒体工具，不需要用户安装 Python、Node.js 或 .NET。Windows 仍需系统 Evergreen WebView2 Runtime。
 
-每个平台的 `*-verification.json` 记录本轮引擎和打包后的真实受控下载验证，`*-SHA256SUMS.txt` 提供校验，`*-sources.tar.gz` 包含第三方对应源码、固定版本、依赖清单与构建材料。应用源码由此标签提供。任意矩阵构建或验证失败，工作流不会公开上传一组不完整的附件。
+下载附件仅保留应用安装版与便携版。[校验、测试报告与第三方对应源码](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3-materials)单独保存。资料页中每个平台的 `*-verification.json` 记录本轮引擎和打包后的真实受控下载验证，`*-SHA256SUMS.txt` 提供校验，`*-sources.tar.gz` 包含第三方对应源码、固定版本、依赖清单与构建材料。应用源码由此标签提供。任意矩阵构建或验证失败，工作流不会公开上传一组不完整的附件。
 
 Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID 或公证。Linux 旧发行版和干净系统安装／卸载、真实会员／私有账号、HDR 播放设备验收仍待完成。CI 启动与实际受控下载通过，不代表全部平台内容或所有站点均已支持。构建链的已知依赖通告和历史验收见 [测试记录](https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/VALIDATION.md)。
 

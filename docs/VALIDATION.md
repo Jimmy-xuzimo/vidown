@@ -6,7 +6,7 @@
 
 macOS 实际展开 ZIP、只读挂载 DMG，Linux 实际展开 AppImage、DEB 与 tar.gz，对照应用目录检查核心程序、app.asar、四种媒体工具及锁定清单的哈希，同时检查可执行权限。之后桌面测试使用 ZIP／AppImage 中实际解出的程序，非仅检查文件存在。安装向导和干净系统卸载仍不在此范围。
 
-**本轮完成情况以 [v1.0.3 附件](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3) 中五份 `verification.json` 和对应 Actions 链接为准。** 发布作业只在全部构建和测试成功后运行。SHA-256 与第三方对应源码／构建材料随安装包一起上传；应用源码对应同一不可变标签。不能把下面 1.0.2 的旧包哈希或旧启动时间套用于新包。
+**本轮完成情况以 [v1.0.3 验证资料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3-materials) 中五份 `verification.json` 和对应 Actions 链接为准。** 发布作业只在全部构建和测试成功后运行。SHA-256 与第三方对应源码／构建材料保存在主 Release 链接的独立资料页；应用源码对应同一不可变标签。不能把下面 1.0.2 的旧包哈希或旧启动时间套用于新包。
 
 当前构建从固定源码生成 FFmpeg／x264 与独立 yt-dlp，移除测试夹具对额外 HEVC 编码器的要求：HDR10 测试采用固定的自有合成片段，仍执行真实合并、解码与参数校验。新增独立提取器读取受控 Cookie、请求鉴权 HTTP 媒体的测试；没有用真实账号数据进入云端构建。
 

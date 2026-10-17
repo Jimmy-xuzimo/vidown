@@ -1,0 +1,31 @@
+name: Simplify existing release downloads
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing application version tag
+        required: true
+        default: v1.0.3
+
+permissions:
+  contents: write
+
+concurrency:
+  group: installers-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  reorganize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Verify and relocate materials before removing redundant assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: node scripts/reorganize-release.mjs

@@ -52,7 +52,7 @@ await writeFile(
     {
       licenseSources: sources,
       notice:
-        "Public release builds include platform-specific corresponding-source archives, build recipes, dependency inventories and hashes next to the installers. Local upstream-binary builds are not public release artifacts.",
+        "Public release builds include platform-specific corresponding-source archives, build recipes, dependency inventories and hashes in the persistent materials release linked from the application release. Local upstream-binary builds are not public release artifacts.",
     },
     null,
     2,
