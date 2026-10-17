@@ -12,6 +12,8 @@ macOS 当前设置最低 15.0；Linux 在 Ubuntu 24.04 构建，不承诺兼容�
 
 ## 依赖与源码材料
 
+打包工具的 `@electron/get@3.1.0` 使用限定范围的 npm override，将代理库固定为 `global-agent@4.1.3`，移除引入 `GHSA-hp3w-g68c-fv3c` 的旧 `roarr`／`sprintf-js` 链，同时保留构建代理能力。不要用 `--omit=optional` 绕过此依赖；回归测试直接调用该打包下载器，验证代理鉴权与 `NO_PROXY`。后续升级下载器时应重新评估该 override。三端源码 CI 同时执行完整 npm 依赖审计；CodeQL 定期扫描 TypeScript／JavaScript、Python、C# 和 Actions。
+
 1. `npm ci --ignore-scripts` 使用锁定的应用依赖。Node.js 24、Python 3.13.16；Windows 另有 .NET SDK 8。
 2. `scripts/build-media.sh` 从固定提交构建 FFmpeg n9.0.2 和 x264，静态链接，不读取运行器上随机安装的编解码库。配置关闭自动发现；Windows 使用系统 Schannel，macOS 使用系统 Secure Transport，Linux FFmpeg 不包含独立 TLS 库（应用的网络传输由 Chromium／下载引擎完成）。记录完整配置和源码归档。FFmpeg 原生 HEVC 解码／无损合并仍可用；不额外捆绑 HEVC 编码器。
 3. `scripts/build-extractor.py` 在专属虚拟环境中，从固定 yt-dlp 提交及其锁定默认依赖构建 PyInstaller 独立程序，包含 EJS。保存全部已安装 Python 分发的精确 sdist、CPython 源码、实际依赖清单、许可文本及构建脚本。没有混入用户浏览器 Cookie、其他环境里的包或可选 curl-cffi 模拟库。非交互程序不包含 Readline／Tk。

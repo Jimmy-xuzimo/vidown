@@ -30,6 +30,7 @@ jobs:
           cache: npm
       # Source checks do not need Electron install-time native execution.
       - run: npm ci --ignore-scripts
+      - run: npm audit --audit-level=moderate
       - run: npm run format:check
       - run: npx prettier --check site .github/workflows
       - run: npm run check
