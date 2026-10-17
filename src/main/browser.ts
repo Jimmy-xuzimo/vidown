@@ -28,6 +28,7 @@ export class BrowserManager {
   protected manifestBodies = new Map<string, string>();
   protected bounds = { x: 270, y: 110, width: 700, height: 560 };
   protected visible = false;
+  protected clearingData = false;
   active?: string;
   constructor(
     protected win: BrowserWindow,
@@ -75,6 +76,15 @@ export class BrowserManager {
     return "Chromium";
   }
   async synchronize(): Promise<void> {}
+  async clearData(): Promise<void> {
+    if (this.clearingData) throw new Error("正在清除浏览器数据，请稍候");
+    this.clearingData = true;
+    try {
+      await this.action({ action: "logout" });
+    } finally {
+      this.clearingData = false;
+    }
+  }
   protected async clearSessionData(): Promise<void> {
     await this.session.closeAllConnections();
     await this.session.clearStorageData();
@@ -235,7 +245,8 @@ export class BrowserManager {
     type: string,
     headers: Record<string, string>,
   ): void {
-    if (!/^https?:/.test(url)) return;
+    if (this.clearingData || !this.info.has(tabId) || !/^https?:/.test(url))
+      return;
     let protocol: Protocol | undefined;
     if (/mpegurl/i.test(type) || /\.m3u8(?:[?#]|$)/i.test(url))
       protocol = "hls";
@@ -305,6 +316,7 @@ export class BrowserManager {
     this.changed();
   }
   async create(url = "about:blank"): Promise<string> {
+    if (this.clearingData) throw new Error("正在清除浏览器数据，请稍候");
     const id = randomUUID();
     const view = new WebContentsView({
       webPreferences: {
@@ -361,7 +373,7 @@ export class BrowserManager {
       );
     });
     view.webContents.setWindowOpenHandler(({ url }) => {
-      if (/^https?:/.test(url)) void this.create(url);
+      if (/^https?:/.test(url)) void this.create(url).catch(() => {});
       return { action: "deny" };
     });
     view.webContents.on("will-navigate", (event, url) => {
@@ -416,7 +428,11 @@ export class BrowserManager {
                 const text = body.base64Encoded
                   ? Buffer.from(body.body, "base64").toString()
                   : body.body;
-                if (text.length <= 8 * 1024 * 1024) {
+                if (
+                  !this.clearingData &&
+                  this.info.has(id) &&
+                  text.length <= 8 * 1024 * 1024
+                ) {
                   this.manifestBodies.set(r.url, text);
                   if (this.manifestBodies.size > 100)
                     this.manifestBodies.delete(

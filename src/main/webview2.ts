@@ -231,6 +231,7 @@ export class WebView2Browser extends BrowserManager {
       return;
     }
     const id = message.tabId;
+    if (this.clearingData || (id && !this.info.has(id))) return;
     if (message.type === "tab") {
       const tab = this.info.get(id);
       if (tab) {
@@ -375,8 +376,10 @@ export class WebView2Browser extends BrowserManager {
     return this.request("geometry");
   }
   override async create(url = "about:blank"): Promise<string> {
+    if (this.clearingData) throw new Error("正在清除浏览器数据，请稍候");
     const target = url === "about:blank" ? url : httpUrl(completeAddress(url));
     await this.ensure();
+    if (this.clearingData) throw new Error("正在清除浏览器数据，请稍候");
     const id = randomUUID();
     this.nativeIds.set(id, ++this.nextWc);
     this.actualUrls.set(id, target);

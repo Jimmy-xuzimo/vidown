@@ -156,7 +156,7 @@ sealed class BrowserHost : Form
         core.DocumentTitleChanged += (_, _) => Changed(id, view);
         core.NewWindowRequested += (_, e) => {
             e.Handled = true;
-            if (e.Uri.StartsWith("http://") || e.Uri.StartsWith("https://")) Program.Send(new { type = "popup", url = e.Uri });
+            if (e.Uri.StartsWith("http://") || e.Uri.StartsWith("https://")) Program.Send(new { type = "popup", tabId = id, url = e.Uri });
         };
         core.WebResourceResponseReceived += async (_, e) => {
             try {
@@ -175,7 +175,7 @@ sealed class BrowserHost : Form
                         if (buffer.Length + count > 8*1024*1024) return;
                         buffer.Write(bytes, 0, count);
                     }
-                    Program.Send(new { type = "manifest", url = e.Request.Uri, text = System.Text.Encoding.UTF8.GetString(buffer.ToArray()) });
+                    Program.Send(new { type = "manifest", tabId = id, url = e.Request.Uri, text = System.Text.Encoding.UTF8.GetString(buffer.ToArray()) });
                 }
             } catch (Exception error) when (error is COMException or InvalidOperationException or IOException or ArgumentException) {
                 Program.Warn("media-capture-unavailable");

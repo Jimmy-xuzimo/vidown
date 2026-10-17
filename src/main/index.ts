@@ -652,7 +652,7 @@ async function clearData(input: { browser: boolean; history: boolean }) {
   dataClearing = true;
   try {
     if (input.browser) {
-      await browser.action({ action: "logout" });
+      await browser.clearData();
       await sessionKeeper.clear();
       assets.clear();
       plans.clear();

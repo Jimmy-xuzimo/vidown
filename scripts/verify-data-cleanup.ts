@@ -198,6 +198,20 @@ try {
   await app.evaluate(async () => {
     await (globalThis as any).__vidownBrowser.synchronize();
   });
+  await app.evaluate(async (_, url) => {
+    const browser = (globalThis as any).__vidownBrowser;
+    const original = browser.clearSessionData.bind(browser);
+    browser.clearSessionData = async () => {
+      let blocked = false;
+      try {
+        await browser.create(url);
+      } catch {
+        blocked = true;
+      }
+      if (!blocked) throw new Error("Navigation was permitted during cleanup");
+      await original();
+    };
+  }, origins[0] + "/login");
   await page.getByRole("checkbox", { name: "下载记录", exact: true }).uncheck();
   await page.getByRole("button", { name: "清除所选数据", exact: true }).click();
   await page
@@ -206,6 +220,34 @@ try {
     .click();
   await until(async () => !(await page.getByRole("dialog").isVisible()));
   let snapshot = await page.evaluate(() => window.vidown.snapshot());
+  await app.evaluate(
+    async (_, input) => {
+      const browser = (globalThis as any).__vidownBrowser;
+      browser.capture(
+        input.id,
+        input.origin + "/late.m3u8",
+        "application/vnd.apple.mpegurl",
+        {},
+      );
+      if (typeof browser.receive === "function") {
+        browser.receive({
+          type: "manifest",
+          tabId: input.id,
+          url: input.origin + "/late.m3u8",
+          text: "#EXTM3U",
+        });
+        browser.receive({
+          type: "popup",
+          tabId: input.id,
+          url: input.origin + "/login",
+        });
+      }
+      if (browser.manifestBodies.size !== 0)
+        throw new Error("Stale manifest survived cleanup");
+    },
+    { id, origin: origins[0] },
+  );
+  snapshot = await page.evaluate(() => window.vidown.snapshot());
   assert.equal(snapshot.tabs.length, 0);
   assert.equal(snapshot.candidates.length, 0);
   assert.equal(snapshot.tasks.length, 1);
