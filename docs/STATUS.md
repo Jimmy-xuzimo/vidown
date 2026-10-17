@@ -4,6 +4,18 @@
 
 启动和格式选择步骤见 [预览版试用说明](PREVIEW_GUIDE.md)。
 
+## alpha.6 当前交付
+
+- Windows 网页已切换为系统 WebView2，保留 Electron 本地界面和协议传输网络层。旧 Chromium 完整网站存储不自动迁移，部分网站需重新登录一次。
+- 使用隔离档案验证真实 WebView2 子窗口、DPI／窗口缩放、登录 Cookie 跨重启及鉴权 HLS 下载，Local Storage／IndexedDB 持久化、原生 blob 保存和清除登录，共 6 项通过。
+- 剪贴板默认自动填入完整链接，可在设置关闭；不会自动解析或下载。界面固定紧凑，应用自有文案移除具体视频平台入口。
+- 原创城市暮色渐变图标，10 个透明 Windows ICO 尺寸；常规安装版和便携版分别打包。载荷、图标及启动记录见 [alpha.6 验证](VALIDATION.md#alpha6-系统-webview2剪贴板与双版本)。
+- 7 项打包界面回归、32 项源码测试，以及正常关闭下载测试通过。真实账号、私有消息和干净 Windows 安装验收仍待执行。
+
+## 之前版本的媒体验证
+
+以下真实平台结果来自此前 Chromium 版本，不等同于 WebView2 新后端已经完成真实账号复验。
+
 已完成的新验证：
 
 - B 站 4K 杜比视界＋Atmos、8K SDR＋AAC、独立 4K HDR10＋AAC：实际下载及无损合并，完整视频／音频编码码流哈希一致。8K 与 HDR10 是独立选择。
@@ -21,7 +33,7 @@
 - 统一浏览器登录和链接解析入口；移除 Telegram API 表单、TDLib 工作进程和依赖。Telegram Web A／K DOM／blob 保存链路通过受控测试；修复 webk.telegram.org 的站内播放地址被当普通直链请求而出现 502 的路由错误，真实账号完整下载尚未验收。
 - 三端源码 CI 状态见 [CI 记录](validation/source-ci.json)，以其中提交为准。这不等同三端应用实机验收。
 
-预览包位于本机仓库的 `release/Vidown Preview 1.0.0-alpha.4.exe`，最终大小、SHA-256 与对应源码提交见 [构建记录](validation/windows-preview-artifact.json)。这是未签名的 M0 实验预览。源码检查 CI 覆盖三端；三端应用安装与实机支持仍未验收。
+当前预览包为 `release/Vidown-Setup-1.0.0-alpha.6.exe` 和 `release/Vidown-Portable-1.0.0-alpha.6.exe`。仍为未签名的 M0 预览；源码 CI 不等同三端应用安装验收。
 
 留待用户回来后的账号／样本验收：B 站其他 FLAC 采样率、番剧与试看边界、X 登录内容、Telegram Web A／K 真实账号及私有消息自动解析下载、杜比设备播放。没有把待验证能力列为已支持。
 

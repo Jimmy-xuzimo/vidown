@@ -23,6 +23,8 @@ const env: Record<string, string> = {
   ) as Record<string, string>),
   VIDOWN_TEST_DATA: join(root, "profile-" + randomUUID()),
   VIDOWN_HEADLESS: "",
+  // This fixture installs Electron protocol handlers. Native WebView2 is tested separately.
+  VIDOWN_BROWSER_BACKEND: "chromium",
 };
 delete env.ELECTRON_RUN_AS_NODE;
 const app = await _electron.launch({
@@ -451,6 +453,8 @@ try {
       {
         generatedAt: new Date().toISOString(),
         packaged: !!process.env.VIDOWN_VERIFY_EXECUTABLE,
+        browserBackend:
+          "Chromium (controlled DOM adapter regression; not WebView2)",
         scope:
           "Controlled Web A and Web K DOM, service-worker URL routing, real blob/media validation. Real Telegram account and private messages remain unverified.",
         results,

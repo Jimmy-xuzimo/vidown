@@ -21,6 +21,8 @@ const env: Record<string, string> = {};
 for (const [key, value] of Object.entries(process.env))
   if (value !== undefined) env[key] = value;
 env.VIDOWN_TEST_DATA = profile;
+// This suite inspects WebContentsView; use verify:webview2 for the Windows native host.
+env.VIDOWN_BROWSER_BACKEND = "chromium";
 env.VIDOWN_HEADLESS = process.env.VIDOWN_VERIFY_EXECUTABLE ? "" : "1";
 delete env.ELECTRON_RUN_AS_NODE;
 const options = {

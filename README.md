@@ -8,12 +8,13 @@
 
 ## 已验证
 
-- 内置 Chromium 浏览器：登录会话、标签页、真实媒体请求捕获、HLS／DASH 及无扩展名媒体类型识别。
+- Windows 网页使用系统 Evergreen WebView2：登录会话、标签页、真实媒体请求捕获、HLS／DASH 及无扩展名媒体类型识别；本地应用界面仍由 Electron 承载。
 - 浏览器随窗口适配、25%–200% 网页缩放、适应宽度与资源栏收起；网站缩放偏好和登录会话可跨重启保留，工作台使用同一登录状态提取格式。
 - 固定高度的浏览器标签，长标题末尾省略，新标签按钮位于标签之后；浏览器和工作台自动补全网址协议。
 - 下载记录支持单条删除和一键清理，默认保留文件；可选择将对应成品移至回收站，进行中与暂停任务受保护。
-- 跟随系统／深色／浅色外观、四套配色、舒适／紧凑密度，以及可关闭的轻量动效和指针微光，设置跨重启保留。
-- 浏览器会话传输桥：保留 HttpOnly Cookie、必要请求头及 Range，媒体请求仍通过 Chromium 发出。
+- 跟随系统／深色／浅色外观、四套配色、固定紧凑密度，以及可关闭的轻量动效和指针微光，设置跨重启保留。
+- 剪贴板链接自动填入工作台，保留查询参数和定位片段；设置可关闭，填入不会自动解析或下载。应用自有文案不设置具体视频平台入口。
+- 浏览器会话传输桥：WebView2 Cookie 通过本地进程管道同步至专用传输会话，保留 HttpOnly、必要请求头及 Range；协议下载继续使用 Electron 网络层，网页原生保存由 WebView2 执行。
 - 真实 HLS 视频／音频分轨、AES-128 密钥轮换、fMP4 初始化片段、字节范围，以及 DASH 模板／时间线分轨下载与合并。
 - HLS 时间戳重置后的 discontinuity；轨道 ID 和实际编码配置不变的连续 DASH 多 Period。缺轨、规格变化或时间轴有空档时明确停止。
 - 直链暂停／继续：检查 ETag 与 Content-Range；源身份变化时重新下载，避免错误追加。
@@ -37,11 +38,12 @@ Chrome／Edge 扩展、自动刷新失效签名、跨重启安全续传、引擎
 
 ## 开发运行（Windows x64）
 
-需要开发工具 Node.js 24 和 Git；**最终用户使用验证包无需安装这些工具**。
+需要 Node.js 24、Git，以及 Windows 原生宿主构建所需的 .NET SDK 8；**最终用户无需安装这些开发工具**。Windows 网页需要系统已有 Evergreen WebView2 Runtime。
 
 ```powershell
 npm ci
 npm run setup
+npm run native:build
 npm run dev
 ```
 
@@ -58,10 +60,13 @@ npm run verify:tasks     # 真实暂停、恢复、排队取消与重启事件�
 npm run pack             # 生成 Windows 应用目录
 npm run verify:interface # 外观持久化、标签布局、记录删除及真实回收站检查
 npm run verify:startup   # 两次隔离档案启动测量（非冷启动）
-npm run dist             # 生成 Windows NSIS 安装预览包
+npm run verify:webview2  # 系统 WebView2、登录持久化、鉴权下载和原生 blob 保存
+npm run dist             # 同时生成 Windows 安装版和便携版
 ```
 
-alpha.5 推荐使用 `release/Vidown-Setup-1.0.0-alpha.5.exe` 安装后通过快捷方式启动，避免旧便携包每次自解压。安装包自带浏览器和下载组件，保留原有本机登录档案；运行新版前请关闭旧版。当前仍为 Electron 应用，尚未改写为 WinUI／C++。本机预热缓存测得新应用目录版约 0.35–0.36 秒显示工作台，旧 alpha.4 便携版约 8.4–8.7 秒；差异包含打包方式，不能视为纯代码优化或冷启动保证。安装程序已生成且载荷与实测应用一致，安装向导仍待人工验收。详见 [alpha.5 验证记录](docs/VALIDATION.md#alpha5-桌面交互与启动)。
+alpha.6 提供 `release/Vidown-Setup-1.0.0-alpha.6.exe` 和 `release/Vidown-Portable-1.0.0-alpha.6.exe`。推荐安装版，通过快捷方式启动以避免便携版每次自解压。应用自带下载组件和原生宿主的 .NET 运行时；网页使用系统 WebView2，缺少时提示安装 Microsoft Evergreen Runtime。图标为原创城市暮色渐变，提供透明多尺寸 Windows ICO。运行新版前请正常退出旧版。
+
+旧 Chromium 档案保留；WebView2 使用独立本机档案，不能完整自动迁移旧网站存储，因此升级后部分网站需要重新登录一次。此后 Cookie、Local Storage 和 IndexedDB 持久化；工作台解析前同步登录 Cookie。不能仅凭受控登录测试声明所有网站最高规格均已重新验收，真实账号与私有消息仍需实测。当前不是 WinUI／C++ 整体重写。详见 [alpha.6 验证记录](docs/VALIDATION.md#alpha6-系统-webview2剪贴板与双版本)。
 
 所有网站统一使用「浏览器探测」访问和登录；会话保存在本机。回下载工作台粘贴链接，应用自动识别站点并使用同一会话解析可用规格。Telegram 识别官方 Web A／Web K 及 weba.telegram.org、webk.telegram.org 入口，粘贴 t.me 链接时沿用已登录的客户端。Web K 打开视频后也可提取当前页面或匹配的探测资源，使用网页提供的保存操作；内部播放地址不作为普通直链重放。真实账号和私有消息完整下载仍待验收，禁止保存的消息明确停止。YouTube 的真实账号解析也未在本轮验收，不能由 Cookie 共享推断所有网站均已支持。
 

@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-10-17T06:47:13.641Z",
+  "executable": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\release\\Vidown-Portable-1.0.0-alpha.6.exe",
+  "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+  "results": [
+    {
+      "run": 1,
+      "readyMs": 10385,
+      "version": "1.0.0-alpha.6",
+      "startup": {
+        "readyMs": 239,
+        "shellMs": 383
+      }
+    },
+    {
+      "run": 2,
+      "readyMs": 9673,
+      "version": "1.0.0-alpha.6",
+      "startup": {
+        "readyMs": 209,
+        "shellMs": 344
+      }
+    }
+  ],
+  "runtimeSourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05"
+}

@@ -4,13 +4,15 @@
 
 ## 启动与保存位置
 
-先正常退出旧版，再双击 `release/Vidown Preview 1.0.0-alpha.3.exe`。便携 EXE 自带浏览器和下载工具，首次启动会自解压；无需安装 Python、Node.js 或 FFmpeg。包目前未签名，文件 SHA-256 与运行时代码版本见 [构建记录](validation/windows-preview-artifact.json)。新版使用原有用户档案，不需要清理旧数据。
+先正常退出旧版。alpha.6 推荐安装 `release/Vidown-Setup-1.0.0-alpha.6.exe`，也可运行 `release/Vidown-Portable-1.0.0-alpha.6.exe`。便携版每次启动需要自解压；两种包均自带下载工具和原生宿主的 .NET 运行时，无需 Python、Node.js 或 FFmpeg。网页使用 Windows 系统 WebView2 Runtime，缺少时按错误提示安装 Microsoft Evergreen Runtime。包目前未签名，不要清理旧用户档案。
+
+Windows 网页从旧内置浏览器切换到 WebView2，使用独立本机档案，部分网站升级后需要重新登录一次。旧 Chromium 档案保留，不能保证完整迁移旧 Cookie 和站点存储。此后在统一浏览器登录，工作台粘贴链接时同步使用该登录 Cookie；Local Storage 和 IndexedDB 留在 WebView2 档案中。
 
 先在「设置与账号」选择保存目录。浏览器登录和任务数据库按当前 Windows 用户保存，不随 EXE 自动搬迁；开发验收使用的隔离登录档案也不会自动导入普通启动的应用。
 
 浏览器区域随窗口伸缩，工具栏提供 25%–200% 网页缩放和「适应宽度」，也支持 Ctrl/Cmd＋加减号、Ctrl/Cmd＋0 和鼠标滚轮缩放。各网站手动缩放比例会保留；收起资源栏可以给网页更多空间。
 
-网站的持久 Cookie 由 Chromium 按其原有效期保存。临时会话 Cookie 在系统安全存储可用时加密保留最多 7 天；原生 Cookie 更新或网站主动注销时不会用旧备份覆盖。网站可使登录提前失效。「清除内置浏览器登录」会同时清除本地登录数据与备份。
+网站的持久 Cookie 由系统 WebView2 按其原有效期保存。临时会话 Cookie 在系统安全存储可用时加密保留最多 7 天；原生 Cookie 更新或网站主动注销时不会用旧备份覆盖。网站可使登录提前失效。「清除内置浏览器登录」会同时清除本地登录数据与备份。
 
 ## 下载 B 站高规格内容
 

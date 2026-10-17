@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-10-17T06:37:12.081Z",
+  "packaged": false,
+  "scope": "Controlled Web A and Web K DOM, service-worker URL routing, real blob/media validation. Real Telegram account and private messages remain unverified.",
+  "results": [
+    {
+      "name": "paste-message-link-parses-webpage-and-saves-real-blob-media-through-native-task-with-identical-file-hash",
+      "status": "passed"
+    },
+    {
+      "name": "failed-new-probe-clears-stale-task-success-notice",
+      "status": "passed"
+    },
+    {
+      "name": "no-site-specific-login-entry-or-api-form",
+      "status": "passed"
+    },
+    {
+      "name": "message-fingerprint-change-refuses-saving-a-different-message",
+      "status": "passed"
+    },
+    {
+      "name": "missing-save-permission-or-changed-page-does-not-produce-a-downloadable-asset",
+      "status": "passed"
+    },
+    {
+      "name": "fake-mp4-is-rejected-by-real-media-validation-and-never-marked-completed",
+      "status": "passed"
+    },
+    {
+      "name": "cancelled-webpage-preparation-cannot-later-save-a-file-or-become-completed",
+      "status": "passed"
+    },
+    {
+      "name": "cancel-native-media-download-stops-the-actual-http-response-and-never-publishes-output",
+      "status": "passed"
+    },
+    {
+      "name": "webk-captured-service-worker-media-uses-native-page-save-with-identical-file-hash-and-zero-http-replays",
+      "status": "passed"
+    },
+    {
+      "name": "webk-current-page-viewer-refuses-changed-media-before-saving",
+      "status": "passed"
+    },
+    {
+      "name": "webk-stale-captured-resource-cannot-save-the-current-different-video",
+      "status": "passed"
+    },
+    {
+      "name": "webk-protected-message-reports-permission-instead-of-502",
+      "status": "passed"
+    },
+    {
+      "name": "webk-download-button-detected-with-current-glyph-icon-as-well-as-legacy-class",
+      "status": "passed"
+    },
+    {
+      "name": "pasted-message-link-reuses-existing-webk-client-origin-and-exact-message",
+      "status": "passed"
+    }
+  ],
+  "runtimeSourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05",
+  "browserBackend": "Chromium (controlled DOM adapter regression; not WebView2)"
+}

@@ -132,6 +132,12 @@ try {
         )
       ).evaluate(() => ({ appAPI: typeof window.vidown, node: typeof require }))
     : await application.evaluate(async ({ webContents }) => {
+        const native = globalThis.__vidownBrowser;
+        if (native?.backendName.startsWith("Windows WebView2"))
+          return native.execute(
+            native.active,
+            "({appAPI:typeof window.vidown,node:typeof require})",
+          );
         const remote = webContents
           .getAllWebContents()
           .find((w) => w.getURL().includes("/player"));

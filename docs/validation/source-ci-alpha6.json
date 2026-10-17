@@ -1,0 +1,28 @@
+{
+  "conclusion": "success",
+  "jobs": [
+    {
+      "name": "Source checks (macos-15)",
+      "status": "completed",
+      "conclusion": "success",
+      "nativeHostBuild": ["skipped"]
+    },
+    {
+      "name": "Source checks (windows-2025)",
+      "status": "completed",
+      "conclusion": "success",
+      "nativeHostBuild": ["success"]
+    },
+    {
+      "name": "Source checks (ubuntu-24.04)",
+      "status": "completed",
+      "conclusion": "success",
+      "nativeHostBuild": ["skipped"]
+    }
+  ],
+  "status": "completed",
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39010843436",
+  "sourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05",
+  "verifiedAt": "2026-10-17T06:47:44.379891+00:00",
+  "scope": "Source checks on three OSes, including native WebView2 host compilation on Windows; not three-platform binary acceptance"
+}

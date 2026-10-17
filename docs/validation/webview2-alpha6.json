@@ -1,0 +1,31 @@
+{
+  "generatedAt": "2026-10-17T06:43:33.797Z",
+  "packaged": true,
+  "results": [
+    {
+      "name": "generic-ui-fixed-compact-and-clipboard-autofill-preserves-query-and-fragment-without-starting-download",
+      "status": "passed"
+    },
+    {
+      "name": "native-child-resizes-to-viewport-zoom-75-percent-and-hides-on-workbench",
+      "status": "passed"
+    },
+    {
+      "name": "actual-system-webview2-embedded-child-window-network-detection-and-no-page-application-api",
+      "status": "passed"
+    },
+    {
+      "name": "native-login-cookie-survives-restart-and-workbench-authenticated-hls-download-merge-and-verification",
+      "status": "passed"
+    },
+    {
+      "name": "native-localstorage-indexeddb-persistence-and-real-blob-download-through-native-task-with-identical-file-hash",
+      "status": "passed"
+    },
+    {
+      "name": "clear-login-removes-native-profile-cookie-and-transfer-session-authorization",
+      "status": "passed"
+    }
+  ],
+  "runtimeSourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05"
+}

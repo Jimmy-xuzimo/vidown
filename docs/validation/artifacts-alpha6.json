@@ -1,0 +1,118 @@
+{
+  "generatedAt": "2026-10-17T06:42:47.667527+00:00",
+  "scope": "Both EXE embedded icons and selected archive payloads compared with the real tested packaged app. Installer wizard was not executed; portable startup was exercised separately.",
+  "artifacts": [
+    {
+      "path": "release\\Vidown-Setup-1.0.0-alpha.6.exe",
+      "bytes": 246514300,
+      "sha256": "f69de584e801b837e1e946e8ad9ad48ec02a4ab95a0ea0840e6a657426767a7b"
+    },
+    {
+      "path": "release\\Vidown-Portable-1.0.0-alpha.6.exe",
+      "bytes": 246231395,
+      "sha256": "fc98055387cbc18e959adadbb297336b122c3db7c5b92ff904fb9aac09918a09"
+    }
+  ],
+  "checks": [
+    {
+      "package": "Setup",
+      "file": "Vidown Preview.exe",
+      "sha256": "89e4da122f28253bf5971ea2e34e5d2db7e866e6acb3e85a99095106e2c9b57d",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/app.asar",
+      "sha256": "0c16c5f7ef793dfaca6f82e1af54f7fcba0d27999c922bf07ee620914b3dfe32",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/icon.ico",
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "sha256": "08148af9b325a44dc7d2ac7de2c6a6181269ed71a879fef5114ed26df406bcbd",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "sha256": "9a42e49fbfe4329d049f800afffeda5b85049bf865a8bfd5fe95df0b914d7d82",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/webview2-host/WebView2-LICENSE.txt",
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Setup",
+      "file": "resources/webview2-host/WebView2-NOTICE.txt",
+      "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "Vidown Preview.exe",
+      "sha256": "89e4da122f28253bf5971ea2e34e5d2db7e866e6acb3e85a99095106e2c9b57d",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/app.asar",
+      "sha256": "0c16c5f7ef793dfaca6f82e1af54f7fcba0d27999c922bf07ee620914b3dfe32",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/icon.ico",
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "sha256": "08148af9b325a44dc7d2ac7de2c6a6181269ed71a879fef5114ed26df406bcbd",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "sha256": "9a42e49fbfe4329d049f800afffeda5b85049bf865a8bfd5fe95df0b914d7d82",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/webview2-host/WebView2-LICENSE.txt",
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Portable",
+      "file": "resources/webview2-host/WebView2-NOTICE.txt",
+      "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "matchesTestedApplication": true
+    },
+    {
+      "package": "Application",
+      "iconSize": [32, 32],
+      "embeddedIconMatchesSource": true
+    },
+    {
+      "package": "Setup",
+      "iconSize": [32, 32],
+      "embeddedIconMatchesSource": true
+    },
+    {
+      "package": "Portable",
+      "iconSize": [32, 32],
+      "embeddedIconMatchesSource": true
+    }
+  ],
+  "runtimeSourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05"
+}

@@ -143,3 +143,20 @@ Web K 通过可见消息 DOM 或当前视频查看器定位媒体，只点击网
 Windows 交付改为 NSIS 常规安装包，安装后通过快捷方式直接启动，避免每次启动重新解压 Chromium 与媒体工具。[安装包载荷检查](validation/windows-installer.json) 确认包内 EXE 与 app.asar 的 SHA-256 与已实测应用一致；未执行安装向导或覆盖用户正在运行的旧版。安装／卸载界面与干净 Windows 实机仍待验收。保留产品档案名称，卸载默认不删除本机登录数据；应用仍采用 Electron，没有宣称已完成原生 WinUI／C++ 重写。
 
 [启动测量](validation/windows-startup.json)：旧 alpha.4 便携包两次为 8706／8370 ms，新 alpha.5 应用目录版为 360／351 ms。均为本机预热缓存、隔离新档案、包含自动化连接的测量，差异包含便携解压开销；不是冷启动、真实旧账号档案或纯代码性能对比。界面 JS 从约 539 kB 缩小至 217 kB，启动不再预先创建闲置媒体工作进程。
+
+## alpha.6 系统 WebView2、剪贴板与双版本
+
+应用运行时代码提交 `eb48e18`。Windows 网页由系统 Evergreen WebView2 承载，原生 C#／WinForms 宿主作为 HWND 子窗口嵌入；Electron 继续承载本地界面和协议下载传输会话。不是整体 WinUI 重写，也没有把另一套 WebView2 浏览器运行时装进包中。宿主自带 .NET 8.0.32，用户无需安装 .NET；缺少系统 WebView2 时提供安装提示。其他系统保留原浏览器实现。
+
+- [6 项系统 WebView2 受控检查](validation/webview2-alpha6.json)：实际子窗口和 Edge UA、远程网页无应用 API／Node、窗口缩放和 75% 网页缩放、切回工作台隐藏网页、Cookie 跨重启并直接完成鉴权 HLS 分轨合并、Local Storage／IndexedDB 持久化、原生 blob 保存且文件 SHA-256 相同，以及退出登录后原生与传输会话均失去鉴权。
+- [7 项打包界面检查](validation/interface-alpha6.json) 和 [6 项桌面闭环](validation/desktop-alpha6.json) 通过。固定紧凑密度、移除密度选择器；应用自有提示和入口使用通用站点文案。新标签创建期间暂不提交导航，避免异步创建导致重复空白标签。
+- 剪贴板默认监听链接，保留 query／hash，填入工作台后由用户解析；复制不会自动访问或下载。设置开关验证通过，非链接和危险协议被忽略。
+- 新原创城市暮色渐变图标包含蓝紫、玫瑰、暖橙、城市剪影与下载符号，Windows ICO 为 16／20／24／32／40／48／64／96／128／256 像素透明 RGBA。已从应用主 EXE、安装 EXE 和便携 EXE 提取图标，显示像素与源一致；[包内载荷检查](validation/artifacts-alpha6.json) 核对两种包的应用代码、图标、宿主和 WebView2 许可，共 17 项比较通过。
+- [正常关闭检查](validation/shutdown-alpha6.json) 确认实际下载子进程退出、源请求停止、重启显示中断状态。
+- [三端源码 CI](validation/source-ci-alpha6.json) 在 Windows 2025、macOS 15、Ubuntu 24.04 通过格式、生产构建和 32 项测试；Windows 另通过锁定依赖的原生宿主编译。这不替代三端应用实机验收。
+
+[启动测量](validation/startup-alpha6.json) 为本机预热缓存、隔离新档案：应用目录版两次为 391／394 ms，便携版约 10 秒，详见 [便携启动报告](validation/portable-startup-alpha6.json)。包含自动化连接开销，不能作为冷启动保证。推荐安装版避免每次自解压。安装向导未执行，以免覆盖用户正在运行的旧版；干净系统安装／卸载仍待验收。
+
+旧 Chromium 完整网站存储不能自动迁移到 WebView2，旧档案保留，部分网站升级后需要重新登录一次。WebView2 档案保存原生站点存储；Cookie 通过可信本地进程管道同步至单独 Electron 传输分区，解析前刷新同步。不能用受控登录成功推断所有真实站点的最高规格均已通过。此前 B 站／X 的真实平台证据属于旧浏览器版本；新后端真实账号和私有消息仍待复验。
+
+共享网页 DOM 适配器的 14 项回归另外显式运行在 Chromium 后端，不能作为 WebView2 的真实 Telegram 验收。一次新后端桌面测试曾在首次传输返回泛化的 `fetch failed`，单独诊断和再次完整桌面测试均通过，尚未定位该次瞬态失败根因，未声称已修复所有网络异常。

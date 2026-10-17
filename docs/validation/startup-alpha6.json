@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-10-17T06:37:53.402Z",
+  "executable": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\release\\win-unpacked\\Vidown Preview.exe",
+  "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+  "results": [
+    {
+      "run": 1,
+      "readyMs": 391,
+      "version": "1.0.0-alpha.6",
+      "startup": {
+        "readyMs": 177,
+        "shellMs": 245
+      }
+    },
+    {
+      "run": 2,
+      "readyMs": 394,
+      "version": "1.0.0-alpha.6",
+      "startup": {
+        "readyMs": 185,
+        "shellMs": 242
+      }
+    }
+  ],
+  "runtimeSourceCommit": "eb48e18d11c35800efdb9b9eaf70d490242f6e05"
+}
