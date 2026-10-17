@@ -79,7 +79,11 @@ for dist in installed:
                 shutil.copyfile(original, target)
 
 python_version = platform.python_version()
-download(f'https://www.python.org/ftp/python/{python_version}/Python-{python_version}.tar.xz', f'Python-{python_version}.tar.xz')
+python_source = download(f'https://www.python.org/ftp/python/{python_version}/Python-{python_version}.tar.xz', f'Python-{python_version}.tar.xz')
+with tarfile.open(python_source) as tf:
+    (NOTICES / 'Python-LICENSE.txt').write_bytes(tf.extractfile(f'Python-{python_version}/LICENSE').read())
+    if os.name == 'nt':
+        (NOTICES / 'Python-Microsoft-runtime.txt').write_bytes(tf.extractfile(f'Python-{python_version}/PC/crtlicense.txt').read())
 shutil.copyfile(src / 'LICENSE', NOTICES / 'yt-dlp-Unlicense.txt')
 # Keep runtime license with the executable as well as inside the source archive.
 for file in ('LICENSE.txt', 'LICENSE'):

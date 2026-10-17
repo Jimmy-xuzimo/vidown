@@ -51,11 +51,11 @@
 
 每组包含 SHA-256、测试报告和第三方对应源码／构建材料。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。便携版账号、设置和任务仍按系统用户保存，并非全部数据随程序搬迁。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
-最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
+最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 
 ### 从源码开发和打包
 
-需要 Node.js 24.13+、Git、Windows .NET SDK 8。固定依赖版本和校验值由准备脚本记录；公开发行使用固定源码构建 FFmpeg／x264 与独立提取器，并保留精确依赖及对应源码；详见[多平台构建](docs/BUILDING.md)。
+需要 Node.js 24.13+、Git；Windows 另需 .NET SDK 8。下列快速开发命令适用于 Windows，其他系统按多平台构建说明准备源码工具。固定依赖版本和校验值由准备脚本记录；公开发行使用固定源码构建 FFmpeg／x264 与独立提取器，并保留精确依赖及对应源码；详见[多平台构建](docs/BUILDING.md)。
 
 ```powershell
 npm ci

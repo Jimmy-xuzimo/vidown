@@ -198,6 +198,7 @@ jobs:
             work/*verification/report.json
             work/*verification/*.png
             work/corresponding-source/*.log
+            work/media-build/ffmpeg/ffbuild/config.log
           if-no-files-found: ignore
           retention-days: 7
 

@@ -84,6 +84,11 @@ for (const suite of [
         data.results.every((r) => r.status === "passed"),
         `Incomplete suite: ${suite}`,
       );
+    else
+      assert(
+        data.results.filter((r) => r.status === "passed").length >= 11,
+        "Missing controlled media/extractor checks",
+      );
   }
   evidence.suites[suite] = data;
 }

@@ -38,7 +38,7 @@ make install
 cp "$PREFIX/bin/ffmpeg"* "$PREFIX/bin/ffprobe"* "$ROOT/resources/tools/"
 cp COPYING.GPLv3 "$ROOT/resources/tools/licenses/FFmpeg-GPL-3.0.txt"
 cp "$BUILD/x264/COPYING" "$ROOT/resources/tools/licenses/x264-GPL-2.0.txt"
-cp config.h config_components.h ffbuild/config.mak config.log "$SOURCES/"
+cp config.h config_components.h ffbuild/config.mak ffbuild/config.log "$SOURCES/"
 cp "$ROOT/scripts/build-media.sh" "$SOURCES/"
 printf '%s\n' "$FFMPEG_REV" > "$SOURCES/ffmpeg-revision.txt"
 printf '%s\n' "$X264_REV" > "$SOURCES/x264-revision.txt"

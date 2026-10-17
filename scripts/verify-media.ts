@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { randomUUID } from "node:crypto";
 import { TransportBridge } from "../src/core/bridge";
 import { parseManifest } from "../src/core/manifest";
-import { execute, mediaInfo, type Tools } from "../src/core/engine";
+import { execute, mediaInfo, probe, type Tools } from "../src/core/engine";
 import { createFixtures } from "./fixtures";
 import type { DownloadPlan, PrivateAsset } from "../src/shared/types";
 const root = resolve("work/media-verification");
@@ -77,6 +77,25 @@ async function runManifest(name: string, path: string, selected?: number[]) {
   }
 }
 try {
+  const extracted = await probe(
+    {
+      url: fixture.origin + "/auth/direct.mp4",
+      context,
+      headers: {},
+      cookies:
+        "# Netscape HTTP Cookie File\n127.0.0.1\tFALSE\t/\tFALSE\t2147483647\tvidown_fixture\tallowed\n",
+    },
+    tools,
+    join(root, "extractor"),
+    new AbortController().signal,
+  );
+  assert(extracted.tracks.some((track) => track.protocol === "http"));
+  assert.equal(new URL(extracted.tracks[0].url).origin, fixture.origin);
+  results.push({
+    name: "standalone-extractor-authenticated-generic-http",
+    status: "passed",
+  });
+  console.log("PASS standalone-extractor-authenticated-generic-http");
   assert.equal((await fetch(fixture.origin + "/auth/master.m3u8")).status, 403);
   await runManifest("authenticated-hls-separated-audio", "master.m3u8");
   await runManifest("aes128-key-rotation", "aes/index.m3u8");
