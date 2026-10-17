@@ -93,6 +93,17 @@ export class Store {
     const r = this.db.prepare("SELECT sealed FROM tasks WHERE id=?").get(id);
     return r?.sealed ? String(r.sealed) : undefined;
   }
+  remove(id: string): void {
+    this.db.exec("BEGIN IMMEDIATE");
+    try {
+      this.db.prepare("DELETE FROM task_events WHERE task_id=?").run(id);
+      this.db.prepare("DELETE FROM tasks WHERE id=?").run(id);
+      this.db.exec("COMMIT");
+    } catch (error) {
+      this.db.exec("ROLLBACK");
+      throw error;
+    }
+  }
   settings(): any {
     return JSON.parse(
       String(

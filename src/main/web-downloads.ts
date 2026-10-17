@@ -38,6 +38,12 @@ export class WebDownloads {
       this.jobs.has(id) || [...this.pending.values()].some((p) => p.id === id)
     );
   }
+  busy(id: string): boolean {
+    return (
+      this.jobs.has(id) ||
+      [...this.pending.values()].some((p) => p.id === id && !p.cancelled)
+    );
+  }
   async capture(
     id: string,
     wc: number,

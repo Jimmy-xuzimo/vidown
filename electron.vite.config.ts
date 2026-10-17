@@ -28,6 +28,6 @@ export default defineConfig({
   renderer: {
     root: resolve("src/renderer"),
     plugins: [react()],
-    build: { outDir: resolve("dist/renderer") },
+    build: { outDir: resolve("dist/renderer"), minify: true },
   },
 });

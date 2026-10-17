@@ -102,8 +102,15 @@ export interface Settings {
   concurrency: number;
   proxy: string;
   clipboard: boolean;
+  colorMode: "system" | "dark" | "light";
+  theme: "iris" | "ocean" | "jade" | "rose";
+  animations: boolean;
+  hoverGlow: boolean;
+  density: "comfortable" | "compact";
 }
 export interface Snapshot {
+  version: string;
+  startup: { shellMs?: number; readyMs?: number };
   revision: number;
   tasks: TaskRecord[];
   candidates: SourceCandidate[];
@@ -138,6 +145,10 @@ export interface DesktopAPI {
     id: string;
     action: "pause" | "resume" | "cancel" | "open" | "retry";
   }): Promise<void>;
+  history(input: { ids?: string[]; deleteFiles: boolean }): Promise<{
+    removed: number;
+    failed: { id: string; error: string }[];
+  }>;
   browser(input: {
     action:
       | "new"

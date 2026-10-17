@@ -7,6 +7,7 @@ const api: DesktopAPI = {
   probe: (input) => invoke("probe", input),
   download: (input) => invoke("download", input),
   task: (input) => invoke("task", input),
+  history: (input) => invoke("history", input),
   browser: (input) => invoke("browser", input),
   settings: (input) => invoke("settings", input),
   directory: () => invoke("directory"),

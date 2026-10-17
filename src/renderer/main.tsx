@@ -9,6 +9,8 @@ import type {
   Settings,
 } from "../shared/types";
 import "./style.css";
+import { useAppearance } from "./appearance";
+import { canRemoveHistory } from "../shared/history";
 declare global {
   interface Window {
     vidown: DesktopAPI;
@@ -108,6 +110,8 @@ function App() {
   const [search, setSearch] = useState("");
   const [resourcesVisible, setResourcesVisible] = useState(true);
   const browserArea = useRef<HTMLDivElement>(null);
+  const [deletion, setDeletion] = useState<{ ids?: string[]; count: number }>();
+  useAppearance(snapshot?.settings);
   useEffect(() => {
     const acceptSnapshot = (next: Snapshot) =>
       setSnapshot((previous) =>
@@ -222,9 +226,7 @@ function App() {
           <div className="brand-mark">
             <Icon name="download" size={24} />
           </div>
-          <div>
-            vidown<span>REBUILT FROM SOURCE</span>
-          </div>
+          <div>vidown</div>
         </div>
         <div className="sidebar-label">工作空间</div>
         <nav>
@@ -244,16 +246,8 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <div className="preview-chip">
-            <i />
-            M0 · 关键链路验证版
-          </div>
-          <p>
-            保留原始画质
-            <br />
-            让每一步下载都有依据。
-          </p>
-          <small>1.0.0-alpha.3</small>
+          <p>把精彩，完整保存。</p>
+          <small>v{snapshot.version}</small>
         </div>
       </aside>
       <main className="workspace">
@@ -482,19 +476,6 @@ function App() {
                     在网页内登录并播放视频，右侧会列出发现的媒体请求。
                   </p>
                 </div>
-                <button
-                  className="secondary"
-                  onClick={() =>
-                    void attempt(() =>
-                      api.browser({
-                        action: "new",
-                      }),
-                    )
-                  }
-                >
-                  <Icon name="plus" size={16} />
-                  新标签
-                </button>
               </div>
               <div className="browser-tabs">
                 {snapshot.tabs.map((t) => (
@@ -514,7 +495,9 @@ function App() {
                       }
                     >
                       {t.loading ? "◌ " : ""}
-                      {t.title.slice(0, 22)}
+                      <span className="tab-title" title={t.title}>
+                        {t.title}
+                      </span>
                     </button>
                     <button
                       aria-label="关闭标签"
@@ -528,6 +511,16 @@ function App() {
                     </button>
                   </div>
                 ))}
+                <button
+                  className="new-tab"
+                  aria-label="新标签页"
+                  title="新标签页"
+                  onClick={() =>
+                    void attempt(() => api.browser({ action: "new" }))
+                  }
+                >
+                  <Icon name="plus" size={18} />
+                </button>
               </div>
               <form
                 className="browser-address"
@@ -535,7 +528,7 @@ function App() {
                   e.preventDefault();
                   void attempt(() =>
                     api.browser({
-                      action: snapshot.activeTab ? "navigate" : "new",
+                      action: "navigate",
                       url: address,
                     }),
                   );
@@ -757,6 +750,22 @@ function App() {
                 <h1>每一次保存，都有记录。</h1>
                 <p>历史只储存在这台电脑上。</p>
               </div>
+              <div className="history-tools">
+                <p className="muted">
+                  {tasks.filter(canRemoveHistory).length} 条可清理记录
+                </p>
+                <button
+                  className="secondary"
+                  disabled={!tasks.some(canRemoveHistory)}
+                  onClick={() =>
+                    setDeletion({
+                      count: tasks.filter(canRemoveHistory).length,
+                    })
+                  }
+                >
+                  一键清除
+                </button>
+              </div>
               <input
                 className="search-input"
                 aria-label="搜索历史"
@@ -765,6 +774,7 @@ function App() {
                 onChange={(e) => setSearch(e.target.value)}
               />
               <TaskList
+                remove={(id) => setDeletion({ ids: [id], count: 1 })}
                 tasks={tasks.filter((t) =>
                   t.title.toLowerCase().includes(search.toLowerCase()),
                 )}
@@ -781,6 +791,10 @@ function App() {
                 <h1>设置与账号</h1>
                 <p>会话保留在本地，账号凭据不会写入诊断报告。</p>
               </div>
+              <AppearancePanel
+                settings={snapshot.settings}
+                save={(input) => attempt(() => api.settings(input))}
+              />
               <SettingsPanel
                 settings={snapshot.settings}
                 save={(input) => attempt(() => api.settings(input))}
@@ -824,14 +838,38 @@ function App() {
           )}
         </div>
       </main>
+      {deletion && (
+        <DeleteHistoryDialog
+          count={deletion.count}
+          close={() => setDeletion(undefined)}
+          confirm={async (deleteFiles) => {
+            await attempt(async () => {
+              const result = await api.history({
+                ids: deletion.ids,
+                deleteFiles,
+              });
+              setDeletion(undefined);
+              setNotice(
+                `已删除 ${result.removed} 条记录${deleteFiles ? "，存在的下载文件已移至回收站" : "，下载文件保留"}`,
+              );
+              if (result.failed.length)
+                setError(
+                  `${result.failed.length} 条记录未删除：${result.failed[0].error}`,
+                );
+            });
+          }}
+        />
+      )}
     </div>
   );
 }
 function TaskList({
   tasks,
   action,
+  remove,
 }: {
   tasks: TaskRecord[];
+  remove?: (id: string) => void;
   action: (id: string, action: string) => void;
 }) {
   if (!tasks.length)
@@ -887,6 +925,15 @@ function TaskList({
             )}
           </div>
           <div className="task-actions">
+            {remove && canRemoveHistory(t) && (
+              <button
+                className="text-button danger-text"
+                aria-label={`删除记录：${t.title}`}
+                onClick={() => remove(t.id)}
+              >
+                删除
+              </button>
+            )}
             {t.state === "completed" ? (
               <button
                 className="secondary"
@@ -929,6 +976,197 @@ function TaskList({
     </div>
   );
 }
+function DeleteHistoryDialog({
+  count,
+  close,
+  confirm,
+}: {
+  count: number;
+  close: () => void;
+  confirm: (deleteFiles: boolean) => Promise<void>;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const [deleteFiles, setDeleteFiles] = useState(false);
+  const [pending, setPending] = useState(false);
+  useEffect(() => {
+    ref.current?.showModal();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      className="delete-dialog"
+      aria-labelledby="delete-history-title"
+      onCancel={(e) => {
+        e.preventDefault();
+        if (!pending) close();
+      }}
+    >
+      <div className="dialog-icon">
+        <Icon name="clock" size={26} />
+      </div>
+      <h2 id="delete-history-title">
+        删除{count === 1 ? "这条" : ` ${count} 条`}下载记录？
+      </h2>
+      <p className="muted">进行中和暂停的任务会保留。</p>
+      <label className="check-option">
+        <input
+          type="checkbox"
+          checked={deleteFiles}
+          onChange={(e) => setDeleteFiles(e.target.checked)}
+          disabled={pending}
+        />
+        同时删除下载文件（移至回收站）
+      </label>
+      <p className="muted">
+        {deleteFiles
+          ? "文件无法移至回收站时，对应记录会保留并显示原因。"
+          : "仅移除记录，下载文件会保留在原目录。"}
+      </p>
+      <div className="dialog-actions">
+        <button
+          className="secondary"
+          autoFocus
+          disabled={pending}
+          onClick={close}
+        >
+          取消
+        </button>
+        <button
+          className="primary"
+          disabled={pending}
+          onClick={async () => {
+            setPending(true);
+            try {
+              await confirm(deleteFiles);
+            } finally {
+              setPending(false);
+            }
+          }}
+        >
+          {pending ? "正在删除…" : "确认删除"}
+        </button>
+      </div>
+    </dialog>
+  );
+}
+function AppearancePanel({
+  settings,
+  save,
+}: {
+  settings: Settings;
+  save: (input: Partial<Settings>) => Promise<unknown>;
+}) {
+  const [value, setValue] = useState(settings);
+  const pending = useRef(0);
+  useEffect(() => {
+    if (!pending.current) setValue(settings);
+  }, [settings]);
+  async function change(input: Partial<Settings>) {
+    setValue((previous) => ({ ...previous, ...input }));
+    pending.current++;
+    try {
+      await save(input);
+    } finally {
+      pending.current--;
+      if (!pending.current) {
+        const actual = await api.snapshot();
+        if (!pending.current) setValue(actual.settings);
+      }
+    }
+  }
+  const themes = [
+    { id: "iris", name: "鸢尾", note: "柔和紫调", color: "#a493ff" },
+    { id: "ocean", name: "海蓝", note: "清澈蓝调", color: "#52b8e8" },
+    { id: "jade", name: "青玉", note: "自然绿调", color: "#4cc4a4" },
+    { id: "rose", name: "玫瑰", note: "温暖粉调", color: "#ec93af" },
+  ] as const;
+  return (
+    <section className="card appearance-card">
+      <div className="section-title">
+        <h2>外观与交互</h2>
+        <span className="muted">自动保存</span>
+      </div>
+      <div className="appearance-controls">
+        <label>
+          颜色模式
+          <select
+            aria-label="颜色模式"
+            value={value.colorMode}
+            onChange={(e) =>
+              void change({
+                colorMode: e.target.value as Settings["colorMode"],
+              })
+            }
+          >
+            <option value="system">跟随系统</option>
+            <option value="dark">深色</option>
+            <option value="light">浅色</option>
+          </select>
+        </label>
+        <label>
+          界面密度
+          <select
+            aria-label="界面密度"
+            value={value.density}
+            onChange={(e) =>
+              void change({ density: e.target.value as Settings["density"] })
+            }
+          >
+            <option value="comfortable">舒适</option>
+            <option value="compact">紧凑</option>
+          </select>
+        </label>
+      </div>
+      <div className="theme-choices" aria-label="界面主题">
+        {themes.map((t) => (
+          <button
+            key={t.id}
+            className={`theme-choice ${value.theme === t.id ? "chosen" : ""}`}
+            aria-pressed={value.theme === t.id}
+            onClick={() => void change({ theme: t.id })}
+          >
+            <span
+              className="theme-preview"
+              style={{ "--swatch": t.color } as React.CSSProperties}
+            >
+              <i />
+              <i />
+              <i />
+            </span>
+            <strong>{t.name}</strong>
+            <small>{t.note}</small>
+          </button>
+        ))}
+      </div>
+      <div className="preference-row">
+        <div>
+          <strong>界面动效</strong>
+          <p>轻量过渡；尊重系统的减少动态效果设置。</p>
+        </div>
+        <input
+          type="checkbox"
+          role="switch"
+          aria-label="界面动效"
+          checked={value.animations}
+          onChange={(e) => void change({ animations: e.target.checked })}
+        />
+      </div>
+      <div className="preference-row">
+        <div>
+          <strong>鼠标微光</strong>
+          <p>只在指针移动时绘制，静止和窗口失焦时停止。</p>
+        </div>
+        <input
+          type="checkbox"
+          role="switch"
+          aria-label="鼠标微光"
+          checked={value.hoverGlow}
+          onChange={(e) => void change({ hoverGlow: e.target.checked })}
+        />
+      </div>
+    </section>
+  );
+}
 function SettingsPanel({
   settings,
   save,
@@ -939,7 +1177,10 @@ function SettingsPanel({
   choose: () => Promise<string | undefined>;
 }) {
   const [value, setValue] = useState(settings);
-  useEffect(() => setValue(settings), [settings]);
+  useEffect(
+    () => setValue(settings),
+    [settings.downloadDir, settings.concurrency, settings.proxy],
+  );
   return (
     <section className="card">
       <h2>下载与网络</h2>
@@ -990,7 +1231,16 @@ function SettingsPanel({
       </div>
       <div className="format-footer">
         <span className="muted">同一代理用于内置浏览器和媒体传输。</span>
-        <button className="primary" onClick={() => void save(value)}>
+        <button
+          className="primary"
+          onClick={() =>
+            void save({
+              downloadDir: value.downloadDir,
+              concurrency: value.concurrency,
+              proxy: value.proxy,
+            })
+          }
+        >
           保存设置
         </button>
       </div>

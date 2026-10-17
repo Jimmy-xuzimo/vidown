@@ -156,6 +156,9 @@ try {
     );
   });
   assert(transferring.networkBytes > 0);
+  await page.evaluate(async () => {
+    await window.vidown.settings({ theme: "jade", colorMode: "dark" });
+  });
   results.push({
     name: "hls-shows-real-received-bytes-and-speed-before-track-completion",
     status: "passed",
@@ -177,6 +180,10 @@ try {
     name: "ui-browser-cookie-to-worker-hls-audio-merge-verification",
     status: "passed",
     output: completed.output,
+  });
+  results.push({
+    name: "appearance-settings-during-transfer-preserve-authenticated-download",
+    status: "passed",
   });
   await page.getByRole("button", { name: "下载记录", exact: true }).click();
   await page.getByText("已完成", { exact: true }).waitFor();

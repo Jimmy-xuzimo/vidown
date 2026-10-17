@@ -7,10 +7,18 @@ import {
   shell,
   safeStorage,
   clipboard,
+  nativeTheme,
 } from "electron";
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile, readdir, rm } from "node:fs/promises";
+import {
+  mkdir,
+  readFile,
+  writeFile,
+  readdir,
+  rm,
+  lstat,
+} from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { Store } from "../core/store";
 import { TransportBridge, limitedBody } from "../core/bridge";
@@ -27,6 +35,8 @@ import { BrowserManager } from "./browser";
 import { SessionKeeper } from "./session";
 import { WebDownloads } from "./web-downloads";
 import { isTelegramLink, isTelegramWeb } from "../shared/telegram";
+import { completeAddress } from "../shared/address";
+import { canRemoveHistory } from "../shared/history";
 import type { Tools } from "../core/engine";
 import type {
   PrivateAsset,
@@ -60,7 +70,10 @@ const stopping = new Map<string, "paused" | "cancelled" | "interrupted">();
 let shuttingDown = false,
   shutdownComplete = false;
 let settings: Settings;
-let engine: Electron.UtilityProcess;
+let engine: Electron.UtilityProcess | undefined;
+let initialization: Promise<void> = Promise.resolve();
+const bootStart = performance.now();
+const startup: Snapshot["startup"] = {};
 const engineCalls = new Map<
   string,
   {
@@ -76,6 +89,8 @@ let toolsStatus: Record<string, string> = {};
 let snapshotRevision = 0;
 function snapshot(): Snapshot {
   return {
+    version: app.getVersion(),
+    startup: { ...startup },
     revision: ++snapshotRevision,
     tasks: store.list().map((t) => ({
       ...t,
@@ -113,10 +128,36 @@ function callWorker(
   payload: any,
   progress?: (data: any) => void,
 ): Promise<any> {
+  const worker = ensureEngine();
   return new Promise((resolve, reject) => {
     engineCalls.set(id, { resolve, reject, progress });
-    engine.postMessage({ id, action, payload: { ...payload, tools, work } });
+    worker.postMessage({ id, action, payload: { ...payload, tools, work } });
   });
+}
+function ensureEngine(): Electron.UtilityProcess {
+  if (engine) return engine;
+  const worker = utilityProcess.fork(join(__dirname, "worker.cjs"), [], {
+    serviceName: "Vidown Media Worker",
+  });
+  engine = worker;
+  worker.on("message", (message: WorkerResponse) => {
+    const call = engineCalls.get(message.id);
+    if (!call) return;
+    if (message.type === "progress") call.progress?.(message.data);
+    else {
+      engineCalls.delete(message.id);
+      message.type === "error"
+        ? call.reject(new Error(message.data))
+        : call.resolve(message.data);
+    }
+  });
+  worker.on("exit", () => {
+    if (engine === worker) engine = undefined;
+    for (const c of engineCalls.values())
+      c.reject(new Error("下载工作进程退出，请重试"));
+    engineCalls.clear();
+  });
+  return worker;
 }
 function secureStorageAvailable(): boolean {
   return (
@@ -182,7 +223,10 @@ async function probeInput(input: {
   if (input.candidateId && !candidate)
     throw new Error("资源已失效，请重新播放以探测");
   const url = httpUrl(
-    candidate?.url ?? input.url ?? browser.currentUrl(input.tabId) ?? "",
+    candidate?.url ??
+      (input.url
+        ? completeAddress(input.url)
+        : (browser.currentUrl(input.tabId) ?? "")),
   );
   const telegramPage =
     candidate && isTelegramWeb(candidate.pageUrl)
@@ -473,7 +517,7 @@ async function taskAction(input: {
       const desired = input.action === "pause" ? "paused" : "cancelled";
       if (job) {
         stopping.set(t.id, desired);
-        engine.postMessage({ id: t.id, action: "abort", payload: {} });
+        engine?.postMessage({ id: t.id, action: "abort", payload: {} });
         await job.bridge?.close();
         await job.promise;
       } else if (
@@ -500,7 +544,14 @@ async function taskAction(input: {
       throw new Error("未知任务操作");
   }
 }
-async function saveSettings(input: Partial<Settings>): Promise<void> {
+let settingsQueue = Promise.resolve();
+let settingsInitialized = false;
+function saveSettings(input: Partial<Settings>): Promise<void> {
+  const pending = settingsQueue.then(() => applySettings(input));
+  settingsQueue = pending.catch(() => {});
+  return pending;
+}
+async function applySettings(input: Partial<Settings>): Promise<void> {
   const next = { ...settings, ...input };
   if (
     !Number.isInteger(next.concurrency) ||
@@ -517,18 +568,33 @@ async function saveSettings(input: Partial<Settings>): Promise<void> {
     throw new Error("无效设置");
   if (next.proxy && !/^(https?|socks5):\/\/[^\s]+$/.test(next.proxy))
     throw new Error("代理格式应为 http:// 或 socks5://");
-  await mkdir(resolve(next.downloadDir), { recursive: true });
+  if (
+    !["system", "dark", "light"].includes(next.colorMode) ||
+    !["iris", "ocean", "jade", "rose"].includes(next.theme) ||
+    !["comfortable", "compact"].includes(next.density) ||
+    typeof next.animations !== "boolean" ||
+    typeof next.hoverGlow !== "boolean"
+  )
+    throw new Error("无效的外观设置");
+  if (!settingsInitialized || next.downloadDir !== settings.downloadDir)
+    await mkdir(resolve(next.downloadDir), { recursive: true });
   next.downloadDir = resolve(next.downloadDir);
-  await browser.session.setProxy(
-    next.proxy ? { proxyRules: next.proxy } : { mode: "system" },
-  );
-  await browser.session.closeAllConnections();
+  if (!settingsInitialized || next.proxy !== settings.proxy) {
+    await browser.session.setProxy(
+      next.proxy ? { proxyRules: next.proxy } : { mode: "system" },
+    );
+    if (settingsInitialized) await browser.session.closeAllConnections();
+  }
+  const clipboardChanged =
+    !settingsInitialized || next.clipboard !== settings.clipboard;
   settings = next;
+  settingsInitialized = true;
+  nativeTheme.themeSource = settings.colorMode;
   store.saveSettings({ ...store.settings(), ...settings });
   changed();
   schedule();
-  if (clipboardTimer) clearInterval(clipboardTimer);
-  if (settings.clipboard) {
+  if (clipboardChanged && clipboardTimer) clearInterval(clipboardTimer);
+  if (clipboardChanged && settings.clipboard) {
     lastClipboard = await clipboard.readText();
     clipboardTimer = setInterval(async () => {
       const text = await clipboard.readText();
@@ -538,6 +604,58 @@ async function saveSettings(input: Partial<Settings>): Promise<void> {
           win.webContents.send("vidown:clipboard", publicUrl(text));
       }
     }, 2000);
+  }
+}
+let historyBusy = false;
+async function removeHistory(input: { ids?: string[]; deleteFiles: boolean }) {
+  if (
+    !input ||
+    typeof input.deleteFiles !== "boolean" ||
+    (input.ids !== undefined &&
+      (!Array.isArray(input.ids) ||
+        input.ids.length > 10000 ||
+        input.ids.some((id) => typeof id !== "string")))
+  )
+    throw new Error("无效的历史删除请求");
+  if (historyBusy) throw new Error("正在清理记录，请稍候");
+  historyBusy = true;
+  const result: { removed: number; failed: { id: string; error: string }[] } = {
+    removed: 0,
+    failed: [],
+  };
+  try {
+    const ids = input.ids
+      ? [...new Set(input.ids)]
+      : store
+          .list()
+          .filter(canRemoveHistory)
+          .map((t) => t.id);
+    for (const id of ids) {
+      try {
+        const t = task(id);
+        if (!canRemoveHistory(t) || running.has(id) || webDownloads.busy(id))
+          throw new Error("任务仍在执行或暂停，请先完成或取消后再删除记录");
+        if (input.deleteFiles && t.output) {
+          try {
+            const info = await lstat(t.output);
+            if (!info.isFile() || info.isSymbolicLink())
+              throw new Error("成品路径不是普通文件，记录已保留");
+            await shell.trashItem(t.output);
+          } catch (error: any) {
+            if (error.code !== "ENOENT") throw error;
+          }
+        }
+        store.remove(id);
+        plans.delete(id);
+        result.removed++;
+      } catch (error) {
+        result.failed.push({ id, error: classifyError(error) });
+      }
+    }
+    changed();
+    return result;
+  } finally {
+    historyBusy = false;
   }
 }
 async function diagnostics(): Promise<string | undefined> {
@@ -572,6 +690,7 @@ function registerIPC(): void {
     probe: probeInput,
     download,
     task: taskAction,
+    history: removeHistory,
     browser: async (input) => {
       await browser.action(input);
       if (input.action === "logout") {
@@ -597,6 +716,7 @@ function registerIPC(): void {
       )
         throw new Error("拒绝远程页面调用应用接口");
       try {
+        if (name !== "snapshot") await initialization;
         return await handler(input);
       } catch (error) {
         throw new Error(classifyError(error));
@@ -619,6 +739,11 @@ async function boot(): Promise<void> {
     concurrency: saved.concurrency ?? 2,
     proxy: saved.proxy ?? "",
     clipboard: saved.clipboard ?? false,
+    colorMode: saved.colorMode ?? "system",
+    theme: saved.theme ?? "iris",
+    animations: saved.animations ?? true,
+    hoverGlow: saved.hoverGlow ?? true,
+    density: saved.density ?? "comfortable",
   };
   const dir = app.isPackaged
     ? join(process.resourcesPath, "tools")
@@ -650,15 +775,22 @@ async function boot(): Promise<void> {
     height: 940,
     minWidth: 900,
     minHeight: 600,
-    title: "Vidown · 重建验证版",
-    backgroundColor: "#11141c",
-    show: !process.env.VIDOWN_HEADLESS,
+    title: "Vidown",
+    backgroundColor:
+      settings.colorMode === "light" ||
+      (settings.colorMode === "system" && !nativeTheme.shouldUseDarkColors)
+        ? "#f5f6fa"
+        : "#10131b",
+    show: false,
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,
     },
+  });
+  win.once("ready-to-show", () => {
+    if (!process.env.VIDOWN_HEADLESS) win.show();
   });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (event) => event.preventDefault());
@@ -676,26 +808,6 @@ async function boot(): Promise<void> {
     seal,
     unseal,
   );
-  await sessionKeeper.restore();
-  engine = utilityProcess.fork(join(__dirname, "worker.cjs"), [], {
-    serviceName: "Vidown Media Worker",
-  });
-  engine.on("message", (message: WorkerResponse) => {
-    const call = engineCalls.get(message.id);
-    if (!call) return;
-    if (message.type === "progress") call.progress?.(message.data);
-    else {
-      engineCalls.delete(message.id);
-      message.type === "error"
-        ? call.reject(new Error(message.data))
-        : call.resolve(message.data);
-    }
-  });
-  engine.on("exit", () => {
-    for (const c of engineCalls.values())
-      c.reject(new Error("下载工作进程退出，请重启应用"));
-    engineCalls.clear();
-  });
   webDownloads = new WebDownloads(
     browser.session,
     (wc) => browser.owns(wc),
@@ -704,16 +816,14 @@ async function boot(): Promise<void> {
     () => settings.downloadDir,
     changed,
     (id, file) => callWorker(id, "verify-file", { file }),
-    (id) => engine.postMessage({ id, action: "abort", payload: {} }),
+    (id) => engine?.postMessage({ id, action: "abort", payload: {} }),
   );
   registerIPC();
-  await saveSettings(settings);
-  if (process.env.ELECTRON_RENDERER_URL)
-    await win.loadURL(process.env.ELECTRON_RENDERER_URL);
-  else await win.loadFile(join(__dirname, "../renderer/index.html"));
   app.on("second-instance", () => {
-    win.show();
-    win.focus();
+    if (!win.isDestroyed()) {
+      win.show();
+      win.focus();
+    }
   });
   win.on("close", (event) => {
     if (!shutdownComplete) {
@@ -721,9 +831,23 @@ async function boot(): Promise<void> {
       app.quit();
     }
   });
-  win.on("closed", () => {
-    browser.close();
-  });
+  win.on("closed", () => browser.close());
+  initialization = (async () => {
+    await sessionKeeper.restore();
+    await saveSettings(settings);
+    startup.readyMs = Math.round(performance.now() - bootStart);
+    changed();
+  })();
+  // Keep early initialization failures handled while the local shell loads.
+  void initialization.catch(() => {});
+  // Display the local shell while sessions initialize. Remote navigation and all
+  // mutations wait for initialization; downloads spawn their worker on demand.
+  if (process.env.ELECTRON_RENDERER_URL)
+    await win.loadURL(process.env.ELECTRON_RENDERER_URL);
+  else await win.loadFile(join(__dirname, "../renderer/index.html"));
+  startup.shellMs = Math.round(performance.now() - bootStart);
+  changed();
+  await initialization;
 }
 if (single)
   void boot().catch((error) => {
@@ -741,7 +865,8 @@ app.on("before-quit", (event) => {
   for (const id of engineCalls.keys())
     engine?.postMessage({ id, action: "abort", payload: {} });
   const jobs: Promise<unknown>[] = [];
-  if (sessionKeeper) jobs.push(sessionKeeper.close());
+  if (sessionKeeper)
+    jobs.push(initialization.catch(() => {}).then(() => sessionKeeper.close()));
   if (webDownloads) jobs.push(webDownloads.close());
   for (const [id, job] of running) {
     stopping.set(id, "interrupted");

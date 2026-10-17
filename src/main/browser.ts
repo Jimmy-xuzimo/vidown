@@ -13,6 +13,7 @@ import {
   isTelegramWeb,
 } from "../shared/telegram";
 import { telegramMessageAction } from "./telegram-web";
+import { completeAddress } from "../shared/address";
 
 export class BrowserManager {
   readonly session: Session;
@@ -408,7 +409,7 @@ export class BrowserManager {
     }
     this.select(id);
     void view.webContents
-      .loadURL(url === "about:blank" ? url : httpUrl(url))
+      .loadURL(url === "about:blank" ? url : httpUrl(completeAddress(url)))
       .catch(() => update());
     return id;
   }
@@ -480,6 +481,10 @@ export class BrowserManager {
     }
     const id = input.tabId ?? this.active;
     const view = this.views.get(id);
+    if (!view && input.action === "navigate" && !input.tabId) {
+      await this.create(input.url);
+      return;
+    }
     if (!view) throw new Error("请先打开一个标签页");
     switch (input.action) {
       case "zoom":
@@ -489,7 +494,7 @@ export class BrowserManager {
         this.select(id);
         break;
       case "navigate":
-        await view.webContents.loadURL(httpUrl(input.url));
+        await view.webContents.loadURL(httpUrl(completeAddress(input.url)));
         break;
       case "reload":
         view.webContents.reload();
