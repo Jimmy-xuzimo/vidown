@@ -1,227 +1,480 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f5f3f0" />
+    <title>Vidown — 把精彩，完整保存。</title>
     <meta
       name="description"
-      content="Vidown，本地视频下载器。浏览器辅助发现、独立音视频轨道选择、源规格保存。Windows 使用系统 WebView2。"
+      content="Vidown 是开源桌面视频下载器。通过链接或内置浏览器发现视频，独立选择音视频轨道，在本地下载、合并与校验。支持 Windows、macOS 与 Linux。"
     />
-    <title>Vidown — 把精彩，完整保存。</title>
+    <link rel="canonical" href="https://jimmy-xuzimo.github.io/vidown/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Vidown" />
+    <meta property="og:title" content="Vidown — 把精彩，完整保存。" />
+    <meta
+      property="og:description"
+      content="本地优先的开源桌面视频下载器。发现、选择、保存，让每一份精彩有迹可循。"
+    />
+    <meta property="og:url" content="https://jimmy-xuzimo.github.io/vidown/" />
+    <meta
+      property="og:image"
+      content="https://jimmy-xuzimo.github.io/vidown/images/social.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Vidown — Keep what moves you. Open-source desktop video downloader."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="icon.png" type="image/png" />
+    <script src="theme.js"></script>
     <link rel="stylesheet" href="style.css" />
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <a class="skip" href="#main">跳到正文</a>
-    <header class="nav wrap">
-      <a class="wordmark" href="#" aria-label="Vidown 首页"
-        ><img src="icon.png" width="36" height="36" alt="" />Vidown<span
-          class="version"
-          >1.0.4</span
-        ></a
-      >
-      <nav aria-label="主导航">
-        <a href="#experience">使用体验</a><a href="#scope">能力边界</a
-        ><a href="https://github.com/Jimmy-xuzimo/vidown" class="github"
-          >GitHub <span aria-hidden="true">↗</span></a
+    <a class="skip" href="#main"><span data-i18n="t0">跳到正文</span></a>
+    <header class="header">
+      <div class="nav wrap">
+        <a class="wordmark" href="#main"
+          ><img src="icon.png" width="36" height="36" alt="" />Vidown<span
+            class="version"
+            >1.0.4</span
+          ></a
         >
+        <nav class="desktop-nav" aria-label="Primary">
+          <a href="#experience"><span data-i18n="t1">使用体验</span></a
+          ><a href="#scope"><span data-i18n="t2">能力边界</span></a
+          ><a href="#download"><span data-i18n="t3">下载</span></a
+          ><a href="https://github.com/Jimmy-xuzimo/vidown">GitHub ↗</a>
+        </nav>
+        <div class="controls">
+          <button id="language" type="button" aria-label="Switch to English">
+            EN</button
+          ><button id="theme" type="button" aria-label="主题：跟随系统">
+            ◐</button
+          ><button
+            id="menu"
+            type="button"
+            aria-label="打开导航"
+            aria-controls="mobile-nav"
+            aria-expanded="false"
+          >
+            ☰
+          </button>
+        </div>
+      </div>
+      <nav id="mobile-nav" class="wrap" aria-label="Mobile" hidden>
+        <a href="#experience"><span data-i18n="t4">使用体验</span></a
+        ><a href="#scope"><span data-i18n="t5">能力边界</span></a
+        ><a href="#download"><span data-i18n="t6">下载</span></a
+        ><a href="https://github.com/Jimmy-xuzimo/vidown">GitHub ↗</a>
       </nav>
     </header>
     <main id="main">
       <section class="hero wrap">
-        <div class="eyebrow"><span></span> LOCAL FIRST · OPEN SOURCE</div>
-        <h1>把精彩，<br /><em>完整保存。</em></h1>
+        <div class="eyebrow"><i></i> LOCAL FIRST · OPEN SOURCE</div>
+        <h1>
+          <span data-i18n="t7">把精彩，</span><br /><em data-i18n="t8"
+            >完整保存。</em
+          >
+        </h1>
         <div class="hero-bottom">
-          <p>
-            从网页中的一段视频，<br />到你硬盘里的一份珍藏。<br
-              class="mobile-break"
-            />看清规格，再安心保存。
+          <p data-i18n="t9">
+            从网页中的一段视频，<br />到你硬盘里的一份珍藏。<br />看清规格，再安心保存。
           </p>
           <div class="hero-actions">
-            <a
-              class="button primary"
-              href="https://github.com/Jimmy-xuzimo/vidown/releases/latest"
-              >获取 Vidown <span aria-hidden="true">↗</span></a
+            <a class="button primary" href="#download"
+              ><span data-i18n="t10">获取 Vidown</span
+              ><span aria-hidden="true">↗</span></a
             ><a class="text-link" href="#experience"
-              >了解它如何工作 <span aria-hidden="true">↓</span></a
+              ><span data-i18n="t11">了解它如何工作</span
+              ><span aria-hidden="true">↓</span></a
             >
           </div>
         </div>
         <div class="hero-line">
-          <span>WINDOWS / macOS / LINUX</span><span>HLS / DASH / HTTP</span
-          ><span>源规格优先</span>
+          <span>WINDOWS / macOS / LINUX</span
+          ><span><span data-i18n="t12">源规格优先 · 本地保存</span></span
+          ><a href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4"
+            >v1.0.4 <span aria-hidden="true">↗</span></a
+          >
         </div>
       </section>
-      <section class="product wrap" aria-label="Vidown 实际界面">
-        <div class="product-glow"></div>
-        <figure>
-          <img
-            src="images/workbench.png"
-            width="1400"
-            height="940"
-            alt="Vidown 下载工作台：选择音视频轨道并管理下载任务"
-            fetchpriority="high"
-          />
-          <figcaption>
-            <span>一个工作台，完整的保存流程。</span
-            ><span>实际应用截图 · 受控媒体样本</span>
-          </figcaption>
-        </figure>
-      </section>
-      <section class="section wrap" id="experience">
-        <div class="section-heading">
-          <p class="eyebrow">MADE FOR THE MOMENT</p>
-          <h2>找到、选择、保存。<br /><span>每一步，都看得清。</span></h2>
-        </div>
-        <div class="features">
-          <article>
-            <span class="feature-number">01 / DISCOVER</span>
-            <h3>让网页，成为入口。</h3>
-            <p>
-              粘贴链接直接解析，或在内置浏览器中登录、播放与发现。Windows
-              网页使用系统 WebView2，登录状态保存在本机。
-            </p>
-            <div class="feature-mark" aria-hidden="true">↗</div>
-          </article>
-          <article>
-            <span class="feature-number">02 / CHOOSE</span>
-            <h3>清晰的规格，自己的选择。</h3>
-            <p>
-              视频和音频独立选择。分辨率、编码与动态范围按源返回展示，未知参数明确标注，不凭名称承诺最高画质。
-            </p>
-            <div class="track-demo" aria-hidden="true">
-              <span>VIDEO <b>源视频轨道</b></span
-              ><span>AUDIO <b>源音频轨道</b></span>
-            </div>
-          </article>
-          <article>
-            <span class="feature-number">03 / KEEP</span>
-            <h3>保存精彩，也保存细节。</h3>
-            <p>
-              优先保留源编码。适合的组合保存为 MP4，其他组合使用
-              MKV；下载、合并、验证分别呈现，验证通过才标记完成。
-            </p>
-            <div class="formats" aria-hidden="true">
-              <span>MP4</span><span>MKV</span><span>AUDIO</span>
-            </div>
-          </article>
-        </div>
-      </section>
-      <section class="browser-section" aria-labelledby="browser-heading">
-        <div class="wrap browser-grid">
+      <section id="experience" class="experience wrap section">
+        <div class="section-top">
           <div>
-            <p class="eyebrow">A CALMER WORKSPACE</p>
-            <h2 id="browser-heading">浏览，自然一点。</h2>
-            <p>
-              柔和的新标签页，固定高度的标签，始终可见的导航栏。收起资源侧栏，给网页更多空间；调整缩放，找到舒服的观看比例。
+            <div class="eyebrow">01 / THE EXPERIENCE</div>
+            <h2 data-i18n="t13">让保存，变得从容。</h2>
+          </div>
+          <p data-i18n="t14">
+            发现资源、选择轨道、管理任务。<br />在一个桌面工作流里完成。
+          </p>
+        </div>
+        <div class="gallery">
+          <div class="gallery-bar">
+            <div class="window-dots" aria-hidden="true">
+              <i></i><i></i><i></i>
+            </div>
+            <div role="tablist" aria-label="Vidown screenshots">
+              <button
+                id="tab-workbench"
+                role="tab"
+                aria-selected="true"
+                aria-controls="panel-workbench"
+                data-screen="workbench"
+              >
+                <span data-i18n="t15">下载工作台</span></button
+              ><button
+                id="tab-browser"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-browser"
+                data-screen="browser"
+                tabindex="-1"
+              >
+                <span data-i18n="t16">内置浏览器</span></button
+              ><button
+                id="tab-settings"
+                role="tab"
+                aria-selected="false"
+                aria-controls="panel-settings"
+                data-screen="settings"
+                tabindex="-1"
+              >
+                <span data-i18n="t17">偏好设置</span>
+              </button>
+            </div>
+            <span class="gallery-label">VIDOWN / DESKTOP</span>
+          </div>
+          <div
+            id="panel-workbench"
+            role="tabpanel"
+            aria-labelledby="tab-workbench"
+          >
+            <img
+              src="images/workbench.webp"
+              width="1384"
+              height="901"
+              alt="Vidown 下载工作台，包含链接输入和任务列表"
+              data-alt="workbench"
+              decoding="async"
+            />
+          </div>
+          <div
+            id="panel-browser"
+            role="tabpanel"
+            aria-labelledby="tab-browser"
+            hidden
+          >
+            <img
+              src="images/browser.webp"
+              width="1384"
+              height="901"
+              alt="Vidown 内置浏览器的起始页面"
+              data-alt="browser"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <div
+            id="panel-settings"
+            role="tabpanel"
+            aria-labelledby="tab-settings"
+            hidden
+          >
+            <img
+              src="images/settings.webp"
+              width="1384"
+              height="901"
+              alt="Vidown 偏好设置界面"
+              data-alt="settings"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+        <p class="caption">
+          <span data-i18n="t18"
+            >真实应用截图，来自项目仓库；界面可能随版本更新。</span
+          >
+        </p>
+        <div class="steps">
+          <article>
+            <div class="step-label">
+              <span>01</span><span data-i18n="t19">发现</span>
+            </div>
+            <h3 data-i18n="t20">从链接开始，也从浏览器开始。</h3>
+            <p data-i18n="t21">
+              粘贴视频链接解析，或在内置浏览器中登录、播放并发现资源。浏览与下载使用同一登录会话。
             </p>
+          </article>
+          <article>
+            <div class="step-label">
+              <span>02</span><span data-i18n="t22">选择</span>
+            </div>
+            <h3 data-i18n="t23">每一条轨道，都看得清楚。</h3>
+            <p data-i18n="t24">
+              分别选择视频与音频轨道，查看源提供的分辨率、帧率、编码和动态范围；未知信息如实显示。
+            </p>
+          </article>
+          <article>
+            <div class="step-label">
+              <span>03</span><span data-i18n="t25">保存</span>
+            </div>
+            <h3 data-i18n="t26">从下载，到合并，再到校验。</h3>
+            <p data-i18n="t27">
+              优先保留原始编码，避免不必要的重编码。任务经过文件校验后才会标记完成，也支持单独保存音频。
+            </p>
+          </article>
+        </div>
+      </section>
+      <section class="detail-band">
+        <div class="wrap detail-grid">
+          <div>
+            <div class="eyebrow">02 / SOURCE MATTERS</div>
+            <h2 data-i18n="t28">好好保存。<br />从尊重原始规格开始。</h2>
+            <p data-i18n="t29">
+              不是一个模糊的“高清”按钮。<br />而是让你知道，正在保存什么。
+            </p>
+          </div>
+          <div class="spec-card">
+            <div class="spec-top">
+              <span>SOURCE → LOCAL</span
+              ><span class="status"><span data-i18n="t30">工作流程</span></span>
+            </div>
+            <ol>
+              <li>
+                <span class="spec-number">01</span>
+                <div>
+                  <h3 data-i18n="t31">独立的音视频轨道</h3>
+                  <p data-i18n="t32">按源提供的信息选择，不虚构未知规格。</p>
+                </div>
+              </li>
+              <li>
+                <span class="spec-number">02</span>
+                <div>
+                  <h3 data-i18n="t33">优先保留原始编码</h3>
+                  <p data-i18n="t34">
+                    合适的组合保存为 MP4，部分高规格组合使用 MKV。
+                  </p>
+                </div>
+              </li>
+              <li>
+                <span class="spec-number">03</span>
+                <div>
+                  <h3 data-i18n="t35">校验后，再标记完成</h3>
+                  <p data-i18n="t36">
+                    下载、合并、校验分阶段呈现，状态清楚可见。
+                  </p>
+                </div>
+              </li>
+            </ol>
+            <div class="spec-foot">
+              <span data-i18n="t37">实际结果取决于源资源与轨道组合。</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="wrap section everyday">
+        <div class="section-top">
+          <div>
+            <div class="eyebrow">03 / MADE FOR YOUR DESKTOP</div>
+            <h2 data-i18n="t38">在本地，井井有条。</h2>
+          </div>
+          <p data-i18n="t39">把选择权留给你。</p>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <span class="feature-icon" aria-hidden="true">↗</span>
+            <h3 data-i18n="t40">一处登录，连贯使用</h3>
+            <p data-i18n="t41">
+              内置浏览器中的登录状态同时用于解析和下载，不必导入外部浏览器的
+              Cookie。
+            </p>
+          </article>
+          <article>
+            <span class="feature-icon" aria-hidden="true">≡</span>
+            <h3 data-i18n="t42">队列清楚，节奏可控</h3>
+            <p data-i18n="t43">
+              支持 1–4
+              个并发任务、同次运行内暂停与继续，以及历史记录搜索和清理。
+            </p>
+          </article>
+          <article>
+            <span class="feature-icon" aria-hidden="true">◐</span>
+            <h3 data-i18n="t44">适应你的桌面</h3>
+            <p data-i18n="t45">
+              四套配色，浅色、深色与跟随系统模式；可关闭动画。剪贴板辅助只填入链接，不自动访问或下载。
+            </p>
+          </article>
+        </div>
+      </section>
+      <section id="download" class="wrap section download">
+        <div class="section-top">
+          <div>
+            <div class="eyebrow">04 / GET VIDOWN</div>
+            <h2 data-i18n="t46">下一份珍藏，<br />从这里开始。</h2>
+          </div>
+          <div class="release-note">
+            <span class="release-pill">v1.0.4</span>
+            <p data-i18n="t47">选择适合你设备的官方发行包。</p>
             <a
               class="text-link"
-              href="https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/USER_GUIDE.md"
-              >阅读使用指南 <span aria-hidden="true">↗</span></a
+              href="https://github.com/Jimmy-xuzimo/vidown/releases/latest"
+              ><span data-i18n="t48">查看最新发行版</span> ↗</a
             >
           </div>
-          <figure>
-            <img
-              src="images/browser.png"
-              width="1400"
-              height="940"
-              alt="浅紫色的 Vidown 内置浏览器欢迎页，包含标签栏、地址栏和资源侧栏"
-              loading="lazy"
-            />
-          </figure>
+        </div>
+        <div class="download-grid">
+          <a
+            class="download-card"
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.4/Vidown-Setup-1.0.4.exe"
+            ><span class="download-os"
+              >Windows<span aria-hidden="true">↗</span></span
+            ><span class="download-arch">x64 · .exe</span
+            ><span data-i18n="t49" class="download-note"
+              >需要系统 WebView2 Runtime。</span
+            ></a
+          ><a
+            class="download-card"
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.4/Vidown-1.0.4-macOS-arm64.dmg"
+            ><span class="download-os"
+              >macOS<span aria-hidden="true">↗</span></span
+            ><span class="download-arch">Apple Silicon · .dmg</span
+            ><span data-i18n="t50" class="download-note"
+              >macOS 15 或更高版本。</span
+            ></a
+          ><a
+            class="download-card"
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.4/Vidown-1.0.4-macOS-x64.dmg"
+            ><span class="download-os"
+              >macOS<span aria-hidden="true">↗</span></span
+            ><span class="download-arch">Intel x64 · .dmg</span
+            ><span data-i18n="t51" class="download-note"
+              >macOS 15 或更高版本。</span
+            ></a
+          ><a
+            class="download-card"
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.4/Vidown-1.0.4-Linux-x86_64.AppImage"
+            ><span class="download-os"
+              >Linux<span aria-hidden="true">↗</span></span
+            ><span class="download-arch">x86_64 · .AppImage</span
+            ><span data-i18n="t52" class="download-note"
+              >基于 Ubuntu 24.04 构建。</span
+            ></a
+          ><a
+            class="download-card"
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.4/Vidown-1.0.4-Linux-arm64.AppImage"
+            ><span class="download-os"
+              >Linux<span aria-hidden="true">↗</span></span
+            ><span class="download-arch">ARM64 · .AppImage</span
+            ><span data-i18n="t53" class="download-note"
+              >基于 Ubuntu 24.04 构建。</span
+            ></a
+          >
+        </div>
+        <div class="download-footer">
+          <p data-i18n="t54">无需自行安装 Python、Node.js 或 .NET。</p>
+          <a
+            href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4-materials"
+            ><span data-i18n="t55">校验与第三方材料</span> ↗</a
+          >
         </div>
       </section>
-      <section class="section wrap details">
-        <div>
-          <p class="eyebrow">THOUGHTFUL BY DEFAULT</p>
-          <h2>轻一点。<br /><span>专注该做的事。</span></h2>
-        </div>
-        <div class="detail-list">
-          <article>
-            <span>01</span>
-            <div>
-              <h3>本机登录，统一使用</h3>
-              <p>
-                在内置浏览器登录后，回工作台重新解析链接。Cookie
-                与站点存储保存在本机，不提供外部浏览器 Cookie 导入。
-              </p>
-            </div>
-          </article>
-          <article>
-            <span>02</span>
-            <div>
-              <h3>紧凑界面，自在配色</h3>
-              <p>
-                跟随系统、深色或浅色，配合四套主题。轻量过渡可以关闭，没有鼠标微光和持续背景动画。
-              </p>
-            </div>
-          </article>
-          <article>
-            <span>03</span>
-            <div>
-              <h3>剪贴板与历史，恰到好处</h3>
-              <p>
-                复制链接可自动填入，解析和下载仍由你触发。记录支持单条或一键删除，可选择将成品移至回收站。
-              </p>
-            </div>
-          </article>
-        </div>
-      </section>
-      <section class="scope wrap" id="scope">
-        <p class="eyebrow">CLEAR ABOUT WHAT WORKS</p>
-        <h2>有边界，才值得信任。</h2>
-        <p class="scope-intro">
-          Vidown
-          正在持续扩大覆盖范围。网站可播放，不代表一定可以下载；登录成功，也不代表源一定提供目标规格。
-        </p>
-        <div class="scope-grid">
+      <section id="scope" class="wrap section scope">
+        <div class="section-top">
           <div>
-            <h3>当前交付</h3>
-            <p>
-              Windows、macOS、Linux · 通用点播 HLS、DASH 与 HTTP ·
-              浏览器辅助发现 · 音视频分轨 · 队列与成品验证。
-            </p>
+            <div class="eyebrow">05 / CLEAR BY DESIGN</div>
+            <h2 data-i18n="t56">好用，也说清边界。</h2>
           </div>
-          <div>
-            <h3>如实记录</h3>
-            <p>
-              历史真实样本包含高规格视频和无损音频。其他平台、私有内容及未覆盖规格以逐项验证报告为准，安装包由各平台原生
-              Actions 运行器构建和受控下载验证；真实账号与干净系统安装另行验收。
-            </p>
-          </div>
-          <div>
-            <h3>明确限制</h3>
-            <p>
-              没有直播录制和频道批量抓取。不绕过 DRM
-              或账号权限。应用重启后需要重新探测，不能自动续用旧授权。
-            </p>
-          </div>
+          <p data-i18n="t57">知道它能做什么，也知道它的限制。</p>
         </div>
-        <a
-          class="text-link"
-          href="https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/VALIDATION.md"
-          >查看测试记录与限制 <span aria-hidden="true">↗</span></a
-        >
+        <div class="faq">
+          <details>
+            <summary>
+              <span data-i18n="t58">可以下载所有网站的视频吗？</span
+              ><span aria-hidden="true">+</span>
+            </summary>
+            <p data-i18n="t59">
+              不保证。支持常见点播 HLS、DASH 与 HTTP(S)
+              直链，但实际可用性取决于站点适配、账号权限、区域、资源地址有效期与风控。能够播放或登录，不等于能够下载，也不保证拿到最高规格。
+            </p>
+          </details>
+          <details>
+            <summary>
+              <span data-i18n="t60">支持 DRM、直播或批量下载吗？</span
+              ><span aria-hidden="true">+</span>
+            </summary>
+            <p data-i18n="t61">
+              不绕过 DRM
+              或访问权限，不提供直播录制、频道或合集批量下载。请仅保存你有权下载的内容，并遵守来源网站的规则。
+            </p>
+          </details>
+          <details>
+            <summary>
+              <span data-i18n="t62">登录信息和任务会怎样保存？</span
+              ><span aria-hidden="true">+</span>
+            </summary>
+            <p data-i18n="t63">
+              使用内置浏览器登录，不导入外部浏览器 Cookie 或 cookies.txt。持久
+              Cookie 遵循源站有效期；在系统安全存储可用时，会话 Cookie
+              可加密备份最多 7
+              天，但站点仍可能提前使其失效。暂停与继续限同次运行，重启后需重新发现资源并创建任务。
+            </p>
+          </details>
+          <details>
+            <summary>
+              <span data-i18n="t64">安装需要额外的开发环境吗？</span
+              ><span aria-hidden="true">+</span>
+            </summary>
+            <p data-i18n="t65">
+              发行包不需要自行安装 Python、Node.js 或 .NET。Windows 需要
+              Evergreen WebView2 Runtime。Windows 安装包未签名；macOS
+              使用临时签名，尚无 Developer ID 签名或公证。请从官方 Releases
+              获取文件，并按需核对校验材料。
+            </p>
+          </details>
+        </div>
+        <div class="project-note">
+          <p data-i18n="t66">
+            这是一个持续迭代的开源项目。原生构建与受控媒体验证不代表所有网站、真实账号或全新系统都已验证。签名地址自动刷新、跨重启安全续传与独立引擎更新等仍在完善中。
+          </p>
+          <a href="https://github.com/Jimmy-xuzimo/vidown#readme"
+            ><span data-i18n="t67">阅读项目说明</span> ↗</a
+          >
+        </div>
       </section>
       <section class="closing wrap">
-        <img src="icon.png" width="76" height="76" alt="" loading="lazy" />
-        <h2>好内容，留在身边。</h2>
-        <p>免费开源。本地运行。由你掌握。</p>
-        <a
-          class="button primary"
-          href="https://github.com/Jimmy-xuzimo/vidown/releases/latest"
-          >下载安装包 <span aria-hidden="true">↗</span></a
+        <div class="eyebrow">KEEP WHAT MOVES YOU.</div>
+        <h2 data-i18n="t68">让精彩，有处安放。</h2>
+        <a class="button primary" href="#download"
+          ><span data-i18n="t69">开始使用 Vidown</span
+          ><span aria-hidden="true">↗</span></a
         >
       </section>
     </main>
     <footer class="wrap">
-      <a class="wordmark" href="#">Vidown</a>
-      <p>© 2026 Jimmy-xuzimo · 自有代码 MIT · 第三方组件遵循各自许可</p>
-      <a
-        href="https://github.com/Jimmy-xuzimo/vidown/blob/main/THIRD_PARTY_NOTICES.md"
-        >组件与许可 ↗</a
+      <a class="wordmark" href="#main"
+        ><img src="icon.png" width="28" height="28" alt="" />Vidown</a
+      >
+      <p><span data-i18n="t70">本地优先。开源。为值得保存的片刻。</span></p>
+      <div>
+        <a href="https://github.com/Jimmy-xuzimo/vidown">GitHub ↗</a
+        ><a
+          href="https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/USER_GUIDE.md"
+          ><span data-i18n="t71">使用指南</span></a
+        ><a
+          href="https://github.com/Jimmy-xuzimo/vidown/blob/main/THIRD_PARTY_NOTICES.md"
+          ><span data-i18n="t72">第三方声明</span></a
+        >
+      </div>
+      <small
+        ><span data-i18n="t73"
+          >项目自有代码采用 MIT 许可；第三方组件遵循各自许可。</span
+        ></small
       >
     </footer>
   </body>
