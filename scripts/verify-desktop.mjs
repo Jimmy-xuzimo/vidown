@@ -101,7 +101,10 @@ try {
     name: "telegram-web-mode-requires-no-native-api-credentials",
     status: "passed",
   });
-  await page.screenshot({ path: join(root, "01-workbench.png") });
+  await page.screenshot({
+    path: join(root, "01-workbench.png"),
+    animations: "disabled",
+  });
   await page.evaluate(
     (directory) => window.vidown.settings({ downloadDir: directory }),
     join(root, "downloads"),
@@ -118,7 +121,10 @@ try {
       snap.candidates.some((c) => c.protocol === "http")
     );
   });
-  await page.screenshot({ path: join(root, "02-browser-detection.png") });
+  await page.screenshot({
+    path: join(root, "02-browser-detection.png"),
+    animations: "disabled",
+  });
   const isolation = portable
     ? await (
         await until(() =>
@@ -146,7 +152,10 @@ try {
   await page.getByRole("heading", { name: "选择保存规格" }).waitFor();
   assert(await page.getByLabel("视频轨道").inputValue());
   assert(await page.getByLabel("音频轨道").inputValue());
-  await page.screenshot({ path: join(root, "03-track-selection.png") });
+  await page.screenshot({
+    path: join(root, "03-track-selection.png"),
+    animations: "disabled",
+  });
   fixture.setSlowSegments(true);
   await page.getByRole("button", { name: "加入下载队列" }).click();
   const transferring = await until(async () => {
@@ -187,7 +196,10 @@ try {
   });
   await page.getByRole("button", { name: "下载记录", exact: true }).click();
   await page.getByText("已完成", { exact: true }).waitFor();
-  await page.screenshot({ path: join(root, "04-completed-download.png") });
+  await page.screenshot({
+    path: join(root, "04-completed-download.png"),
+    animations: "disabled",
+  });
   assert.equal(errors.length, 0, errors.join("\n"));
   assert(fixture.requests.every((r) => r.authorized));
   const snapshot = await page.evaluate(() => window.vidown.snapshot());

@@ -1,0 +1,48 @@
+{
+  "runtimeSourceCommit": "031099c221ed6522f003b63d52707fac4c491552",
+  "baseline": {
+    "generatedAt": "2026-10-17T05:39:10.105Z",
+    "executable": "release/Vidown Preview 1.0.0-alpha.4.exe",
+    "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+    "results": [
+      {
+        "run": 1,
+        "readyMs": 8706,
+        "version": "alpha.4 baseline",
+        "startup": null
+      },
+      {
+        "run": 2,
+        "readyMs": 8370,
+        "version": "alpha.4 baseline",
+        "startup": null
+      }
+    ]
+  },
+  "current": {
+    "generatedAt": "2026-10-17T05:56:18.063Z",
+    "executable": "release/win-unpacked/Vidown Preview.exe",
+    "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+    "results": [
+      {
+        "run": 1,
+        "readyMs": 360,
+        "version": "1.0.0-alpha.5",
+        "startup": {
+          "readyMs": 161,
+          "shellMs": 215
+        }
+      },
+      {
+        "run": 2,
+        "readyMs": 351,
+        "version": "1.0.0-alpha.5",
+        "startup": {
+          "readyMs": 162,
+          "shellMs": 213
+        }
+      }
+    ]
+  },
+  "note": "Different packaging: old self-extracting portable versus new app directory. Warm OS caches and isolated profiles; includes CDP automation overhead. Installer UI and cold boot not measured."
+}

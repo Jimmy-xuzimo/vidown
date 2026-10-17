@@ -1,8 +1,8 @@
 {
-  "name": "Vidown Preview 1.0.0-alpha.4.exe",
-  "stage": "M0 local experimental preview",
+  "name": "Vidown-Setup-1.0.0-alpha.5.exe",
+  "stage": "Local experimental NSIS preview",
   "signature": "NotSigned",
-  "sha256": "df73c1d1c620e36aefef91747218d371bc00e4837fd7329283717decfa5615a0",
-  "size": 174583649,
-  "runtimeSourceCommit": "07ac3c75a900e83a0a061bc35c2924c91185a021"
+  "sha256": "a7adf5cc6031e53bed584d6c2ec603587a9d7205105f0b0cdd0d20dfe06d96c5",
+  "size": 190025933,
+  "runtimeSourceCommit": "031099c221ed6522f003b63d52707fac4c491552"
 }

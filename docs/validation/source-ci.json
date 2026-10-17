@@ -1,8 +1,8 @@
 {
-  "verifiedAt": "2026-10-17T04:48:52.7858604Z",
-  "scope": "Source build, type checking, formatting and 29 tests; not packaged application or real OS acceptance",
-  "sourceCommit": "07ac3c75a900e83a0a061bc35c2924c91185a021",
-  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39003892290",
+  "verifiedAt": "2026-10-17T05:59:31.3119470Z",
+  "scope": "Source build, type checking, formatting and 32 tests; not packaged application or real OS acceptance",
+  "sourceCommit": "031099c221ed6522f003b63d52707fac4c491552",
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39008174625",
   "status": "completed",
   "conclusion": "success",
   "jobs": [
@@ -12,12 +12,12 @@
       "conclusion": "success"
     },
     {
-      "name": "Source checks (macos-15)",
+      "name": "Source checks (ubuntu-24.04)",
       "status": "completed",
       "conclusion": "success"
     },
     {
-      "name": "Source checks (ubuntu-24.04)",
+      "name": "Source checks (macos-15)",
       "status": "completed",
       "conclusion": "success"
     }

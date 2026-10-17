@@ -1,0 +1,17 @@
+{
+  "GeneratedAt": "2026-10-17T05:56:54.0055049Z",
+  "Scope": "NSIS archive payload comparison; installer UI and actual installation not executed to preserve the running user app",
+  "Checks": [
+    {
+      "File": "resources/app.asar",
+      "SHA256": "c7aa11c7f05882801eb2130cc1f0e28bd75acfaae6ea9bc6061bedf137e57a5c",
+      "MatchesTestedApplication": true
+    },
+    {
+      "File": "Vidown Preview.exe",
+      "SHA256": "0e14cf0ddb2a824fc1ca5303bc7570afb66290d90e4b4c612bc1d4afa420a8b5",
+      "MatchesTestedApplication": true
+    }
+  ],
+  "runtimeSourceCommit": "031099c221ed6522f003b63d52707fac4c491552"
+}
