@@ -80,3 +80,7 @@ npm run dist               # 同时生成安装版和便携版
 `src/core` 管理协议、下载进程、传输桥与成品检查；`src/main` 管理浏览器、会话和任务；`src/preload` 仅向本地界面提供受限 IPC；`src/renderer` 为工作台；`native/WebViewHost` 为 Windows WebView2 宿主；`scripts`／`tests` 提供组件准备和验收；`site` 为 GitHub Pages 介绍页。
 
 详见[架构](docs/ARCHITECTURE.md)与[研究参考](docs/REFERENCES.md)。自有代码采用 [MIT](LICENSE)，第三方二进制、运行时及库遵循各自许可，不能把整个安装包笼统标为 MIT，见[第三方组件说明](THIRD_PARTY_NOTICES.md)。
+
+## 参与项目
+
+提交问题或建议请使用 [Issue 表单](https://github.com/Jimmy-xuzimo/vidown/issues/new/choose)，代码贡献参见[贡献指南](CONTRIBUTING.md)。参与交流请遵守[行为准则](CODE_OF_CONDUCT.md)；安全漏洞请按照[安全政策](SECURITY.md)私密报告，不在公开 Issue 中提交凭据或未修复的利用细节。

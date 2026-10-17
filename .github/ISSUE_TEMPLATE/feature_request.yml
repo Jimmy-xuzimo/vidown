@@ -1,0 +1,33 @@
+name: 功能建议
+description: 提出有具体使用场景的功能或体验改进。
+title: "[Feature] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先搜索现有建议，并查看 [功能边界与后续计划](https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/ROADMAP.md)。
+        不要附账号凭据、私有媒体或带签名的地址。安全问题请使用私密漏洞报告入口。
+  - type: textarea
+    id: problem
+    attributes:
+      label: 使用场景与问题
+      description: 你正在完成什么操作？现有功能在哪一步不够用？
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 希望的改进
+      description: 描述期望的行为和结果；不必预先指定技术实现。
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 已尝试的办法或参考
+      description: 可说明临时解决方式、参考软件或公开资料；不需要上传受版权保护的内容。
+  - type: input
+    id: environment
+    attributes:
+      label: 相关平台与版本
+      placeholder: "例如：Windows 11、Vidown 1.0.4；或适用于所有平台"

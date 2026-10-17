@@ -1,0 +1,69 @@
+name: 故障反馈
+description: 报告可复现的软件故障或下载问题。
+title: "[Bug] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先搜索现有 Issue，并阅读使用指南。此表单公开可见：不要提交密码、Cookie、授权头、验证码、私有消息或带签名的媒体地址。
+        **安全漏洞请通过 [私密报告](https://github.com/Jimmy-xuzimo/vidown/security/advisories/new) 提交。**
+  - type: input
+    id: version
+    attributes:
+      label: Vidown 版本
+      description: 填写设置或侧栏中显示的完整版本；源码运行请附提交 SHA。
+      placeholder: "例如：1.0.4，Windows 安装版"
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 系统与处理器架构
+      options:
+        - Windows x64
+        - macOS Apple Silicon（arm64）
+        - macOS Intel（x64）
+        - Linux x64
+        - Linux ARM64
+        - 其他／不确定（请在环境中说明）
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 环境信息
+      description: 系统具体版本；Linux 请注明发行版。浏览器相关问题可附设置页的浏览器运行时版本；使用代理时只说明类型，不附密码或完整配置。
+      placeholder: "例如：Windows 11 24H2，系统 WebView2，使用系统代理"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      description: 说明从哪个入口开始、是否在内置浏览器登录、所选视频／音轨及操作顺序。仅提供可公开分享且无敏感参数的页面链接，或受控样本。
+      placeholder: |
+        1. 在内置浏览器打开页面并登录
+        2. 播放视频后解析资源
+        3. 选择音视频轨道并加入下载
+        4. 出现……
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: 预期与实际结果
+      description: 写明期望的行为和实际错误；下载问题请说明发生在探测、传输、合并还是验证阶段。
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: 日志、截图或补充信息
+      description: 可附软件导出的脱敏诊断或已遮挡个人信息的截图；发送前仍请自行检查内容。不要上传整个浏览器资料目录或下载内容。
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: 提交确认
+      options:
+        - label: 已搜索现有 Issue，并确认上述内容不包含账号凭据或不应公开的资料。
+          required: true

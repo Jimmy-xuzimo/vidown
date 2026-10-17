@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 私密报告安全漏洞
+    url: https://github.com/Jimmy-xuzimo/vidown/security/advisories/new
+    about: 涉及凭据泄露、越权、本地文件安全或代码执行的问题，请私密报告。
+  - name: 使用指南与常见限制
+    url: https://github.com/Jimmy-xuzimo/vidown/blob/main/docs/USER_GUIDE.md
+    about: 先了解浏览器登录、下载操作、数据清理与当前限制。
