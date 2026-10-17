@@ -44,13 +44,14 @@ for (const platform of [
 }
 const gh = (...args) => execFileSync("gh", args, { stdio: "inherit" });
 const commitEndpoint = `repos/${process.env.GITHUB_REPOSITORY}/commits/${tag}`;
-let target;
 try {
-  target = JSON.parse(
-    execFileSync("gh", ["api", commitEndpoint], {
+  execFileSync(
+    "gh",
+    ["api", `repos/${process.env.GITHUB_REPOSITORY}/git/ref/tags/${tag}`],
+    {
       encoding: "utf8",
       stdio: ["ignore", "pipe", "pipe"],
-    }),
+    },
   );
 } catch (error) {
   if (!error.stderr?.toString().includes("HTTP 404")) throw error;
@@ -66,10 +67,10 @@ try {
     "-f",
     `sha=${commit}`,
   );
-  target = JSON.parse(
-    execFileSync("gh", ["api", commitEndpoint], { encoding: "utf8" }),
-  );
 }
+const target = JSON.parse(
+  execFileSync("gh", ["api", commitEndpoint], { encoding: "utf8" }),
+);
 assert.equal(
   target.sha,
   commit,
