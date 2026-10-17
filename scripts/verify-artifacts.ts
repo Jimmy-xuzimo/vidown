@@ -7,7 +7,16 @@ import { command } from "../src/core/process";
 const version = JSON.parse(await readFile("package.json", "utf8")).version;
 const root = resolve("work", `artifacts-${version}-${randomUUID()}`);
 await mkdir(root, { recursive: true });
-const zip = resolve("node_modules/electron-winstaller/vendor/7z.exe");
+// Full 7-Zip understands the outer NSIS container; reduced 7za builds only see
+// an embedded stream. Hosted Windows runners include full 7-Zip in Program Files.
+const zip =
+  process.env.VIDOWN_VERIFY_7ZIP ||
+  join(process.env.ProgramFiles || "C:/Program Files", "7-Zip", "7z.exe");
+await stat(zip).catch(() => {
+  throw new Error(
+    "Package verification needs full 7-Zip. Install 7-Zip or set VIDOWN_VERIFY_7ZIP.",
+  );
+});
 const hash = async (file: string) =>
   createHash("sha256")
     .update(await readFile(file))
