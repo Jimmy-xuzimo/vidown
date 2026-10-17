@@ -42,9 +42,12 @@ if (!bytes || hash(bytes) !== expected) {
   if (hash(bytes) !== expected) throw new Error("Runtime SHA-256 mismatch");
 }
 await mkdir(join(dir, "dist"), { recursive: true });
-execFileSync("tar", ["-xf", archive, "-C", join(dir, "dist")], {
-  windowsHide: true,
-});
+if (process.platform === "linux")
+  execFileSync("unzip", ["-q", "-o", archive, "-d", join(dir, "dist")]);
+else
+  execFileSync("tar", ["-xf", archive, "-C", join(dir, "dist")], {
+    windowsHide: true,
+  });
 await writeFile(
   join(dir, "path.txt"),
   process.platform === "win32"

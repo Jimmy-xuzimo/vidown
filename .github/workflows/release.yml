@@ -102,7 +102,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential pkg-config nasm libgtk-3-0 libnss3 libasound2t64 libgbm1 libxss1 libfuse2t64 xvfb dbus-x11
+          sudo apt-get install -y build-essential pkg-config nasm unzip libgtk-3-0 libnss3 libasound2t64 libgbm1 libxss1 libfuse2t64 xvfb dbus-x11
           # Isolated CI runner only: allow Chromium's namespace sandbox, keep it enabled in the application.
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
       - name: macOS native build dependencies
