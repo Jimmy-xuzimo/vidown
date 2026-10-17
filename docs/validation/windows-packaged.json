@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T03:56:51.535Z",
+  "generatedAt": "2026-10-17T04:44:45.937Z",
   "packaged": true,
   "portable": false,
   "results": [
@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/packaged-verification/downloads/master.m3u8 [e089862e].mp4"
+      "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\packaged-verification\\downloads\\master.m3u8 [96e9ea5e].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",
