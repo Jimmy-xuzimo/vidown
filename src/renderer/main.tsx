@@ -117,6 +117,7 @@ function App() {
   const [apiId, setApiId] = useState("");
   const [apiHash, setApiHash] = useState("");
   const [authValue, setAuthValue] = useState("");
+  const [resourcesVisible, setResourcesVisible] = useState(true);
   const browserArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const acceptSnapshot = (next: Snapshot) =>
@@ -151,10 +152,14 @@ function App() {
     const observer = new ResizeObserver(update);
     observer.observe(node);
     window.addEventListener("resize", update);
+    window.visualViewport?.addEventListener("resize", update);
+    window.addEventListener("scroll", update, true);
     update();
     return () => {
       observer.disconnect();
       window.removeEventListener("resize", update);
+      window.visualViewport?.removeEventListener("resize", update);
+      window.removeEventListener("scroll", update, true);
     };
   }, [section, snapshot?.activeTab]);
   useEffect(() => {
@@ -216,6 +221,7 @@ function App() {
     ["settings", "settings", "设置与账号"],
   ];
   const selectedVideo = asset?.tracks.find((t) => t.id === video);
+  const activeTab = snapshot?.tabs.find((t) => t.id === snapshot.activeTab);
   const trackLabel = (t: Track) =>
     `${t.label}${t.bitrate ? " · " + Math.round(t.bitrate / 1000) + " kbps" : ""}${t.sampleRate ? " · " + t.sampleRate / 1000 + " kHz" : ""}${t.channels ? " · " + t.channels + " 声道" : ""}`;
   if (!snapshot) return <div className="startup">正在启动 Vidown…</div>;
@@ -257,7 +263,7 @@ function App() {
             <br />
             让每一步下载都有依据。
           </p>
-          <small>1.0.0-alpha.1</small>
+          <small>1.0.0-alpha.2</small>
         </div>
       </aside>
       <main className="workspace">
@@ -269,7 +275,11 @@ function App() {
             <i /> 本地处理
           </span>
         </header>
-        <div className="content">
+        <div
+          className={
+            section === "browser" ? "content browser-content" : "content"
+          }
+        >
           {error && (
             <div className="message error" role="alert">
               <span>{error}</span>
@@ -318,7 +328,9 @@ function App() {
                 </button>
               </form>
               <div className="entry-caption">
-                <span>HLS / DASH / 视频与音频直链</span>
+                <span>
+                  自动使用内置浏览器登录状态 · 登录后重新探测可用最高规格
+                </span>
                 <button
                   className="text-button"
                   onClick={() => {
@@ -584,7 +596,116 @@ function App() {
                   提取当前页面
                 </button>
               </form>
-              <div className="browser-columns">
+              <div className="browser-tools">
+                <div className="zoom-controls" aria-label="网页缩放控制">
+                  <button
+                    type="button"
+                    className="secondary"
+                    aria-label="缩小网页"
+                    disabled={!activeTab || activeTab.zoomFactor <= 0.25}
+                    onClick={() =>
+                      void attempt(() =>
+                        api.browser({
+                          action: "zoom",
+                          zoom: Math.max(
+                            0.25,
+                            Math.round(
+                              ((activeTab?.zoomFactor ?? 1) - 0.1) * 100,
+                            ) / 100,
+                          ),
+                        }),
+                      )
+                    }
+                  >
+                    −
+                  </button>
+                  <select
+                    aria-label="网页缩放"
+                    disabled={!activeTab}
+                    value={
+                      activeTab?.autoFit
+                        ? "fit"
+                        : String(activeTab?.zoomFactor ?? 1)
+                    }
+                    onChange={(e) =>
+                      void attempt(() =>
+                        api.browser({
+                          action: "zoom",
+                          zoom:
+                            e.target.value === "fit"
+                              ? "fit"
+                              : Number(e.target.value),
+                        }),
+                      )
+                    }
+                  >
+                    <option value="fit">
+                      适应宽度
+                      {activeTab
+                        ? ` · ${Math.round(activeTab.zoomFactor * 100)}%`
+                        : ""}
+                    </option>
+                    {[
+                      ...new Set([
+                        0.25,
+                        0.5,
+                        0.67,
+                        0.75,
+                        0.9,
+                        1,
+                        1.1,
+                        1.25,
+                        1.5,
+                        1.75,
+                        2,
+                        ...(activeTab && !activeTab.autoFit
+                          ? [activeTab.zoomFactor]
+                          : []),
+                      ]),
+                    ]
+                      .sort((a, b) => a - b)
+                      .map((zoom) => (
+                        <option key={zoom} value={zoom}>
+                          {Math.round(zoom * 100)}%
+                        </option>
+                      ))}
+                  </select>
+                  <button
+                    type="button"
+                    className="secondary"
+                    aria-label="放大网页"
+                    disabled={!activeTab || activeTab.zoomFactor >= 2}
+                    onClick={() =>
+                      void attempt(() =>
+                        api.browser({
+                          action: "zoom",
+                          zoom: Math.min(
+                            2,
+                            Math.round(
+                              ((activeTab?.zoomFactor ?? 1) + 0.1) * 100,
+                            ) / 100,
+                          ),
+                        }),
+                      )
+                    }
+                  >
+                    ＋
+                  </button>
+                </div>
+                <button
+                  className="text-button"
+                  onClick={() => setResourcesVisible(!resourcesVisible)}
+                >
+                  {resourcesVisible ? "收起资源栏" : "显示资源栏"}
+                </button>
+              </div>
+              <div
+                className={
+                  resourcesVisible
+                    ? "browser-columns"
+                    : "browser-columns resources-hidden"
+                }
+              >
                 <div ref={browserArea} className="browser-surface">
                   {!snapshot.tabs.length && (
                     <button
@@ -597,7 +718,7 @@ function App() {
                     </button>
                   )}
                 </div>
-                <aside className="resource-panel">
+                <aside className="resource-panel" hidden={!resourcesVisible}>
                   <div className="section-title">
                     <h2>发现的资源</h2>
                     <span>
@@ -777,8 +898,9 @@ function App() {
               <section className="card">
                 <h2>浏览器会话与诊断</h2>
                 <p className="muted">
-                  浏览器会话与 Telegram
-                  会话分别管理。重启后下载任务需要重新探测确认源身份。
+                  网站登录会保留在本机，下载工作台使用同一浏览器会话；网站可随时使登录失效。
+                  临时会话 Cookie 加密保存最多 7 天，持久 Cookie
+                  遵循网站有效期。 重启后的旧下载任务仍需重新探测源身份。
                 </p>
                 <div className="button-row">
                   <button

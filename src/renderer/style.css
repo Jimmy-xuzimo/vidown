@@ -11,6 +11,7 @@
 }
 body {
   margin: 0;
+  overflow: hidden;
 }
 button,
 input,
@@ -74,7 +75,7 @@ h3 {
 }
 .app-shell {
   display: flex;
-  min-height: 100vh;
+  height: 100dvh;
 }
 .sidebar {
   width: 224px;
@@ -175,9 +176,13 @@ h3 {
   margin-left: 224px;
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
 }
 .topbar {
   height: 68px;
+  flex-shrink: 0;
   border-bottom: 1px solid #232a36;
   display: flex;
   align-items: center;
@@ -205,6 +210,10 @@ h3 {
   padding: 36px;
   max-width: 1600px;
   margin: auto;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 .page-heading {
   position: relative;
@@ -609,10 +618,58 @@ label select {
   font-size: 23px;
   margin-bottom: 6px;
 }
+.browser-content {
+  max-width: none;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.browser-content > .message {
+  flex-shrink: 0;
+  margin-bottom: 10px;
+}
+.browser-workspace {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.browser-workspace > .section-title {
+  margin-bottom: 12px;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.browser-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 9px;
+  background: #1b2230;
+  border-inline: 1px solid #303b51;
+  flex-shrink: 0;
+}
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.zoom-controls .secondary {
+  padding: 3px 9px;
+  min-width: 30px;
+}
+.zoom-controls select {
+  padding: 4px 8px;
+  font-size: 11px;
+  min-width: 132px;
+}
 .browser-tabs {
   display: flex;
   gap: 6px;
   overflow: auto;
+  flex-shrink: 0;
 }
 .browser-tab {
   display: flex;
@@ -638,6 +695,7 @@ label select {
   background: #1b2230;
   padding: 9px;
   border: 1px solid #303b51;
+  flex-shrink: 0;
 }
 .browser-address > button:not(.primary):not(.secondary) {
   background: transparent;
@@ -651,15 +709,21 @@ label select {
 }
 .browser-columns {
   display: grid;
-  grid-template-columns: minmax(360px, 1fr) 270px;
-  height: calc(100vh - 295px);
-  min-height: 430px;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+.browser-columns.resources-hidden {
+  grid-template-columns: minmax(0, 1fr);
 }
 .browser-surface {
   background: #e9edf3;
   display: grid;
   place-items: center;
   overflow: hidden;
+  min-height: 0;
+  min-width: 0;
 }
 .resource-panel {
   background: #181f2d;
@@ -740,6 +804,24 @@ label select {
     display: none;
   }
   .browser-columns {
-    grid-template-columns: minmax(350px, 1fr) 240px;
+    grid-template-columns: minmax(0, 1fr) 220px;
+  }
+  .browser-content {
+    padding: 14px 16px;
+  }
+  .sidebar {
+    width: 190px;
+    padding-inline: 10px;
+  }
+  .workspace {
+    margin-left: 190px;
+  }
+  .browser-address {
+    gap: 4px;
+    padding: 6px;
+  }
+  .browser-address .primary,
+  .browser-address .secondary {
+    padding: 8px 10px;
   }
 }

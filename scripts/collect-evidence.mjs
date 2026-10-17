@@ -31,6 +31,8 @@ for (const [name, source] of [
   ],
   ["bilibili-flac-only", "work/bilibili-flac-verification/audio-only.json"],
   ["task-controls", "work/task-controls-verification/report.json"],
+  ["browser-session", "work/browser-session-verification/report.json"],
+  ["workbench-login", "work/workbench-login-verification/report.json"],
   [
     "bilibili-8k-preservation",
     "work/high-spec-verification/8k/preservation.json",

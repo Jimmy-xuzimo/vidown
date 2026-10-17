@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-10-17T03:19:42.196Z",
+  "packaged": true,
+  "status": "passed",
+  "page": "https://www.bilibili.com/video/BV1NGZtBwELa/",
+  "scope": "Existing local Bilibili login across app restart, no browser tab opened; actual workbench URL form returns 4K Dolby Vision and Dolby audio and defaults to 2160p. High-quality full download was verified previously, not repeated here.",
+  "videoOptions": [
+    "仅下载音频",
+    "2160p · 29.97fps · DV · hvc1.2.4.H150.90 · 14673 kbps",
+    "2160p · 29.965fps · avc1.640033 · 12598 kbps",
+    "2160p · 29.963fps · hev1.1.6.L153.90 · 7031 kbps",
+    "2160p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 5568 kbps",
+    "1080p · 29.966fps · avc1.640032 · 4174 kbps",
+    "1080p · 29.966fps · avc1.640032 · 2673 kbps",
+    "1080p · 29.963fps · hev1.1.6.L150.90 · 2633 kbps",
+    "1080p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 2551 kbps",
+    "1080p · 29.963fps · hev1.1.6.L150.90 · 1345 kbps",
+    "1080p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 1271 kbps",
+    "720p · 29.966fps · avc1.640028 · 1174 kbps",
+    "720p · 29.963fps · hev1.1.6.L120.90 · 587 kbps",
+    "720p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 543 kbps",
+    "480p · 29.966fps · avc1.64001F · 604 kbps",
+    "480p · 29.963fps · hev1.1.6.L120.90 · 307 kbps",
+    "480p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 285 kbps",
+    "360p · 29.966fps · avc1.64001E · 380 kbps",
+    "360p · 29.963fps · hev1.1.6.L120.90 · 200 kbps",
+    "360p · 29.963fps · av01.0.00M.10.0.110.01.01.01.0 · 184 kbps"
+  ],
+  "audioOptions": [
+    "请选择音频 / 无音频",
+    "音频 · ec-3 · 769 kbps",
+    "音频 · mp4a.40.2 · 197 kbps",
+    "音频 · mp4a.40.2 · 102 kbps",
+    "音频 · mp4a.40.2 · 66 kbps"
+  ],
+  "selectedVideo": "2160p · 29.97fps · DV · hvc1.2.4.H150.90 · 14673 kbps",
+  "loginCredentialsExported": false
+}

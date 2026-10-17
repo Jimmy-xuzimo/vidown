@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.0-alpha.1",
+  "version": "1.0.0-alpha.2",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -23,6 +23,8 @@
     "verify:protocol-edges": "node --import tsx scripts/verify-protocol-edges.ts",
     "verify:shutdown": "node --import tsx scripts/verify-shutdown.ts",
     "verify:tasks": "node --import tsx scripts/verify-task-controls.ts",
+    "verify:browser-session": "node --import tsx scripts/verify-browser-session.ts",
+    "verify:workbench-login": "node --import tsx scripts/verify-workbench-login.ts",
     "verify:x-complete": "node --import tsx scripts/verify-x-complete.ts",
     "verify:bilibili-flac": "node --import tsx scripts/verify-bilibili-flac.ts",
     "verify:desktop": "node --import tsx scripts/verify-desktop.mjs",

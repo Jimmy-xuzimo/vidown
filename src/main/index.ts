@@ -24,6 +24,7 @@ import {
   digest,
 } from "../core/safety";
 import { BrowserManager } from "./browser";
+import { SessionKeeper } from "./session";
 import type { Tools } from "../core/engine";
 import type {
   PrivateAsset,
@@ -45,6 +46,7 @@ let win: BrowserWindow,
   browser: BrowserManager,
   tools: Tools,
   work: string;
+let sessionKeeper: SessionKeeper;
 const assets = new Map<string, PrivateAsset>();
 const plans = new Map<string, DownloadPlan>();
 const running = new Map<
@@ -582,7 +584,13 @@ function registerIPC(): void {
     probe: probeInput,
     download,
     task: taskAction,
-    browser: (input) => browser.action(input),
+    browser: async (input) => {
+      await browser.action(input);
+      if (input.action === "logout") {
+        await sessionKeeper.clear();
+        assets.clear();
+      }
+    },
     settings: saveSettings,
     directory: async () => {
       const result = await dialog.showOpenDialog(win, {
@@ -653,8 +661,8 @@ async function boot(): Promise<void> {
   win = new BrowserWindow({
     width: 1400,
     height: 940,
-    minWidth: 1100,
-    minHeight: 760,
+    minWidth: 900,
+    minHeight: 600,
     title: "Vidown · 重建验证版",
     backgroundColor: "#11141c",
     show: !process.env.VIDOWN_HEADLESS,
@@ -667,7 +675,21 @@ async function boot(): Promise<void> {
   });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (event) => event.preventDefault());
-  browser = new BrowserManager(win, changed);
+  browser = new BrowserManager(
+    win,
+    changed,
+    saved.browserZoom ?? {},
+    (browserZoom) => store.saveSettings({ ...store.settings(), browserZoom }),
+  );
+  sessionKeeper = new SessionKeeper(
+    browser.session,
+    () => store.settings().browserSession,
+    (browserSession) =>
+      store.saveSettings({ ...store.settings(), browserSession }),
+    seal,
+    unseal,
+  );
+  await sessionKeeper.restore();
   engine = utilityProcess.fork(join(__dirname, "worker.cjs"), [], {
     serviceName: "Vidown Media Worker",
   });
@@ -775,6 +797,7 @@ app.on("before-quit", (event) => {
   for (const id of engineCalls.keys())
     engine?.postMessage({ id, action: "abort", payload: {} });
   const jobs: Promise<unknown>[] = [];
+  if (sessionKeeper) jobs.push(sessionKeeper.close());
   for (const [id, job] of running) {
     stopping.set(id, "interrupted");
     engine?.postMessage({ id, action: "abort", payload: {} });

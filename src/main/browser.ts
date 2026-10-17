@@ -25,6 +25,8 @@ export class BrowserManager {
   constructor(
     private win: BrowserWindow,
     private changed: () => void,
+    private zoomPreferences: Record<string, number> = {},
+    private saveZoom: (value: Record<string, number>) => void = () => {},
   ) {
     this.session = session.fromPartition("persist:vidown-browser");
     this.session.setPermissionRequestHandler((_wc, _permission, callback) =>
@@ -132,6 +134,38 @@ export class BrowserManager {
   body(url: string): string | undefined {
     return this.manifestBodies.get(url);
   }
+  private applyZoom(id: string): void {
+    const view = this.views.get(id),
+      tab = this.info.get(id);
+    if (!view || !tab || view.webContents.isDestroyed()) return;
+    let manual: number | undefined;
+    try {
+      manual = this.zoomPreferences[new URL(view.webContents.getURL()).origin];
+    } catch {}
+    const factor = Number.isFinite(manual)
+      ? Math.max(0.25, Math.min(2, manual!))
+      : Math.max(
+          0.5,
+          Math.min(1, Math.floor((this.bounds.width / 1280) * 100) / 100),
+        );
+    view.webContents.setZoomFactor(factor);
+    tab.zoomFactor = factor;
+    tab.autoFit = !Number.isFinite(manual);
+  }
+  private zoom(id: string, value: number | "fit"): void {
+    const view = this.views.get(id);
+    if (!view) throw new Error("请先打开一个标签页");
+    const origin = new URL(view.webContents.getURL()).origin;
+    if (value === "fit") delete this.zoomPreferences[origin];
+    else {
+      if (!Number.isFinite(value) || value < 0.25 || value > 2)
+        throw new Error("网页缩放范围为 25%–200%");
+      this.zoomPreferences[origin] = value;
+    }
+    this.saveZoom({ ...this.zoomPreferences });
+    for (const other of this.views.keys()) this.applyZoom(other);
+    this.changed();
+  }
   async create(url = "https://www.bilibili.com"): Promise<string> {
     const id = randomUUID();
     const view = new WebContentsView({
@@ -144,7 +178,50 @@ export class BrowserManager {
       },
     });
     this.views.set(id, view);
-    this.info.set(id, { id, url, title: "新标签页", loading: true });
+    this.info.set(id, {
+      id,
+      url,
+      title: "新标签页",
+      loading: true,
+      zoomFactor: 1,
+      autoFit: true,
+    });
+    view.webContents.on("before-input-event", (event, input) => {
+      if (input.type !== "keyDown" || !(input.control || input.meta)) return;
+      if (!["+", "=", "-", "0"].includes(input.key)) return;
+      event.preventDefault();
+      const value =
+        input.key === "0"
+          ? 1
+          : Math.max(
+              0.25,
+              Math.min(
+                2,
+                Math.round(
+                  (view.webContents.getZoomFactor() +
+                    (input.key === "-" ? -0.1 : 0.1)) *
+                    100,
+                ) / 100,
+              ),
+            );
+      this.zoom(id, value);
+    });
+    view.webContents.on("zoom-changed", (_event, direction) => {
+      this.zoom(
+        id,
+        Math.max(
+          0.25,
+          Math.min(
+            2,
+            Math.round(
+              (view.webContents.getZoomFactor() +
+                (direction === "in" ? 0.1 : -0.1)) *
+                100,
+            ) / 100,
+          ),
+        ),
+      );
+    });
     view.webContents.setWindowOpenHandler(({ url }) => {
       if (/^https?:/.test(url)) void this.create(url);
       return { action: "deny" };
@@ -167,6 +244,7 @@ export class BrowserManager {
         t.url = publicUrl(view.webContents.getURL());
         t.loading = view.webContents.isLoading();
       }
+      this.applyZoom(id);
       this.changed();
     };
     view.webContents.on("did-navigate", update);
@@ -233,6 +311,7 @@ export class BrowserManager {
     if (view) {
       this.win.contentView.addChildView(view);
       view.setBounds(this.bounds);
+      this.applyZoom(this.active!);
     }
   }
   hide(): void {
@@ -257,13 +336,17 @@ export class BrowserManager {
       )
         return;
       const [width, height] = this.win.getContentSize();
+      const scale = this.win.webContents.getZoomFactor();
+      const x = Math.max(0, Math.min(width - 1, Math.round(b.x * scale)));
+      const y = Math.max(0, Math.min(height - 1, Math.round(b.y * scale)));
       this.bounds = {
-        x: Math.max(0, Math.round(b.x)),
-        y: Math.max(0, Math.round(b.y)),
-        width: Math.max(1, Math.min(Math.round(b.width), width)),
-        height: Math.max(1, Math.min(Math.round(b.height), height)),
+        x,
+        y,
+        width: Math.max(1, Math.min(Math.round(b.width * scale), width - x)),
+        height: Math.max(1, Math.min(Math.round(b.height * scale), height - y)),
       };
       this.show();
+      this.changed();
       return;
     }
     if (input.action === "logout") {
@@ -284,6 +367,9 @@ export class BrowserManager {
     const view = this.views.get(id);
     if (!view) throw new Error("请先打开一个标签页");
     switch (input.action) {
+      case "zoom":
+        this.zoom(id, input.zoom);
+        break;
       case "select":
         this.select(id);
         break;

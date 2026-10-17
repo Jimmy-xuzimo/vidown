@@ -92,6 +92,8 @@ export interface BrowserTab {
   url: string;
   title: string;
   loading: boolean;
+  zoomFactor: number;
+  autoFit: boolean;
 }
 export interface Settings {
   downloadDir: string;
@@ -146,9 +148,11 @@ export interface DesktopAPI {
       | "close"
       | "bounds"
       | "hide"
+      | "zoom"
       | "logout";
     tabId?: string;
     url?: string;
+    zoom?: number | "fit";
     bounds?: { x: number; y: number; width: number; height: number };
   }): Promise<void>;
   settings(input: Partial<Settings>): Promise<void>;
