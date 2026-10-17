@@ -25,7 +25,13 @@ export async function listenLoopback(server: Server): Promise<void> {
       });
       return;
     } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "EADDRINUSE") throw error;
+      // Windows excluded port ranges report EACCES rather than EADDRINUSE.
+      if (
+        !["EADDRINUSE", "EACCES"].includes(
+          (error as NodeJS.ErrnoException).code ?? "",
+        )
+      )
+        throw error;
     }
   }
   throw new Error("无法分配本地媒体传输端口，请稍后重试。");

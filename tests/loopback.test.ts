@@ -1,8 +1,29 @@
 import { describe, it, expect } from "vitest";
-import { createServer } from "node:http";
+import { createServer, type Server } from "node:http";
+import { EventEmitter } from "node:events";
 import { listenLoopback } from "../src/core/loopback";
 
 describe("local media listener", () => {
+  it("skips Windows excluded ports and occupied ports before binding successfully", async () => {
+    let attempts = 0;
+    const server = Object.assign(new EventEmitter(), {
+      listen() {
+        const code = ["EACCES", "EADDRINUSE"][attempts++];
+        queueMicrotask(() =>
+          code
+            ? server.emit(
+                "error",
+                Object.assign(new Error("Controlled bind failure"), { code }),
+              )
+            : server.emit("listening"),
+        );
+      },
+    });
+    await listenLoopback(server as unknown as Server);
+    expect(attempts).toBe(3);
+    expect(server.listenerCount("error")).toBe(0);
+    expect(server.listenerCount("listening")).toBe(0);
+  });
   it("binds independent browser-fetchable listeners only on loopback", async () => {
     const servers = Array.from({ length: 8 }, () =>
       createServer((_req, res) => res.end("controlled-media")),

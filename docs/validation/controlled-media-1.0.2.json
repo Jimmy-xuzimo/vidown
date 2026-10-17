@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-10-17T08:29:56.108Z",
+  "generatedAt": "2026-10-17T08:56:55.750Z",
   "platform": "win32",
   "results": [
     {
       "name": "authenticated-hls-separated-audio",
       "status": "passed",
-      "output": "work/media-verification/results/master.m3u8 [99dd27c4].mp4",
+      "output": "work/media-verification/results/master.m3u8 [df92688b].mp4",
       "streams": [
         {
           "type": "video",
@@ -24,7 +24,7 @@
     {
       "name": "aes128-key-rotation",
       "status": "passed",
-      "output": "work/media-verification/results/index.m3u8 [5b257fa4].mp4",
+      "output": "work/media-verification/results/index.m3u8 [0d0c6450].mp4",
       "streams": [
         {
           "type": "video",
@@ -38,7 +38,7 @@
     {
       "name": "hls-fmp4-initialization",
       "status": "passed",
-      "output": "work/media-verification/results/index.m3u8 [08a4c3cf].mp4",
+      "output": "work/media-verification/results/index.m3u8 [12e7fb1b].mp4",
       "streams": [
         {
           "type": "video",
@@ -52,7 +52,7 @@
     {
       "name": "hls-byte-range",
       "status": "passed",
-      "output": "work/media-verification/results/index.m3u8 [cd7cac25].mp4",
+      "output": "work/media-verification/results/index.m3u8 [cd007ccf].mp4",
       "streams": [
         {
           "type": "video",
@@ -66,7 +66,7 @@
     {
       "name": "dash-template-timeline-separated-audio",
       "status": "passed",
-      "output": "work/media-verification/results/manifest.mpd [8e663992].mp4",
+      "output": "work/media-verification/results/manifest.mpd [eafdcb01].mp4",
       "streams": [
         {
           "type": "video",
@@ -85,7 +85,7 @@
     {
       "name": "generated-hdr10-10bit-and-flac-96khz-24bit-source-preservation",
       "status": "passed",
-      "output": "work/media-verification/results/HDR10 + Hi-Res 原规格验证 [328cb318].mkv",
+      "output": "work/media-verification/results/HDR10 + Hi-Res 原规格验证 [3018b22d].mkv",
       "frameMetadata": [
         {
           "side_data_type": "Mastering display metadata",
@@ -110,19 +110,19 @@
     {
       "name": "direct-pause-resume-with-etag-range",
       "status": "passed",
-      "reusedBytes": 32768,
-      "output": "work/media-verification/results/暂停恢复验证 [3a6fae09].mp4"
+      "reusedBytes": 36864,
+      "output": "work/media-verification/results/暂停恢复验证 [557781e9].mp4"
     },
     {
       "name": "changed-validator-restarts-instead-of-appending",
       "status": "passed",
-      "output": "work/media-verification/results/暂停恢复验证 [e4917da7].mp4"
+      "output": "work/media-verification/results/暂停恢复验证 [007c936f].mp4"
     },
     {
       "name": "hls-pause-resume-across-new-bridge-without-refetching-completed-segments",
       "status": "passed",
       "reusedSegments": 5,
-      "output": "work/media-verification/results/index.m3u8 [d6c12daa].mp4"
+      "output": "work/media-verification/results/index.m3u8 [0123ac1e].mp4"
     },
     {
       "name": "changed-manifest-refuses-old-segment-checkpoint",

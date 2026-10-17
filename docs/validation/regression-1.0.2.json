@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-10-17T08:50:37.482908+00:00",
+  "generatedAt": "2026-10-17T08:57:24.804470+00:00",
   "version": "1.0.2",
   "scope": "Current automated controlled protocol and desktop regression. Real accounts, clean-machine install/uninstall, forced OS termination and non-Windows applications are not covered.",
-  "unitTests": 33,
+  "unitTests": 34,
   "suites": [
     {
       "suite": "controlled-media",

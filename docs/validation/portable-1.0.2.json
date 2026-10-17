@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T08:43:38.886Z",
+  "generatedAt": "2026-10-17T08:57:19.172Z",
   "packaged": true,
   "portable": true,
   "results": [
@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/portable-1.0.2-verification/downloads/master.m3u8 [644b1afc].mp4"
+      "output": "work/portable-1.0.2-verification/downloads/master.m3u8 [6e006322].mp4"
     },
     {
       "name": "appearance-settings-during-transfer-preserve-authenticated-download",
