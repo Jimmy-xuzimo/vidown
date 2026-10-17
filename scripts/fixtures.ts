@@ -1,6 +1,6 @@
 import { listenLoopback } from "../src/core/loopback";
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
+import { mkdir, readFile, writeFile, stat, copyFile } from "node:fs/promises";
 import { join, resolve, extname } from "node:path";
 import { createCipheriv, randomBytes } from "node:crypto";
 import { command } from "../src/core/process";
@@ -84,30 +84,9 @@ export async function createFixtures(directory: string, tools: Tools) {
     join(root, "range", "index.m3u8"),
   ]);
   await ff([...video, join(root, "direct.mp4")]);
-  await ff([
-    "-f",
-    "lavfi",
-    "-i",
-    "testsrc2=size=320x180:rate=24",
-    "-t",
-    "1.25",
-    "-c:v",
-    "libx265",
-    "-preset",
-    "ultrafast",
-    "-pix_fmt",
-    "yuv420p10le",
-    "-color_primaries",
-    "bt2020",
-    "-color_trc",
-    "smpte2084",
-    "-colorspace",
-    "bt2020nc",
-    "-x265-params",
-    "log-level=error:bframes=0:hdr10=1:repeat-headers=1:colorprim=9:transfer=16:colormatrix=9:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(10000000,1):max-cll=1000,400",
-    "-an",
-    join(root, "hdr10.mp4"),
-  ]);
+  // Synthetic 1.25 s HEVC Main10/HDR10 test pattern, generated from lavfi.
+  // Keep the encoded fixture fixed; production remuxing does not need an HEVC encoder.
+  await copyFile(resolve("tests/fixtures/hdr10.mp4"), join(root, "hdr10.mp4"));
   await ff([
     "-f",
     "lavfi",

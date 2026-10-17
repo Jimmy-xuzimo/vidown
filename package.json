@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -89,7 +89,8 @@
           "N_m3u8DL-RE",
           "N_m3u8DL-RE.exe",
           "tools.lock.json",
-          "licenses/**/*"
+          "licenses/**/*",
+          "extractor-build.json"
         ]
       },
       {
@@ -101,8 +102,8 @@
         "to": "icon.ico"
       },
       {
-        "from": "resources/webview2-host",
-        "to": "webview2-host"
+        "from": "assets/icon_512.png",
+        "to": "icon.png"
       }
     ],
     "win": {
@@ -111,7 +112,13 @@
         "portable"
       ],
       "icon": "assets/icon.ico",
-      "signExecutable": false
+      "signExecutable": false,
+      "extraResources": [
+        {
+          "from": "resources/webview2-host",
+          "to": "webview2-host"
+        }
+      ]
     },
     "compression": "normal",
     "nsis": {
@@ -127,19 +134,39 @@
     },
     "mac": {
       "target": [
-        "dmg"
+        "dmg",
+        "zip"
       ],
-      "category": "public.app-category.utilities"
+      "category": "public.app-category.utilities",
+      "icon": "assets/icon_512.png",
+      "artifactName": "Vidown-${version}-macOS-${arch}.${ext}",
+      "hardenedRuntime": false,
+      "identity": "-",
+      "minimumSystemVersion": "15.0"
     },
     "linux": {
       "target": [
-        "AppImage"
+        "AppImage",
+        "deb",
+        "tar.gz"
       ],
-      "category": "Utility"
+      "category": "Utility",
+      "icon": "assets/icon_512.png",
+      "artifactName": "Vidown-${version}-Linux-${arch}.${ext}",
+      "maintainer": "Jimmy-xuzimo <noreply@github.com>",
+      "executableName": "vidown"
     },
     "portable": {
       "artifactName": "Vidown-Portable-${version}.exe"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Jimmy-xuzimo",
+        "repo": "vidown",
+        "releaseType": "release"
+      }
+    ]
   },
   "allowScripts": {
     "electron@44.8.0": true,

@@ -4,7 +4,7 @@
 
 一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-**版本：1.0.2 · Windows x64。** Windows 网页使用系统 WebView2，本地应用界面由 Electron 承载。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。macOS／Linux 目前进行源码检查，尚未完成安装包和实机验收。
+**版本：1.0.3。** Windows 网页使用系统 WebView2，本地应用界面由 Electron 承载。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。GitHub Actions 构建 Windows x64、macOS Intel／Apple Silicon、Linux x64／ARM64；跨平台打包和受控下载由原生运行器验证，真实账号与干净系统安装验收分别记录。
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [使用指南](docs/USER_GUIDE.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
@@ -37,22 +37,25 @@
 
 页面能播放不保证可以下载。账号权限、源提供的规格、地域、试看、DRM 和网站风控会影响结果。没有直播录制、合集或频道批量抓取，不提供 DRM 或账号权限绕过。
 
-应用重启后保留任务记录，但**需要重新探测并新建任务**，不能自动续用旧授权。失效签名自动刷新、跨重启安全续传、引擎独立更新回滚及外部浏览器资源发现扩展仍未完成。Windows 应用未签名；干净系统安装／卸载和 macOS／Linux 实机验收尚未完成。
+应用重启后保留任务记录，但**需要重新探测并新建任务**，不能自动续用旧授权。失效签名自动刷新、跨重启安全续传、引擎独立更新回滚及外部浏览器资源发现扩展仍未完成。干净系统安装／卸载、更多 Linux 发行版和真实会员／私有账号验收尚未完成。
 
 ## 获取与运行
 
-源代码可直接从本仓库获取。当前已在本机生成两种 Windows x64 包：
+在 [GitHub Releases](https://github.com/Jimmy-xuzimo/vidown/releases/latest) 选择系统和处理器架构。正式附件由 Actions 在五个原生运行器构建、验证后统一发布：
 
-- `Vidown-Setup-1.0.2.exe`：安装版，推荐日常使用，避免每次自解压。
-- `Vidown-Portable-1.0.2.exe`：免安装自解压启动包；账号、设置和任务仍按 Windows 用户保存，并非全部数据随 EXE 搬迁。
+| 平台                           | 安装／免安装格式                                  |
+| ------------------------------ | ------------------------------------------------- |
+| Windows x64                    | Setup 安装 EXE、Portable 自解压 EXE               |
+| macOS 15+ Intel／Apple Silicon | 各自的 DMG、ZIP                                   |
+| Linux x64／ARM64               | 各自的 AppImage、DEB、tar.gz（Ubuntu 24.04 构建） |
 
-公开二进制附件在第三方组件的完整对应源码与构建材料核验完成前不发布，不能把本地打包成功等同于公开发行完成。可按下方步骤自行构建；当前 Release 以实际附件和说明为准。
+每组包含 SHA-256、测试报告和第三方对应源码／构建材料。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。便携版账号、设置和任务仍按系统用户保存，并非全部数据随程序搬迁。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 
 ### 从源码开发和打包
 
-需要 Node.js 24.13+、Git、Windows .NET SDK 8。固定依赖版本和校验值由准备脚本记录；当前工具脚本不为 macOS／Linux 打包未经验证的 FFmpeg。
+需要 Node.js 24.13+、Git、Windows .NET SDK 8。固定依赖版本和校验值由准备脚本记录；公开发行使用固定源码构建 FFmpeg／x264 与独立提取器，并保留精确依赖及对应源码；详见[多平台构建](docs/BUILDING.md)。
 
 ```powershell
 npm ci

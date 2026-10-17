@@ -33,36 +33,54 @@ function hash(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
 }
 const receipts = [];
-const yUrl = `https://github.com/yt-dlp/yt-dlp/releases/download/${ytdlpVersion}/${yName}`;
-console.log("Preparing yt-dlp", ytdlpVersion);
-const sums = (
-  await get(
-    `https://github.com/yt-dlp/yt-dlp/releases/download/${ytdlpVersion}/SHA2-256SUMS`,
-  )
-).toString();
-const expected = sums
-  .split(/\r?\n/)
-  .find((line) => line.endsWith(" " + yName))
-  ?.split(/\s+/)[0];
-if (!expected) throw new Error("Missing upstream yt-dlp checksum");
-const yPath = join(root, "yt-dlp" + exe);
-let yBytes;
-try {
-  yBytes = await readFile(yPath);
-} catch {}
-if (!yBytes || hash(yBytes) !== expected) {
-  yBytes = await get(yUrl);
-  if (hash(yBytes) !== expected) throw new Error("yt-dlp checksum mismatch");
-  await writeFile(yPath, yBytes);
+const fromSource = process.env.VIDOWN_TOOLS_FROM_SOURCE === "1";
+if (!fromSource) {
+  const yUrl = `https://github.com/yt-dlp/yt-dlp/releases/download/${ytdlpVersion}/${yName}`;
+  console.log("Preparing yt-dlp", ytdlpVersion);
+  const sums = (
+    await get(
+      `https://github.com/yt-dlp/yt-dlp/releases/download/${ytdlpVersion}/SHA2-256SUMS`,
+    )
+  ).toString();
+  const expected = sums
+    .split(/\r?\n/)
+    .find((line) => line.endsWith(" " + yName))
+    ?.split(/\s+/)[0];
+  if (!expected) throw new Error("Missing upstream yt-dlp checksum");
+  const yPath = join(root, "yt-dlp" + exe);
+  let yBytes;
+  try {
+    yBytes = await readFile(yPath);
+  } catch {}
+  if (!yBytes || hash(yBytes) !== expected) {
+    yBytes = await get(yUrl);
+    if (hash(yBytes) !== expected) throw new Error("yt-dlp checksum mismatch");
+    await writeFile(yPath, yBytes);
+  }
+  receipts.push({
+    name: "yt-dlp",
+    version: ytdlpVersion,
+    source: yUrl,
+    sha256: hash(yBytes),
+    checksum: "upstream SHA2-256SUMS",
+    license: "GPL-3.0-or-later (bundled binary)",
+  });
+} else {
+  const build = JSON.parse(
+    await readFile(join(root, "extractor-build.json"), "utf8"),
+  );
+  const bytes = await readFile(join(root, "yt-dlp" + exe));
+  if (hash(bytes) !== build.sha256)
+    throw new Error("Source-built yt-dlp hash mismatch");
+  receipts.push({
+    name: "yt-dlp",
+    version: ytdlpVersion,
+    sha256: hash(bytes),
+    source: build.sourceRevision,
+    build: "Vidown Actions / scripts/build-extractor.py",
+    license: build.license,
+  });
 }
-receipts.push({
-  name: "yt-dlp",
-  version: ytdlpVersion,
-  source: yUrl,
-  sha256: hash(yBytes),
-  checksum: "upstream SHA2-256SUMS",
-  license: "GPL-3.0-or-later (bundled binary)",
-});
 console.log("Preparing N_m3u8DL-RE", nVersion);
 const nUrl = `https://github.com/nilaoda/N_m3u8DL-RE/releases/download/${nVersion}/${archive}`;
 // GitHub release assets publish a SHA-256 digest. Fail closed if it cannot be obtained.
@@ -127,7 +145,9 @@ receipts.push({
   license: "MIT",
 });
 let ffPaths;
-if (windows) {
+if (fromSource) {
+  ffPaths = ["ffmpeg", "ffprobe"].map((name) => [name, join(root, name + exe)]);
+} else if (windows) {
   const ffVersion = "9.0.2",
     ffArchive = join(root, `.ffmpeg-${ffVersion}.zip`),
     ffExpected =
@@ -167,16 +187,18 @@ if (windows) {
 } else {
   // Non-Windows builds are not release-ready until a current, matching pair is provisioned and tested.
   throw new Error(
-    "Current matching FFmpeg / ffprobe pair must be provisioned for this platform before packaging; Windows M0 only.",
+    "Build FFmpeg and yt-dlp using the release workflow, then set VIDOWN_TOOLS_FROM_SOURCE=1 before tools:prepare.",
   );
 }
 for (const [name, path] of ffPaths) {
   const target = join(root, name + exe);
-  await copyFile(path, target);
+  if (resolve(path) !== resolve(target)) await copyFile(path, target);
   receipts.push({
     name,
     sha256: hash(await readFile(target)),
-    source: "GyanD/codexffmpeg 9.0.2",
+    source: fromSource
+      ? "FFmpeg n9.0.2 + x264 (scripts/build-media.sh)"
+      : "GyanD/codexffmpeg 9.0.2",
     version: execFileSync(target, ["-version"], {
       encoding: "utf8",
       windowsHide: true,

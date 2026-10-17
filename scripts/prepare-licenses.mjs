@@ -5,7 +5,8 @@ import {
   readdir,
   readFile,
 } from "node:fs/promises";
-import { resolve, join } from "node:path";
+import { resolve, join, basename } from "node:path";
+import { execFileSync } from "node:child_process";
 const root = resolve("resources/tools/licenses");
 await mkdir(root, { recursive: true });
 const sources = [
@@ -24,14 +25,24 @@ for (const [name, url] of sources) {
     throw new Error(`License request failed: ${response.status} ${url}`);
   await writeFile(join(root, name), await response.text());
 }
-const pkg = JSON.parse(await readFile("package.json", "utf8"));
-for (const name of Object.keys(pkg.dependencies)) {
-  const directory = resolve("node_modules", name);
+const directories = execFileSync(
+  process.execPath,
+  [process.env.npm_execpath, "ls", "--omit=dev", "--all", "--parseable"],
+  { encoding: "utf8", windowsHide: true },
+)
+  .trim()
+  .split(/\r?\n/)
+  .slice(1);
+for (const directory of new Set(directories)) {
+  const pkg = JSON.parse(
+    await readFile(join(directory, "package.json"), "utf8"),
+  );
+  const prefix = pkg.name.replace(/[\/@]/g, "_") + "-" + pkg.version;
   for (const file of await readdir(directory))
     if (/^(LICEN[CS]E|COPYING|NOTICE)(\.|$)/i.test(file))
       await copyFile(
         join(directory, file),
-        join(root, name.replace(/[\/@]/g, "_") + "-" + file),
+        join(root, prefix + "-" + basename(file)),
       );
 }
 await copyFile("LICENSE", join(root, "Vidown-MIT.txt"));
@@ -41,7 +52,7 @@ await writeFile(
     {
       licenseSources: sources,
       notice:
-        "This is a local experimental preview. Complete corresponding-source and native dependency notices remain a public binary release gate.",
+        "Public release builds include platform-specific corresponding-source archives, build recipes, dependency inventories and hashes next to the installers. Local upstream-binary builds are not public release artifacts.",
     },
     null,
     2,

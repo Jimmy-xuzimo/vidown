@@ -805,8 +805,16 @@ async function boot(): Promise<void> {
     minHeight: 600,
     title: "Vidown",
     icon: app.isPackaged
-      ? join(process.resourcesPath, "icon.ico")
-      : join(app.getAppPath(), "assets/icon.ico"),
+      ? join(
+          process.resourcesPath,
+          process.platform === "win32" ? "icon.ico" : "icon.png",
+        )
+      : join(
+          app.getAppPath(),
+          process.platform === "win32"
+            ? "assets/icon.ico"
+            : "assets/icon_512.png",
+        ),
     backgroundColor:
       settings.colorMode === "light" ||
       (settings.colorMode === "system" && !nativeTheme.shouldUseDarkColors)

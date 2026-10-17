@@ -1,0 +1,224 @@
+name: Build and publish installers
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Version tag (must match package.json)"
+        required: true
+        default: v1.0.3
+      ref:
+        description: "Commit, branch or existing tag to build"
+        required: true
+        default: main
+      publish:
+        description: "Publish after all five builds pass (tag must point to this commit)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: installers-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Package ${{ matrix.platform }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-2025
+            platform: Windows
+            arch: x64
+            flag: win
+            executable: release/win-unpacked/Vidown.exe
+          - os: macos-15
+            platform: macOS
+            arch: arm64
+            flag: mac
+            executable: release/mac-arm64/Vidown.app/Contents/MacOS/Vidown
+          - os: macos-15-intel
+            platform: macOS
+            arch: x64
+            flag: mac
+            executable: release/mac/Vidown.app/Contents/MacOS/Vidown
+          - os: ubuntu-24.04
+            platform: Linux
+            arch: x64
+            flag: linux
+            executable: release/linux-unpacked/vidown
+          - os: ubuntu-24.04-arm
+            platform: Linux
+            arch: arm64
+            flag: linux
+            executable: release/linux-arm64-unpacked/vidown
+    env:
+      VIDOWN_TOOLS_FROM_SOURCE: "1"
+      VIDOWN_VERIFY_EXECUTABLE: ${{ matrix.executable }}
+      MACOSX_DEPLOYMENT_TARGET: "15.0"
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - name: Validate tag and native architecture
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+          BUILD_ARCH: ${{ matrix.arch }}
+        run: |
+          node --input-type=module -e 'import fs from "node:fs"; if (process.env.RELEASE_TAG !== "v"+JSON.parse(fs.readFileSync("package.json")).version || process.arch !== process.env.BUILD_ARCH) throw new Error("Tag/architecture mismatch")'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13.16"
+      - uses: actions/setup-dotnet@v4
+        if: runner.os == 'Windows'
+        with:
+          dotnet-version: "8.0.x"
+      - name: Linux native build and desktop libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config nasm libgtk-3-0 libnss3 libasound2t64 libgbm1 libxss1 libfuse2t64 xvfb dbus-x11
+          # Isolated CI runner only: allow Chromium's namespace sandbox, keep it enabled in the application.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+      - name: macOS native build dependencies
+        if: runner.os == 'macOS'
+        run: brew install nasm pkg-config
+      - uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            make diffutils curl tar
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-pkgconf
+            mingw-w64-x86_64-nasm
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+      - run: npx prettier --check site .github/workflows
+      - run: npm run check
+      - uses: actions/cache/restore@v4
+        id: media-cache
+        with:
+          key: media-v1-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('scripts/build-media.sh') }}
+          path: |
+            resources/tools/ffmpeg*
+            resources/tools/ffprobe*
+            resources/tools/licenses/FFmpeg-*
+            resources/tools/licenses/x264-*
+            work/corresponding-source/ffmpeg-*
+            work/corresponding-source/x264-*
+            work/corresponding-source/config*
+            work/corresponding-source/build-media.sh
+      - name: Build FFmpeg and x264 (Windows)
+        if: runner.os == 'Windows' && steps.media-cache.outputs.cache-hit != 'true'
+        shell: msys2 {0}
+        run: bash scripts/build-media.sh
+      - name: Build FFmpeg and x264 (Unix)
+        if: runner.os != 'Windows' && steps.media-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: bash scripts/build-media.sh
+      - uses: actions/cache/save@v4
+        if: steps.media-cache.outputs.cache-hit != 'true'
+        with:
+          key: ${{ steps.media-cache.outputs.cache-primary-key }}
+          path: |
+            resources/tools/ffmpeg*
+            resources/tools/ffprobe*
+            resources/tools/licenses/FFmpeg-*
+            resources/tools/licenses/x264-*
+            work/corresponding-source/ffmpeg-*
+            work/corresponding-source/x264-*
+            work/corresponding-source/config*
+            work/corresponding-source/build-media.sh
+      - name: Build isolated extractor and retain sources
+        shell: bash
+        run: |
+          python -m venv work/extractor-venv
+          if [ "$RUNNER_OS" = Windows ]; then
+            work/extractor-venv/Scripts/python.exe scripts/build-extractor.py
+          else
+            work/extractor-venv/bin/python scripts/build-extractor.py
+          fi
+      - run: npm run setup
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Verify media engines and real controlled protocols
+        run: npm run verify:media
+      - run: npm run verify:protocol-edges
+      - run: npm run verify:mirrors
+      - name: Build native installers
+        run: npm run dist -- --${{ matrix.flag }} --${{ matrix.arch }} --publish never --config.electronDist=node_modules/electron/dist
+      - name: Packaged native browser and login checks
+        if: runner.os == 'Windows'
+        run: npm run verify:webview2
+      - name: Packaged desktop download (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: npm run verify:desktop
+      - name: Packaged desktop download (Linux)
+        if: runner.os == 'Linux'
+        run: dbus-run-session -- xvfb-run -a npm run verify:desktop
+      - name: Verify Windows portable execution
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:VIDOWN_VERIFY_EXECUTABLE=(Resolve-Path "release/Vidown-Portable-$((Get-Content package.json | ConvertFrom-Json).version).exe").Path
+          $env:VIDOWN_VERIFY_PORTABLE='1'
+          $env:VIDOWN_VERIFY_REPORT_DIR='work/portable-release-verification'
+          npm run verify:desktop
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node --import tsx scripts/verify-artifacts.ts
+      - name: Collect installers, sources, checksums and evidence
+        run: node scripts/collect-release.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ matrix.platform }}-${{ matrix.arch }}
+          path: release/publish/*
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            work/*verification/report.json
+            work/*verification/*.png
+            work/corresponding-source/*.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+  publish:
+    name: Publish verified release files
+    needs: build
+    if: github.event_name == 'push' || inputs.publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: release/publish
+          merge-multiple: true
+      - name: Verify and publish assets together
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+        run: node scripts/publish-release.mjs
