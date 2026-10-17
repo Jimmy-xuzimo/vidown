@@ -860,6 +860,19 @@ function App() {
                 save={(input) => attempt(() => api.settings(input))}
                 choose={() => api.directory()}
               />
+              <DataCleanupPanel
+                clear={async (input) => {
+                  const result = await api.clearData(input);
+                  if (input.browser) {
+                    setAsset(undefined);
+                    setAddress("");
+                    setUrl("");
+                  }
+                  setNotice(
+                    `${input.browser ? "浏览器数据已清空，网站需要重新登录。" : ""}${input.history ? `已清除 ${result.removed} 条下载记录。` : ""}下载文件已保留。`,
+                  );
+                }}
+              />
               <section className="card">
                 <h2>浏览器会话与诊断</h2>
                 <p className="muted">
@@ -868,14 +881,6 @@ function App() {
                   遵循网站有效期。 重启后的旧下载任务仍需重新探测源身份。
                 </p>
                 <div className="button-row">
-                  <button
-                    className="secondary"
-                    onClick={() =>
-                      void attempt(() => api.browser({ action: "logout" }))
-                    }
-                  >
-                    清除内置浏览器登录
-                  </button>
                   <button
                     className="secondary"
                     onClick={() => void attempt(() => api.diagnostics())}
@@ -1107,6 +1112,108 @@ function DeleteHistoryDialog({
         </button>
       </div>
     </dialog>
+  );
+}
+function DataCleanupPanel({
+  clear,
+}: {
+  clear: (input: { browser: boolean; history: boolean }) => Promise<void>;
+}) {
+  const [browser, setBrowser] = useState(true);
+  const [history, setHistory] = useState(true);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState("");
+  const dialog = useRef<HTMLDialogElement>(null);
+  return (
+    <section className="card">
+      <h2>本地数据清理</h2>
+      <p className="muted">
+        清理内置浏览器的全部网站数据或下载记录。下载文件、下载目录和界面设置会保留。
+      </p>
+      <label className="check-option">
+        <input
+          type="checkbox"
+          checked={browser}
+          disabled={pending}
+          onChange={(e) => setBrowser(e.target.checked)}
+        />
+        浏览器数据（全部网站）
+      </label>
+      <p className="muted">
+        关闭全部标签页，清除浏览记录、Cookie、登录备份、缓存、网站存储和网页缩放设置；所有网站需要重新登录。
+        请先完成或取消等待中、进行中和暂停的下载任务。
+      </p>
+      <label className="check-option">
+        <input
+          type="checkbox"
+          checked={history}
+          disabled={pending}
+          onChange={(e) => setHistory(e.target.checked)}
+        />
+        下载记录
+      </label>
+      <p className="muted">
+        清除已完成、失败、取消和中断的任务记录，保留进行中和暂停的任务。下载文件不会删除。
+      </p>
+      <button
+        className="secondary"
+        disabled={pending || (!browser && !history)}
+        onClick={() => {
+          setError("");
+          dialog.current?.showModal();
+        }}
+      >
+        清除所选数据
+      </button>
+      <dialog
+        ref={dialog}
+        className="delete-dialog"
+        aria-labelledby="clear-data-title"
+        onCancel={(e) => {
+          if (pending) e.preventDefault();
+        }}
+      >
+        <h2 id="clear-data-title">清除所选本地数据？</h2>
+        <p>
+          {browser ? "全部浏览器数据（关闭标签页并退出网站登录）" : ""}
+          {browser && history ? "、" : ""}
+          {history ? "下载记录" : ""}将被清除，此操作无法撤销。
+        </p>
+        <p className="muted">下载文件和应用设置会保留。</p>
+        {error && (
+          <p role="alert" className="task-error">
+            {error}
+          </p>
+        )}
+        <div className="dialog-actions">
+          <button
+            className="secondary"
+            autoFocus
+            disabled={pending}
+            onClick={() => dialog.current?.close()}
+          >
+            取消
+          </button>
+          <button
+            className="primary"
+            disabled={pending}
+            onClick={async () => {
+              setPending(true);
+              try {
+                await clear({ browser, history });
+                dialog.current?.close();
+              } catch (e: any) {
+                setError(e.message);
+              } finally {
+                setPending(false);
+              }
+            }}
+          >
+            {pending ? "正在清理…" : "确认清除"}
+          </button>
+        </div>
+      </dialog>
+    </section>
   );
 }
 function AppearancePanel({

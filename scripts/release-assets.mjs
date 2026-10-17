@@ -11,13 +11,9 @@ export function releaseAssets(version) {
   return {
     installers: [
       `Vidown-Setup-${version}.exe`,
-      `Vidown-Portable-${version}.exe`,
       ...["arm64", "x64"].map((arch) => `Vidown-${version}-macOS-${arch}.dmg`),
       ...["x86_64", "arm64"].map(
         (arch) => `Vidown-${version}-Linux-${arch}.AppImage`,
-      ),
-      ...["amd64", "arm64"].map(
-        (arch) => `Vidown-${version}-Linux-${arch}.deb`,
       ),
     ],
     materials: platforms.flatMap((platform) => [
@@ -26,6 +22,10 @@ export function releaseAssets(version) {
       `Vidown-${version}-${platform}-SHA256SUMS.txt`,
     ]),
     internal: [
+      `Vidown-Portable-${version}.exe`,
+      ...["amd64", "arm64"].map(
+        (arch) => `Vidown-${version}-Linux-${arch}.deb`,
+      ),
       ...["arm64", "x64"].map((arch) => `Vidown-${version}-macOS-${arch}.zip`),
       ...["arm64", "x64"].map(
         (arch) => `Vidown-${version}-Linux-${arch}.tar.gz`,

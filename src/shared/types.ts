@@ -130,6 +130,10 @@ export type WorkerResponse = {
 };
 export interface DesktopAPI {
   snapshot(): Promise<Snapshot>;
+  clearData(input: {
+    browser: boolean;
+    history: boolean;
+  }): Promise<{ removed: number }>;
   probe(input: {
     url?: string;
     candidateId?: string;

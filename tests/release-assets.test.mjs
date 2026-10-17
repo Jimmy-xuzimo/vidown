@@ -6,15 +6,15 @@ import {
 } from "../scripts/release-assets.mjs";
 
 describe("public release downloads", () => {
-  const groups = releaseAssets("1.0.3");
-  it("keeps eight application downloads and preserves all corresponding sources separately", () => {
-    expect(groups.installers).toHaveLength(8);
+  const groups = releaseAssets("1.0.4");
+  it("keeps five application downloads and preserves all corresponding sources separately", () => {
+    expect(groups.installers).toHaveLength(5);
     expect(groups.materials).toHaveLength(15);
     expect(
       groups.materials.filter((f) => f.endsWith("-sources.tar.gz")),
     ).toHaveLength(5);
     expect(new Set(Object.values(groups).flat()).size).toBe(27);
-    expect(selectReleaseAssets(Object.values(groups).flat(), "1.0.3")).toEqual(
+    expect(selectReleaseAssets(Object.values(groups).flat(), "1.0.4")).toEqual(
       groups,
     );
     expect(
@@ -26,11 +26,11 @@ describe("public release downloads", () => {
     expect(() =>
       selectReleaseAssets(
         files.filter((f) => f !== groups.materials[0]),
-        "1.0.3",
+        "1.0.4",
       ),
     ).toThrow("Missing release file");
     expect(() =>
-      selectReleaseAssets([...files, "unverified.exe"], "1.0.3"),
+      selectReleaseAssets([...files, "unverified.exe"], "1.0.4"),
     ).toThrow("Unexpected release file");
   });
   it("retains source checksums while dropping unpublished alternate application archives", () => {

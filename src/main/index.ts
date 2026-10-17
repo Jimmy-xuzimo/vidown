@@ -630,6 +630,45 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   }
 }
 let historyBusy = false;
+let dataClearing = false;
+let pendingActions = 0;
+async function clearData(input: { browser: boolean; history: boolean }) {
+  if (
+    !input ||
+    typeof input.browser !== "boolean" ||
+    typeof input.history !== "boolean" ||
+    (!input.browser && !input.history)
+  )
+    throw new Error("请选择需要清除的数据");
+  if (dataClearing || pendingActions || historyBusy)
+    throw new Error("正在处理其他操作，请稍后清理");
+  if (
+    input.browser &&
+    (running.size || store.list().some((t) => !canRemoveHistory(t)))
+  )
+    throw new Error(
+      "请先完成或取消下载任务（包括等待和暂停的任务），再清除浏览器数据",
+    );
+  dataClearing = true;
+  try {
+    if (input.browser) {
+      await browser.action({ action: "logout" });
+      await sessionKeeper.clear();
+      assets.clear();
+      plans.clear();
+      store.forgetPlans();
+    }
+    const result = input.history
+      ? await removeHistory({ deleteFiles: false })
+      : { removed: 0, failed: [] };
+    if (result.failed.length)
+      throw new Error(`部分记录未清除：${result.failed[0].error}`);
+    return { removed: result.removed };
+  } finally {
+    dataClearing = false;
+    changed();
+  }
+}
 async function removeHistory(input: { ids?: string[]; deleteFiles: boolean }) {
   if (
     !input ||
@@ -714,12 +753,11 @@ function registerIPC(): void {
     download,
     task: taskAction,
     history: removeHistory,
+    clearData,
     browser: async (input) => {
-      await browser.action(input);
       if (input.action === "logout") {
-        await sessionKeeper.clear();
-        assets.clear();
-      }
+        await clearData({ browser: true, history: false });
+      } else await browser.action(input);
     },
     settings: saveSettings,
     directory: async () => {
@@ -740,7 +778,21 @@ function registerIPC(): void {
         throw new Error("拒绝远程页面调用应用接口");
       try {
         if (name !== "snapshot") await initialization;
-        return await handler(input);
+        const passive =
+          name === "snapshot" ||
+          (name === "browser" && input?.action === "hide");
+        if (!passive && dataClearing)
+          throw new Error("正在清除本地数据，请稍候");
+        const tracked =
+          !passive &&
+          name !== "clearData" &&
+          !(name === "browser" && input?.action === "logout");
+        if (tracked) pendingActions++;
+        try {
+          return await handler(input);
+        } finally {
+          if (tracked) pendingActions--;
+        }
       } catch (error) {
         throw new Error(classifyError(error));
       }

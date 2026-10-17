@@ -4,7 +4,7 @@
 
 一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-**版本：1.0.3。** Windows 网页使用系统 WebView2，本地应用界面由 Electron 承载。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。GitHub Actions 构建 Windows x64、macOS Intel／Apple Silicon、Linux x64／ARM64；跨平台打包和受控下载由原生运行器验证，真实账号与干净系统安装验收分别记录。
+**版本：1.0.4。** Windows 网页使用系统 WebView2，本地应用界面由 Electron 承载。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。GitHub Actions 构建 Windows x64、macOS Intel／Apple Silicon、Linux x64／ARM64；跨平台打包和受控下载由原生运行器验证，真实账号与干净系统安装验收分别记录。
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [使用指南](docs/USER_GUIDE.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
@@ -43,13 +43,13 @@
 
 在 [GitHub Releases](https://github.com/Jimmy-xuzimo/vidown/releases/latest) 选择系统和处理器架构。正式附件由 Actions 在五个原生运行器构建、验证后统一发布：
 
-| 平台                           | 安装／免安装格式                          |
-| ------------------------------ | ----------------------------------------- |
-| Windows x64                    | Setup 安装 EXE、Portable 自解压 EXE       |
-| macOS 15+ Intel／Apple Silicon | 各自的 DMG                                |
-| Linux x64／ARM64               | 各自的 AppImage、DEB（Ubuntu 24.04 构建） |
+| 平台                           | 安装／免安装格式                     |
+| ------------------------------ | ------------------------------------ |
+| Windows x64                    | Setup 安装 EXE                       |
+| macOS 15+ Intel／Apple Silicon | 各自的 DMG                           |
+| Linux x64／ARM64               | 各自的 AppImage（Ubuntu 24.04 构建） |
 
-下载页只列应用安装版与便携版；SHA-256、测试报告和第三方对应源码／构建材料保存在[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3-materials)。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。便携版账号、设置和任务仍按系统用户保存，并非全部数据随程序搬迁。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
+下载页仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4-materials)。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 

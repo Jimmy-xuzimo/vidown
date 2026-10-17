@@ -67,6 +67,7 @@ for (const suite of [
   "protocol-edge-verification",
   "mirror-verification",
   "packaged-verification",
+  `data-cleanup-${process.platform === "win32" ? "webview2" : "chromium"}`,
   ...(process.platform === "win32"
     ? ["webview2-verification", "portable-release-verification"]
     : ["package-layout"]),

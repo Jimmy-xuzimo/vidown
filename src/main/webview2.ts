@@ -475,6 +475,8 @@ export class WebView2Browser extends BrowserManager {
     }
     if (input.action === "logout") {
       this.hide();
+      // Drain any older cookie snapshot before removing native and transport data.
+      await this.syncing;
       if (this.child) await this.request("logout");
       else {
         await this.ensure();
@@ -485,9 +487,10 @@ export class WebView2Browser extends BrowserManager {
       this.nativeIds.clear();
       this.active = undefined;
       this.candidates.clear();
+      this.headers.clear();
       this.capturedHeaders.clear();
       this.manifestBodies.clear();
-      await this.session.clearStorageData();
+      await this.clearSessionData();
       this.changed();
       return;
     }

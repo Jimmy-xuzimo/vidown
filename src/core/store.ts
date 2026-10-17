@@ -93,6 +93,11 @@ export class Store {
     const r = this.db.prepare("SELECT sealed FROM tasks WHERE id=?").get(id);
     return r?.sealed ? String(r.sealed) : undefined;
   }
+  forgetPlans(): void {
+    this.db.exec(
+      "UPDATE tasks SET sealed=NULL, record=json_set(record,'$.resumable',json('false'))",
+    );
+  }
   remove(id: string): void {
     this.db.exec("BEGIN IMMEDIATE");
     try {

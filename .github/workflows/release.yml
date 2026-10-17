@@ -8,7 +8,7 @@ on:
       tag:
         description: "Version tag (must match package.json)"
         required: true
-        default: v1.0.3
+        default: v1.0.4
       publish:
         description: "Create version tag and publish after all five builds pass"
         type: boolean
@@ -171,6 +171,12 @@ jobs:
       - name: Packaged desktop download (Linux)
         if: runner.os == 'Linux'
         run: dbus-run-session -- xvfb-run -a npm run verify:desktop
+      - name: Packaged browser and history data cleanup (Windows / macOS)
+        if: runner.os != 'Linux'
+        run: npm run verify:data-cleanup
+      - name: Packaged browser and history data cleanup (Linux)
+        if: runner.os == 'Linux'
+        run: dbus-run-session -- xvfb-run -a npm run verify:data-cleanup
       - name: Verify Windows portable execution
         if: runner.os == 'Windows'
         shell: pwsh

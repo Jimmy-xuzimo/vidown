@@ -1,5 +1,13 @@
 # 验证记录
 
+## 1.0.4 本地数据清理
+
+新增 `npm run verify:data-cleanup`。Windows 本机分别使用 WebView2、Chromium 和独立测试档案验证 5 组行为：空选择及暂停任务保护；取消确认与仅清理记录；设置页清理浏览器时保留文件、记录和偏好；重启后两个网站的 Cookie、LocalStorage、SessionStorage、IndexedDB、CacheStorage、HTTP 缓存与登录备份不恢复；同时及重复清理。数据库中的旧加密下载计划一并失效。
+
+类型／生产构建和 39 项单元／本地集成测试通过；Windows WebView2 原有 7 组受控登录、鉴权下载与文件验证通过；完整 npm audit 为 0。上述为本地源码运行结果。发行工作流还必须在五个平台的实际打包程序上通过数据清理、受控下载及原有协议／载荷检查，报告随版本的独立资料 Release 保存。
+
+本轮不读取或删除个人浏览器资料；不代表真实网站账号、干净系统安装／卸载或磁盘取证级擦除通过验收。
+
 ## 1.0.3 多平台发行验证
 
 [发行工作流](https://github.com/Jimmy-xuzimo/vidown/actions/workflows/release.yml)在五个原生运行器构建 Windows x64、macOS x64／arm64、Linux x64／arm64。每组包含 34 项单元／本地集成测试、11 项受控媒体／独立提取器测试、2 项时间轴边界、6 项备用源断言，以及打包应用的 6 组浏览器→鉴权下载→合并→成品验证。Windows 另有 7 组原生 WebView2 检查、便携 EXE 的 6 组实际闭环与 22 项载荷比较。

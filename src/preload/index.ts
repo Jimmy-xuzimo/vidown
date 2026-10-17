@@ -4,6 +4,7 @@ const invoke = (method: string, input?: unknown) =>
   ipcRenderer.invoke("vidown:" + method, input);
 const api: DesktopAPI = {
   snapshot: () => invoke("snapshot"),
+  clearData: (input) => invoke("clearData", input),
   probe: (input) => invoke("probe", input),
   download: (input) => invoke("download", input),
   task: (input) => invoke("task", input),

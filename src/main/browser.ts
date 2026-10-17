@@ -23,7 +23,7 @@ export class BrowserManager {
   >();
   private views = new Map<string, WebContentsView>();
   protected info = new Map<string, BrowserTab>();
-  private headers = new Map<number, Record<string, string>>();
+  protected headers = new Map<number, Record<string, string>>();
   protected capturedHeaders = new Map<string, Record<string, string>>();
   protected manifestBodies = new Map<string, string>();
   protected bounds = { x: 270, y: 110, width: 700, height: 560 };
@@ -75,6 +75,17 @@ export class BrowserManager {
     return "Chromium";
   }
   async synchronize(): Promise<void> {}
+  protected async clearSessionData(): Promise<void> {
+    await this.session.closeAllConnections();
+    await this.session.clearStorageData();
+    await this.session.clearCache();
+    await this.session.clearCodeCaches({});
+    await this.session.clearAuthCache();
+    await this.session.clearHostResolverCache();
+    await this.session.cookies.flushStore();
+    this.zoomPreferences = {};
+    this.saveZoom({});
+  }
   async configureProxy(proxy: string): Promise<void> {
     await this.session.setProxy(
       proxy ? { proxyRules: proxy } : { mode: "system" },
@@ -491,7 +502,7 @@ export class BrowserManager {
       this.capturedHeaders.clear();
       this.manifestBodies.clear();
       this.active = undefined;
-      await this.session.clearStorageData();
+      await this.clearSessionData();
       this.changed();
       return;
     }
