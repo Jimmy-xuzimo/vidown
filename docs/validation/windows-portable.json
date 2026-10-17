@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-17T03:24:56.334Z",
+  "generatedAt": "2026-10-17T04:12:30.565Z",
   "packaged": true,
   "portable": true,
   "results": [
     {
-      "name": "native-tdlib-worker-loads-and-reports-version",
+      "name": "telegram-web-mode-requires-no-native-api-credentials",
       "status": "passed"
     },
     {
@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "work/portable-verification/downloads/master.m3u8 [a41512a1].mp4"
+      "output": "work/portable-verification/downloads/master.m3u8 [f89fd9a1].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",

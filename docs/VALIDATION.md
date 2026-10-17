@@ -20,7 +20,7 @@ Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启�
 
 上述媒体测试由本地 FFmpeg 生成真实片段，通过真实 HTTP 服务、N_m3u8DL-RE、FFmpeg、ffprobe 执行，不使用下载成功的模拟返回值。对应 [协议报告](validation/controlled-media.json)、[Windows 打包报告](validation/windows-packaged.json)、[组件版本与 SHA-256](validation/tools-windows-x64.json)。受控套件内的真实平台条目标为 pending，真实平台结果单独记录于下节。
 
-运行时代码提交 `e8e0c7f` 的 Windows 2025、macOS 15、Ubuntu 24.04 源码 CI 均通过，执行格式检查、生产构建、类型检查和 26 项测试；[CI 记录](validation/source-ci.json) 包含对应运行链接。源码检查没有替代三端打包及实机验收。
+运行时代码提交 `cca0962` 的 Windows 2025、macOS 15、Ubuntu 24.04 源码 CI 均通过，执行格式检查、生产构建、类型检查和 28 项测试；[CI 记录](validation/source-ci.json) 包含对应运行链接。源码检查没有替代三端打包及实机验收。
 
 额外验证见 [时间轴和多 Period](validation/protocol-edges.json)、[跨源检查点隔离](validation/mirror-isolation.json)、[正常关闭和重启](validation/windows-shutdown.json)。最初多 Period 样本只有前半段被引擎保存；新增平台／清单完整时长检查先阻止了错误成功，再改为每 Period 交由成熟引擎下载、核对实际编码配置、FFmpeg 无损拼接，12 秒成品完整解码通过。轨道缺失、编码变化或时间范围有间隔会明确拒绝，不能扩展成所有 MPD 均已验证。
 
