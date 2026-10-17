@@ -9,10 +9,6 @@ on:
         description: "Version tag (must match package.json)"
         required: true
         default: v1.0.3
-      ref:
-        description: "Commit, branch or existing tag to build"
-        required: true
-        default: main
       publish:
         description: "Create version tag and publish after all five builds pass"
         type: boolean
@@ -26,20 +22,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  resolve:
-    name: Resolve immutable source commit
-    runs-on: ubuntu-24.04
-    outputs:
-      commit: ${{ steps.source.outputs.commit }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.ref || github.ref }}
-      - id: source
-        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   build:
     name: Package ${{ matrix.platform }}-${{ matrix.arch }}
-    needs: resolve
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -79,7 +63,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.resolve.outputs.commit }}
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -108,7 +93,7 @@ jobs:
       - name: macOS native build dependencies
         if: runner.os == 'macOS'
         run: brew install nasm pkg-config
-      - uses: msys2/setup-msys2@v2
+      - uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2.33.0
         if: runner.os == 'Windows'
         with:
           msystem: MINGW64
@@ -219,7 +204,7 @@ jobs:
 
   publish:
     name: Publish verified release files
-    needs: [resolve, build]
+    needs: [build]
     if: github.event_name == 'push' || inputs.publish
     runs-on: ubuntu-24.04
     permissions:
@@ -227,7 +212,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ needs.resolve.outputs.commit }}
+          ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*

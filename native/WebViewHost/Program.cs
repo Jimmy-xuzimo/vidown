@@ -10,6 +10,8 @@ static class Program
 {
     public static readonly JsonSerializerOptions Json = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
     static readonly object OutputLock = new();
+    // Keep diagnostics separate from the JSON protocol and exclude URLs/credentials.
+    public static void Warn(string code) => Console.Error.WriteLine("Vidown native: " + code);
     public static void Send(object value)
     {
         lock (OutputLock) Console.Out.WriteLine(JsonSerializer.Serialize(value, Json));
@@ -29,7 +31,9 @@ static class Program
                     var command = JsonDocument.Parse(line).RootElement.Clone();
                     form.BeginInvoke(async () => await form.Dispatch(command));
                 }
-                catch { /* Malformed local pipe input is never executed. */ }
+                catch (Exception error) when (error is JsonException or InvalidOperationException or ArgumentException) {
+                    Program.Warn("local-command-rejected");
+                }
             }
             if (!form.IsDisposed) form.BeginInvoke(() => Application.Exit());
         });
@@ -79,7 +83,7 @@ sealed class BrowserHost : Form
         lifetime.Tick += (_, _) =>
         {
             try { if (Process.GetProcessById(parentPid).HasExited) Application.Exit(); }
-            catch { Application.Exit(); }
+            catch (Exception error) when (error is ArgumentException or InvalidOperationException or System.ComponentModel.Win32Exception) { Application.Exit(); }
         };
         lifetime.Start();
     }
@@ -173,7 +177,9 @@ sealed class BrowserHost : Form
                     }
                     Program.Send(new { type = "manifest", url = e.Request.Uri, text = System.Text.Encoding.UTF8.GetString(buffer.ToArray()) });
                 }
-            } catch { /* Capture failure does not interrupt website playback. */ }
+            } catch (Exception error) when (error is COMException or InvalidOperationException or IOException or ArgumentException) {
+                Program.Warn("media-capture-unavailable");
+            }
         };
         core.DownloadStarting += (_, e) => {
             e.Handled = true;
@@ -201,10 +207,10 @@ sealed class BrowserHost : Form
     }
     void Select(string id)
     {
-        if (!tabs.ContainsKey(id)) throw new Exception("标签页不存在");
+        if (!tabs.TryGetValue(id, out var selected)) throw new Exception("标签页不存在");
         active = id;
         foreach (var pair in tabs) pair.Value.Visible = shown && pair.Key == active && pair.Value.Source?.Scheme is "http" or "https";
-        tabs[id].BringToFront();
+        selected.BringToFront();
     }
     async Task<object?> Execute(WebView2 view, string code)
     {
@@ -266,7 +272,9 @@ sealed class BrowserHost : Form
                             c.Expires = DateTimeOffset.FromUnixTimeSeconds((long)expiry.GetDouble()).UtcDateTime;
                         manager.AddOrUpdateCookie(c);
                         imported++;
-                      } catch { /* One invalid cookie must not block the remaining selected-site cookies. */ }
+                      } catch (Exception error) when (error is ArgumentException or InvalidOperationException or KeyNotFoundException or COMException) {
+                        Program.Warn("session-cookie-rejected");
+                      }
                     }
                     value = imported;
                     break;
@@ -290,7 +298,7 @@ sealed class BrowserHost : Form
                 case "download-action":
                     if(downloads.TryGetValue(Str(input,"downloadId"),out var job)) {
                         switch(Str(input,"action")) {
-                            case "cancel": job.Op.Cancel(); try { job.Deferral.Complete(); } catch {} break;
+                            case "cancel": job.Op.Cancel(); CompleteDeferral(job.Deferral); break;
                             case "pause": job.Op.Pause(); break;
                             case "resume": job.Op.Resume(); break;
                         }
@@ -301,7 +309,15 @@ sealed class BrowserHost : Form
             }
             Program.Send(new { id = request, value });
         } catch (Exception error) {
+            // RPC boundary: reply to this request instead of terminating the host.
             Program.Send(new { id = request, error = error.Message });
+        }
+    }
+    static void CompleteDeferral(CoreWebView2Deferral deferral)
+    {
+        try { deferral.Complete(); }
+        catch (Exception error) when (error is InvalidOperationException or COMException) {
+            Program.Warn("download-deferral-already-complete");
         }
     }
     protected override void Dispose(bool disposing)
@@ -309,7 +325,7 @@ sealed class BrowserHost : Form
         if(disposing && !closing) {
             closing=true;
             lifetime.Dispose();
-            foreach(var job in downloads.Values) { job.Op.Cancel(); try { job.Deferral.Complete(); } catch {} }
+            foreach(var job in downloads.Values) { job.Op.Cancel(); CompleteDeferral(job.Deferral); }
             foreach(var view in tabs.Values) view.Dispose();
             cookieView?.Dispose();
         }

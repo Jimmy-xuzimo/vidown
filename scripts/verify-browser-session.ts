@@ -1,5 +1,5 @@
 import { _electron } from "playwright";
-import { mkdir, readFile, writeFile, rm } from "node:fs/promises";
+import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join, resolve, relative } from "node:path";
 import { randomUUID } from "node:crypto";
 import assert from "node:assert/strict";

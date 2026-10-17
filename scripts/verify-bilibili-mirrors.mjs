@@ -1,5 +1,5 @@
 import { _electron } from "playwright";
-import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import assert from "node:assert/strict";
 const root = resolve("work/bilibili-mirror-verification");

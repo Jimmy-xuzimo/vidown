@@ -1,6 +1,6 @@
 import { listenLoopback } from "../src/core/loopback";
 import { createServer } from "node:http";
-import { mkdir, readFile, writeFile, stat, copyFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile, copyFile } from "node:fs/promises";
 import { join, resolve, extname } from "node:path";
 import { createCipheriv, randomBytes } from "node:crypto";
 import { command } from "../src/core/process";

@@ -1,13 +1,5 @@
-import {
-  mkdir,
-  readFile,
-  writeFile,
-  stat,
-  rename,
-  rm,
-  open,
-} from "node:fs/promises";
-import { join, extname } from "node:path";
+import { mkdir, readFile, writeFile, stat, rename, rm } from "node:fs/promises";
+import { join } from "node:path";
 import { createWriteStream } from "node:fs";
 import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";

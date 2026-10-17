@@ -43,6 +43,7 @@ def download(url, name, expected=None):
             if attempt == 3:
                 raise
             time.sleep(3 * (attempt + 1))
+    raise RuntimeError('Source download retry loop exhausted')
 
 
 def run(*args, **kwargs):

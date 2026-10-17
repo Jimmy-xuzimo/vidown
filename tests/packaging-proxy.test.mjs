@@ -36,6 +36,12 @@ describe("packaging downloader proxy compatibility", () => {
       res.end("controlled-packaging-download");
     });
     const proxy = createServer((req, res) => {
+      const target = new URL(req.url);
+      if (target.origin !== `http://127.0.0.1:${origin.address().port}`) {
+        res.writeHead(403);
+        res.end();
+        return;
+      }
       observed.push({
         url: req.url,
         authorization: req.headers["proxy-authorization"],
@@ -44,8 +50,14 @@ describe("packaging downloader proxy compatibility", () => {
       const headers = { ...req.headers };
       delete headers["proxy-authorization"];
       const forward = request(
-        req.url,
-        { method: req.method, headers, agent: false },
+        {
+          hostname: "127.0.0.1",
+          port: origin.address().port,
+          path: target.pathname + target.search,
+          method: req.method,
+          headers,
+          agent: false,
+        },
         (upstream) => {
           res.writeHead(upstream.statusCode, upstream.headers);
           upstream.pipe(res);

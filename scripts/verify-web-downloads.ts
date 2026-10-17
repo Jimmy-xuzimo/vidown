@@ -171,7 +171,7 @@ try {
   });
   const remote = app
     .windows()
-    .find((p) => p.url().includes("web.telegram.org"))!;
+    .find((p) => new URL(p.url()).hostname === "web.telegram.org")!;
   const stale = await page.evaluate(() =>
     window.vidown.probe({ url: "https://t.me/controlledchannel/42" }),
   );
@@ -290,7 +290,13 @@ try {
     });
     webContents
       .getAllWebContents()
-      .find((w) => w.getURL().includes("web.telegram.org"))!
+      .find((w) => {
+        try {
+          return new URL(w.getURL()).hostname === "web.telegram.org";
+        } catch {
+          return false;
+        }
+      })!
       .downloadURL(origin + "/auth/direct.mp4");
   }, fixture.origin);
   const transferring = await until(async () => {
@@ -437,7 +443,9 @@ try {
   assert.equal(new URL(kPage.url()).hostname, "webk.telegram.org");
   assert.equal(linked.tracks[0].protocol, "browser");
   assert.equal(
-    app.windows().filter((p) => p.url().includes("web.telegram.org")).length,
+    app
+      .windows()
+      .filter((p) => new URL(p.url()).hostname === "web.telegram.org").length,
     1,
   );
   results.push({
