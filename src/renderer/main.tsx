@@ -164,7 +164,7 @@ function App() {
       window.visualViewport?.removeEventListener("resize", update);
       window.removeEventListener("scroll", update, true);
     };
-  }, [section, snapshot?.activeTab]);
+  }, [section, snapshot?.activeTab, error, notice, resourcesVisible]);
   useEffect(() => {
     const t = snapshot?.tabs.find((t) => t.id === snapshot.activeTab);
     if (t) setAddress(t.url === "about:blank" ? "" : t.url);
@@ -478,9 +478,9 @@ function App() {
             <div className="browser-workspace">
               <div className="section-title">
                 <div>
-                  <h1>播放，即可发现。</h1>
+                  <h1>浏览器探测</h1>
                   <p className="muted">
-                    在网页内登录并播放视频，右侧会列出发现的媒体请求。
+                    访问网站、登录并播放，发现可保存的原始资源。
                   </p>
                 </div>
               </div>
@@ -577,6 +577,8 @@ function App() {
                 </button>
                 <input
                   aria-label="浏览器地址"
+                  placeholder="输入网址，自动补全 https://"
+                  spellCheck={false}
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
@@ -590,7 +592,9 @@ function App() {
                 <button
                   type="button"
                   className="secondary"
-                  disabled={busy}
+                  disabled={
+                    busy || !activeTab || activeTab.url === "about:blank"
+                  }
                   onClick={() => void probe({ tabId: snapshot.activeTab })}
                 >
                   提取当前页面
@@ -692,12 +696,15 @@ function App() {
                     ＋
                   </button>
                 </div>
-                <button
-                  className="text-button"
-                  onClick={() => setResourcesVisible(!resourcesVisible)}
-                >
-                  {resourcesVisible ? "收起资源栏" : "显示资源栏"}
-                </button>
+                <div className="browser-tool-actions">
+                  <button
+                    className="text-button"
+                    aria-expanded={resourcesVisible}
+                    onClick={() => setResourcesVisible(!resourcesVisible)}
+                  >
+                    {resourcesVisible ? "收起资源栏" : "显示资源栏"}
+                  </button>
+                </div>
               </div>
               <div
                 className={
@@ -707,15 +714,50 @@ function App() {
                 }
               >
                 <div ref={browserArea} className="browser-surface">
-                  {!snapshot.tabs.length && (
-                    <button
-                      className="secondary"
-                      onClick={() =>
-                        void attempt(() => api.browser({ action: "new" }))
-                      }
-                    >
-                      打开登录与探测浏览器
-                    </button>
+                  {(!activeTab || activeTab.url === "about:blank") && (
+                    <section className="browser-welcome" aria-label="新标签页">
+                      <img src={brandIcon} width="64" height="64" alt="" />
+                      <span className="welcome-brand">VIDOWN</span>
+                      <h2>把精彩，完整保存。</h2>
+                      <p>从一个网址开始，发现值得留下的声音与画面。</p>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          if (!creatingTab)
+                            void attempt(() =>
+                              api.browser({ action: "navigate", url: address }),
+                            );
+                        }}
+                      >
+                        <input
+                          aria-label="新标签页网址"
+                          placeholder="输入网站或视频网址"
+                          spellCheck={false}
+                          value={address}
+                          onChange={(e) => setAddress(e.target.value)}
+                        />
+                        <button
+                          className="primary"
+                          disabled={creatingTab || !address.trim()}
+                        >
+                          打开网页 <Icon name="arrow" size={16} />
+                        </button>
+                      </form>
+                      <div className="welcome-steps">
+                        <span>
+                          <b>01</b> 访问与登录
+                        </span>
+                        <span>
+                          <b>02</b> 播放与发现
+                        </span>
+                        <span>
+                          <b>03</b> 选择与保存
+                        </span>
+                      </div>
+                      <small>
+                        登录状态保存在本机，返回工作台即可使用同一账号解析链接。
+                      </small>
+                    </section>
                   )}
                 </div>
                 <aside className="resource-panel" hidden={!resourcesVisible}>
@@ -1167,19 +1209,6 @@ function AppearancePanel({
           aria-label="界面动效"
           checked={value.animations}
           onChange={(e) => void change({ animations: e.target.checked })}
-        />
-      </div>
-      <div className="preference-row">
-        <div>
-          <strong>鼠标微光</strong>
-          <p>只在指针移动时绘制，静止和窗口失焦时停止。</p>
-        </div>
-        <input
-          type="checkbox"
-          role="switch"
-          aria-label="鼠标微光"
-          checked={value.hoverGlow}
-          onChange={(e) => void change({ hoverGlow: e.target.checked })}
         />
       </div>
     </section>

@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-17T07:37:19.2702565Z",
+  "version": "1.0.1",
+  "scope": "Local archive inspection; installer wizard not executed",
+  "artifacts": [
+    {
+      "file": "Vidown-Setup-1.0.1.exe",
+      "bytes": 246518050,
+      "sha256": "135a9d7177f94f91db815d06462865d1c658477d32ef1d68673f3b0b3f64e316",
+      "payloadSHA256": "5dfa35d8921c983cc43ca4cd897f6bd85505e3edbc33393e03398ed79acd056f"
+    },
+    {
+      "file": "Vidown-Portable-1.0.1.exe",
+      "bytes": 246235350,
+      "sha256": "05fa05aac09a0fd47f4776243872cb62271f5e75f864d423e5be3064bffda8da",
+      "payloadSHA256": "5dfa35d8921c983cc43ca4cd897f6bd85505e3edbc33393e03398ed79acd056f"
+    }
+  ],
+  "checks": [
+    {
+      "file": "Vidown.exe",
+      "matchesTestedApplication": true,
+      "sha256": "9b42c326a9443db5f34f50b19a5b633be2003149522a130130ccb52a1dc286f9"
+    },
+    {
+      "file": "resources/app.asar",
+      "matchesTestedApplication": true,
+      "sha256": "1a365f1ec9158eaad487cd556092be8cac9cd8650c3c54efe02bc134024144d0"
+    },
+    {
+      "file": "resources/icon.ico",
+      "matchesTestedApplication": true,
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5"
+    },
+    {
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "matchesTestedApplication": true,
+      "sha256": "678b41930efe2504fa9f94534353d8d9850584adc6b65b82e288bafd418ff4a6"
+    },
+    {
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "matchesTestedApplication": true,
+      "sha256": "7afc411fdc230aba29d76aaa888000aaba97a36bb31c021c44c2a9bc47de7400"
+    }
+  ]
+}

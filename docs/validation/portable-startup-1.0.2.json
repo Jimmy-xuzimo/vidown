@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-10-17T08:44:00.692Z",
+  "executable": "release/Vidown-Portable-1.0.2.exe",
+  "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+  "results": [
+    {
+      "run": 1,
+      "readyMs": 9800,
+      "version": "1.0.2",
+      "startup": {
+        "readyMs": 246,
+        "shellMs": 378
+      }
+    },
+    {
+      "run": 2,
+      "readyMs": 9880,
+      "version": "1.0.2",
+      "startup": {
+        "readyMs": 218,
+        "shellMs": 402
+      }
+    }
+  ]
+}

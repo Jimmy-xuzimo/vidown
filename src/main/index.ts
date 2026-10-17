@@ -8,6 +8,7 @@ import {
   safeStorage,
   clipboard,
   nativeTheme,
+  Menu,
 } from "electron";
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
@@ -51,7 +52,10 @@ import type {
 
 if (process.env.VIDOWN_TEST_DATA)
   app.setPath("userData", resolve(process.env.VIDOWN_TEST_DATA));
-app.setName("Vidown Preview");
+else
+  // Keep existing accounts and downloads when changing the displayed product name.
+  app.setPath("userData", join(app.getPath("appData"), "Vidown Preview"));
+app.setName("Vidown");
 const single = app.requestSingleInstanceLock();
 if (!single) app.quit();
 let win: BrowserWindow,
@@ -538,7 +542,7 @@ async function taskAction(input: {
         );
       if (!plans.has(t.id))
         throw new Error(
-          "重启后需要重新探测确认账号与源身份；本验证版不自动重用旧会话。",
+          "重启后需要重新探测确认账号与源身份；当前版本不自动重用旧会话。",
         );
       patchTask(t.id, { state: "queued", error: undefined });
       schedule();
@@ -574,8 +578,7 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   if (
     !["system", "dark", "light"].includes(next.colorMode) ||
     !["iris", "ocean", "jade", "rose"].includes(next.theme) ||
-    typeof next.animations !== "boolean" ||
-    typeof next.hoverGlow !== "boolean"
+    typeof next.animations !== "boolean"
   )
     throw new Error("无效的外观设置");
   if (!settingsInitialized || next.downloadDir !== settings.downloadDir)
@@ -590,8 +593,9 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   settings = next;
   settingsInitialized = true;
   nativeTheme.themeSource = settings.colorMode;
+  const { hoverGlow: _removed, ...retained } = store.settings();
   store.saveSettings({
-    ...store.settings(),
+    ...retained,
     ...settings,
     clipboardAutofillVersion: 1,
   });
@@ -697,7 +701,7 @@ async function diagnostics(): Promise<string | undefined> {
         .events(id)
         .map(({ sequence, state }) => ({ sequence, state })),
     })),
-    stage: "M0 preview",
+    stage: "Windows desktop",
     accountTests: "pending",
   };
   await writeFile(result.filePath, JSON.stringify(report, null, 2));
@@ -744,13 +748,17 @@ function registerIPC(): void {
 }
 async function boot(): Promise<void> {
   await app.whenReady();
+  if (process.platform !== "darwin") Menu.setApplicationMenu(null);
   if (process.platform === "win32") app.setAppUserModelId("top.xuzimo.vidown");
   await mkdir(app.getPath("userData"), { recursive: true });
   work = join(app.getPath("userData"), "work");
   await mkdir(work, { recursive: true });
   // The extractor normally removes these in finally; recover from an interrupted worker too.
   for (const entry of await readdir(work, { withFileTypes: true }))
-    if (entry.isFile() && /^[a-f0-9-]{36}\.cookies\.txt$/.test(entry.name))
+    if (
+      entry.isFile() &&
+      /^[a-f0-9-]{36}\.(cookies\.txt|cookie-info\.json)$/.test(entry.name)
+    )
       await rm(join(work, entry.name), { force: true });
   store = new Store(join(app.getPath("userData"), "vidown.sqlite"));
   const saved = store.settings();
@@ -763,7 +771,6 @@ async function boot(): Promise<void> {
     colorMode: saved.colorMode ?? "system",
     theme: saved.theme ?? "iris",
     animations: saved.animations ?? true,
-    hoverGlow: saved.hoverGlow ?? true,
     density: "compact",
   };
   const dir = app.isPackaged

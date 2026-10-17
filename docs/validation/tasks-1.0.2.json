@@ -1,0 +1,18 @@
+{
+  "generatedAt": "2026-10-17T08:33:13.645Z",
+  "packaged": true,
+  "results": [
+    {
+      "name": "queued-cancel-and-active-pause-stop-real-requests",
+      "status": "passed"
+    },
+    {
+      "name": "resume-verifies-complete-media-and-terminal-tasks-cannot-reopen",
+      "status": "passed"
+    },
+    {
+      "name": "phase-events-persist-in-order-and-restart-does-not-offer-false-resume",
+      "status": "passed"
+    }
+  ]
+}

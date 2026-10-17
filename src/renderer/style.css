@@ -885,32 +885,6 @@ label select {
   }
 }
 
-/* Small, input-driven highlights. No canvas, blur, perpetual pointer loop or new layer per card. */
-button,
-.card,
-.task-row,
-.url-entry {
-  position: relative;
-}
-button::after,
-.card::after,
-.task-row::after,
-.url-entry::after {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(
-    120px circle at var(--glow-x, 50%) var(--glow-y, 50%),
-    color-mix(in srgb, var(--accent) 13%, transparent),
-    transparent 75%
-  );
-  opacity: 0;
-}
-[data-glow="on"] .pointer-lit::after {
-  opacity: 1;
-}
 button {
   overflow: hidden;
 }
@@ -936,7 +910,7 @@ button:disabled {
   animation: surface-in 0.18s ease-out both;
 }
 .browser-workspace {
-  animation: fade-in 0.16s ease-out both;
+  animation: none;
 }
 .nav,
 .secondary,
@@ -1236,5 +1210,171 @@ button:disabled {
   }
   .theme-choice {
     padding: 8px;
+  }
+}
+
+/* Browser chrome has fixed rows; the native website is confined to the measured surface. */
+.browser-workspace > .section-title h1 {
+  font-size: 22px;
+}
+.browser-workspace > .section-title p {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.browser-address {
+  align-items: center;
+}
+.browser-address > input {
+  width: 0;
+}
+.browser-address > button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.browser-tools {
+  min-height: 42px;
+}
+.browser-tool-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.browser-tool-actions button {
+  font-size: 11px;
+  white-space: nowrap;
+}
+.browser-columns {
+  border: 1px solid var(--border);
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+.browser-surface {
+  position: relative;
+  background: #f1f3fa;
+}
+.browser-welcome {
+  color-scheme: light;
+  color: #303a54;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: clamp(20px, 4vh, 56px) clamp(20px, 4vw, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 14% 12%, #e5ddfa 0, transparent 60%),
+    radial-gradient(ellipse at 95% 85%, #dbeef4 0, transparent 60%), #f7f7fc;
+}
+.browser-welcome > img {
+  flex-shrink: 0;
+  filter: drop-shadow(0 8px 16px #63529920);
+}
+.welcome-brand {
+  font-size: 11px;
+  letter-spacing: 5px;
+  margin: 14px 0 12px;
+  color: #77748d;
+}
+.browser-welcome h2 {
+  font-size: clamp(22px, 2.5vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.6px;
+}
+.browser-welcome > p {
+  color: #64708b;
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 10px;
+}
+.browser-welcome form {
+  display: flex;
+  width: min(100%, 560px);
+  margin: 26px 0;
+  padding: 5px;
+  gap: 5px;
+  border: 1px solid #d8d9ea;
+  background: #ffffffc9;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px #7772990b;
+}
+.browser-welcome input {
+  flex: 1;
+  width: 0;
+  background: transparent;
+  border: 0;
+  color: #303a54;
+  font-size: 12px;
+  padding: 10px;
+}
+.browser-welcome input::placeholder {
+  color: #858ba0;
+}
+.browser-welcome .primary {
+  background: #7560c5;
+  color: white;
+  padding: 10px 14px;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.welcome-steps {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  color: #69718b;
+  font-size: 11px;
+}
+.welcome-steps b {
+  font-weight: 500;
+  color: #8b7cb1;
+  margin-right: 5px;
+}
+.browser-welcome > small {
+  color: #7a8298;
+  font-size: 10px;
+  line-height: 1.8;
+  margin-top: 22px;
+  max-width: 340px;
+}
+@media (max-height: 740px) {
+  .browser-workspace > .section-title {
+    margin-bottom: 4px;
+  }
+  .browser-workspace > .section-title p {
+    display: none;
+  }
+  .browser-welcome {
+    justify-content: flex-start;
+    padding-block: 20px;
+  }
+  .browser-welcome > img {
+    width: 44px;
+    height: 44px;
+  }
+  .welcome-brand {
+    margin: 8px 0;
+  }
+  .browser-welcome form {
+    margin: 18px 0;
+  }
+}
+@media (max-width: 1000px) {
+  .browser-columns {
+    grid-template-columns: minmax(0, 1fr) 200px;
+  }
+  .browser-address {
+    flex-wrap: wrap;
+  }
+  .browser-address > input {
+    flex-basis: 200px;
+  }
+  .browser-address .secondary {
+    margin-left: auto;
+  }
+  .resource-panel {
+    padding: 12px;
   }
 }

@@ -1,0 +1,25 @@
+{
+  "generatedAt": "2026-10-17T07:20:53.965Z",
+  "executable": "release/win-unpacked/Vidown.exe",
+  "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
+  "results": [
+    {
+      "run": 1,
+      "readyMs": 424,
+      "version": "1.0.0",
+      "startup": {
+        "readyMs": 202,
+        "shellMs": 269
+      }
+    },
+    {
+      "run": 2,
+      "readyMs": 413,
+      "version": "1.0.0",
+      "startup": {
+        "readyMs": 184,
+        "shellMs": 253
+      }
+    }
+  ]
+}

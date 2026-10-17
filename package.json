@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.0-alpha.6",
+  "version": "1.0.2",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -67,7 +67,7 @@
   },
   "build": {
     "appId": "top.xuzimo.vidown",
-    "productName": "Vidown Preview",
+    "productName": "Vidown",
     "directories": {
       "output": "release"
     },

@@ -26,8 +26,7 @@ env.VIDOWN_HEADLESS = "1";
 delete env.ELECTRON_RUN_AS_NODE;
 const options = {
   executablePath: resolve(
-    process.env.VIDOWN_VERIFY_EXECUTABLE ||
-      "release/win-unpacked/Vidown Preview.exe",
+    process.env.VIDOWN_VERIFY_EXECUTABLE || "release/win-unpacked/Vidown.exe",
   ),
   args: [],
   env,

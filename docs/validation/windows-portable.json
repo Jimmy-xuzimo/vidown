@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\portable-verification-alpha4\\downloads\\master.m3u8 [dc8a2d74].mp4"
+      "output": "work/portable-verification-alpha4/downloads/master.m3u8 [dc8a2d74].mp4"
     },
     {
       "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",

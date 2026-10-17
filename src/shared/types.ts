@@ -105,7 +105,6 @@ export interface Settings {
   colorMode: "system" | "dark" | "light";
   theme: "iris" | "ocean" | "jade" | "rose";
   animations: boolean;
-  hoverGlow: boolean;
   density: "compact";
 }
 export interface Snapshot {

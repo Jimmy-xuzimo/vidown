@@ -1,6 +1,6 @@
 {
   "generatedAt": "2026-10-17T06:47:13.641Z",
-  "executable": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\release\\Vidown-Portable-1.0.0-alpha.6.exe",
+  "executable": "release/Vidown-Portable-1.0.0-alpha.6.exe",
   "scope": "Two isolated-profile starts; warm OS caches, includes automation connection overhead; no cold-boot claim",
   "results": [
     {

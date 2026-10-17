@@ -1,44 +1,58 @@
-# Vidown · 全量重建验证版
+# Vidown
 
-基于 Electron、React 和 TypeScript 从零编写的本地视频下载器。旧 Python 工程未复用，历史保留在 Git 中。默认保留源编码，视频和音频分别选择，可靠时封装 MP4，否则使用 MKV。
+> 把精彩，完整保存。
 
-**当前交付阶段是 M0，不是完成全部计划的 1.0。** 已验证受控媒体、Windows 应用闭环，B 站真实 4K 杜比视界＋Atmos、8K SDR、独立 4K HDR10、48 kHz／24-bit FLAC，以及备用 CDN。X 公开短视频已完整下载并验证保真；用户提供的长视频按要求停止，仅验证实际传输及短样本。X 登录、Telegram 私有内容等仍待验收。详见 [验证记录](docs/VALIDATION.md) 和 [后续里程碑](docs/ROADMAP.md)。
+一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-![Windows 重建工作台](docs/images/workbench.png)
+**版本：1.0.2 · Windows x64。** Windows 网页使用系统 WebView2，本地应用界面由 Electron 承载。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。macOS／Linux 目前进行源码检查，尚未完成安装包和实机验收。
 
-## 已验证
+[项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [使用指南](docs/USER_GUIDE.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
-- Windows 网页使用系统 Evergreen WebView2：登录会话、标签页、真实媒体请求捕获、HLS／DASH 及无扩展名媒体类型识别；本地应用界面仍由 Electron 承载。
-- 浏览器随窗口适配、25%–200% 网页缩放、适应宽度与资源栏收起；网站缩放偏好和登录会话可跨重启保留，工作台使用同一登录状态提取格式。
-- 固定高度的浏览器标签，长标题末尾省略，新标签按钮位于标签之后；浏览器和工作台自动补全网址协议。
-- 下载记录支持单条删除和一键清理，默认保留文件；可选择将对应成品移至回收站，进行中与暂停任务受保护。
-- 跟随系统／深色／浅色外观、四套配色、固定紧凑密度，以及可关闭的轻量动效和指针微光，设置跨重启保留。
-- 剪贴板链接自动填入工作台，保留查询参数和定位片段；设置可关闭，填入不会自动解析或下载。应用自有文案不设置具体视频平台入口。
-- 浏览器会话传输桥：WebView2 Cookie 通过本地进程管道同步至专用传输会话，保留 HttpOnly、必要请求头及 Range；协议下载继续使用 Electron 网络层，网页原生保存由 WebView2 执行。
-- 真实 HLS 视频／音频分轨、AES-128 密钥轮换、fMP4 初始化片段、字节范围，以及 DASH 模板／时间线分轨下载与合并。
-- HLS 时间戳重置后的 discontinuity；轨道 ID 和实际编码配置不变的连续 DASH 多 Period。缺轨、规格变化或时间轴有空档时明确停止。
-- 直链暂停／继续：检查 ETag 与 Content-Range；源身份变化时重新下载，避免错误追加。
-- HDR10 10-bit 视频＋96 kHz／24-bit FLAC 的生成样本无损封装；首帧 HDR 元数据及成品参数检查。
-- 用户提供的 B 站 4K Dolby Vision Profile 8＋Dolby Atmos 5.1 实际下载；源／成品完整编码码流哈希一致。真实平台能力以该样本范围为准。
-- 另一个 B 站短样本的 7680×4320 SDR＋AAC、3840×2160 10-bit HDR10＋AAC，均完成完整下载、无损合并和码流哈希检查；这是两种独立组合。
-- B 站主 CDN 被主动阻断后，完整杜比音轨从备用源下载成功；不同源的检查点与保留字节隔离。
-- X 公开长视频的 1080p HLS 实际分片下载；9 秒 H.264＋AAC 样本无损合并与解码。缺少编码字段的音轨和 HTTP 变体仍可选择，未知参数明确显示。
-- 独立公开 X 短视频完整下载、全片音视频解码及码流哈希一致；B 站真实 48 kHz／24-bit FLAC 与视频无损封装为 MKV。
-- SQLite 任务记录、历史搜索、独立下载工作进程、失败诊断；已知中断不会假装完成。
-- 任务状态迁移约束、阶段事件与单调版本号、原子数据库升级；重启缺少计划的任务明确要求重新探测。
-- 分片下载的实际接收字节／速度、传输停滞超时，以及正常关闭时终止下载子进程。
+![Vidown 下载工作台](docs/images/workbench.png)
 
-## 接入但仍待实测
+## 能做什么
 
-- B 站其他高规格组合、X 登录内容与单帖多视频。
-- Telegram 使用已登录的 Web A／Web K 网页定位消息并触发允许的保存操作；Web K 当前视频与资源栏入口、受控 DOM／blob 链路通过，真实账号和私有消息尚待验收。无需申请 API 身份，不设置网站专属登录入口。
-- 其他真实 FLAC／Hi-Res 采样率组合、番剧会员权限，以及杜比硬件播放。
+- **两种发现入口**：直接粘贴链接，或用内置浏览器登录并播放，再解析当前页面或侧栏资源；识别不依赖 URL 扩展名。
+- **独立选择音视频**：展示源返回的分辨率、帧率、编码、动态范围与音轨；未知或缺少的参数如实显示。支持单独保存音频。
+- **通用点播协议**：HLS 主清单、分离音轨、TS／fMP4、初始化片段、字节范围与普通 AES-128 密钥轮换；DASH 常见模板与时间线；HTTP／HTTPS 直链。
+- **源规格保存**：默认不重新编码，适合的组合保存为 MP4，部分高规格组合使用 MKV。下载、合并与验证分别呈现，验证通过后才标记完成。
+- **统一内置登录**：登录状态保存在本机，解析与下载使用相同会话。Cookie 遵循网站有效期；临时会话 Cookie 在系统安全存储可用时加密备份最多 7 天。网站可使登录提前失效。
+- **队列与记录**：并发 1–4、同次会话暂停与恢复、取消、历史搜索。支持单条删除和一键清理，默认保留文件，可选择把成品移至回收站。
+- **紧凑工作台**：固定高度标签、自动补全网址协议、网页缩放、可折叠资源栏、柔和的新标签页；四套配色与深浅模式，动效可关闭，无鼠标微光。
+- **剪贴板填入**：监听可关闭；复制链接只填入输入框，不会自行访问、解析或下载。
 
-Chrome／Edge 扩展、自动刷新失效签名、跨重启安全续传、引擎更新回滚与正式跨平台发行尚未实现。当前重启后需重新探测。没有直播录制、合集／频道抓取，也不处理 DRM 绕过。
+**没有外部浏览器 Cookie 导入、cookies.txt 导入或配套导出扩展。** 需要账号的网站统一在内置浏览器登录。此版本已完整移除此前尝试的导入入口和后台接口。
 
-## 开发运行（Windows x64）
+## 实测范围与限制
 
-需要 Node.js 24、Git，以及 Windows 原生宿主构建所需的 .NET SDK 8；**最终用户无需安装这些开发工具**。Windows 网页需要系统已有 Evergreen WebView2 Runtime。
+通用协议和桌面功能使用可重复的本地真实媒体服务验证，详见[本轮回归](docs/VALIDATION.md)。历史版本还验证过以下真实样本；这些结果仅对应所列样本及当时版本，不能自动扩展为所有内容或新浏览器后端的完整账号验收。
+
+| 范围                 | 已有证据                                                                                                             | 仍需验证                                               |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| 通用 HLS／DASH／直链 | 分轨、加密样本、暂停与源变化校验、合并及成品检查                                                                     | 更多清单变体、不同站点的风控与授权限制                 |
+| B 站                 | 4K Dolby Vision Profile 8＋Atmos、8K SDR、独立 4K HDR10、48 kHz／24-bit FLAC，以及备用 CDN，历史完整码流哈希检查通过 | 新浏览器后端真实会员账号、其他规格组合、番剧和试看边界 |
+| X                    | 公开短视频完整下载及码流哈希检查，长视频短分片验证                                                                   | 登录内容和单帖多视频                                   |
+| Telegram 网页        | Web A／K 受控 DOM、原生 blob／文件保存与权限处理                                                                     | 真实账号、私有消息与页面变化                           |
+| YouTube 及其他站点   | 使用固定版本 yt-dlp 提取器和浏览器发现链路                                                                           | 当前版本的真实账号和逐站点最高规格验收                 |
+
+页面能播放不保证可以下载。账号权限、源提供的规格、地域、试看、DRM 和网站风控会影响结果。没有直播录制、合集或频道批量抓取，不提供 DRM 或账号权限绕过。
+
+应用重启后保留任务记录，但**需要重新探测并新建任务**，不能自动续用旧授权。失效签名自动刷新、跨重启安全续传、引擎独立更新回滚及外部浏览器资源发现扩展仍未完成。Windows 应用未签名；干净系统安装／卸载和 macOS／Linux 实机验收尚未完成。
+
+## 获取与运行
+
+源代码可直接从本仓库获取。当前已在本机生成两种 Windows x64 包：
+
+- `Vidown-Setup-1.0.2.exe`：安装版，推荐日常使用，避免每次自解压。
+- `Vidown-Portable-1.0.2.exe`：免安装自解压启动包；账号、设置和任务仍按 Windows 用户保存，并非全部数据随 EXE 搬迁。
+
+公开二进制附件在第三方组件的完整对应源码与构建材料核验完成前不发布，不能把本地打包成功等同于公开发行完成。可按下方步骤自行构建；当前 Release 以实际附件和说明为准。
+
+最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
+
+### 从源码开发和打包
+
+需要 Node.js 24.13+、Git、Windows .NET SDK 8。固定依赖版本和校验值由准备脚本记录；当前工具脚本不为 macOS／Linux 打包未经验证的 FFmpeg。
 
 ```powershell
 npm ci
@@ -47,39 +61,19 @@ npm run native:build
 npm run dev
 ```
 
-`setup` 获取并校验固定版本的 Electron、yt-dlp、N_m3u8DL-RE 和配套 FFmpeg／ffprobe。所有文件存放在项目内，不修改系统 PATH。组件来源和校验值记录在 `resources/tools/tools.lock.json`。
-
 ```powershell
-npm run check            # 类型检查、构建及自动化测试
-npm run verify:media     # 生成真实分片，使用下载引擎完成协议与保真测试
-npm run verify:desktop   # 启动真实 Electron，执行浏览器登录到保存成品的界面测试
-npm run verify:protocol-edges # 时间轴切换、多 Period、中文及引号路径
-npm run verify:mirrors   # 跨源检查点隔离和备用地址
-npm run verify:shutdown  # 下载中关闭应用及重启状态
-npm run verify:tasks     # 真实暂停、恢复、排队取消与重启事件顺序
-npm run pack             # 生成 Windows 应用目录
-npm run verify:interface # 外观持久化、标签布局、记录删除及真实回收站检查
-npm run verify:startup   # 两次隔离档案启动测量（非冷启动）
-npm run verify:webview2  # 系统 WebView2、登录持久化、鉴权下载和原生 blob 保存
-npm run dist             # 同时生成 Windows 安装版和便携版
+npm run check              # 类型检查、生产构建、单元／本地集成测试
+npm run format:check
+npm run verify:media       # 真实媒体协议、保真、暂停与源变化
+npm run verify:protocol-edges
+npm run verify:mirrors
+npm run dist               # 同时生成安装版和便携版
 ```
 
-alpha.6 提供 `release/Vidown-Setup-1.0.0-alpha.6.exe` 和 `release/Vidown-Portable-1.0.0-alpha.6.exe`。推荐安装版，通过快捷方式启动以避免便携版每次自解压。应用自带下载组件和原生宿主的 .NET 运行时；网页使用系统 WebView2，缺少时提示安装 Microsoft Evergreen Runtime。图标为原创城市暮色渐变，提供透明多尺寸 Windows ICO。运行新版前请正常退出旧版。
+打包后的桌面验收使用 `VIDOWN_VERIFY_EXECUTABLE` 指向 `release/win-unpacked/Vidown.exe`，执行 `verify:webview2`、`verify:interface`、`verify:desktop`、`verify:tasks`、`verify:shutdown`、`verify:browser-session`、`verify:web-downloads` 和 `verify:startup`。这些脚本使用隔离档案；部分检查会临时替换系统剪贴板或把受控文件放入回收站，请在专用测试环境运行。
 
-旧 Chromium 档案保留；WebView2 使用独立本机档案，不能完整自动迁移旧网站存储，因此升级后部分网站需要重新登录一次。此后 Cookie、Local Storage 和 IndexedDB 持久化；工作台解析前同步登录 Cookie。不能仅凭受控登录测试声明所有网站最高规格均已重新验收，真实账号与私有消息仍需实测。当前不是 WinUI／C++ 整体重写。详见 [alpha.6 验证记录](docs/VALIDATION.md#alpha6-系统-webview2剪贴板与双版本)。
+## 结构与许可证
 
-所有网站统一使用「浏览器探测」访问和登录；会话保存在本机。回下载工作台粘贴链接，应用自动识别站点并使用同一会话解析可用规格。Telegram 识别官方 Web A／Web K 及 weba.telegram.org、webk.telegram.org 入口，粘贴 t.me 链接时沿用已登录的客户端。Web K 打开视频后也可提取当前页面或匹配的探测资源，使用网页提供的保存操作；内部播放地址不作为普通直链重放。真实账号和私有消息完整下载仍待验收，禁止保存的消息明确停止。YouTube 的真实账号解析也未在本轮验收，不能由 Cookie 共享推断所有网站均已支持。
+`src/core` 管理协议、下载进程、传输桥与成品检查；`src/main` 管理浏览器、会话和任务；`src/preload` 仅向本地界面提供受限 IPC；`src/renderer` 为工作台；`native/WebViewHost` 为 Windows WebView2 宿主；`scripts`／`tests` 提供组件准备和验收；`site` 为 GitHub Pages 介绍页。
 
-仓库提供 Windows／macOS／Linux 的源码检查 CI；其通过与否应以实际运行结果为准，不代表三端应用实机验收。当前工具准备脚本仍会拒绝为 macOS／Linux 打包未经验证的 FFmpeg。
-
-## 代码结构
-
-- `src/core`：协议元数据、进程适配、传输桥、源质量策略和成品检查。
-- `src/main`：浏览器、会话、任务协调、Telegram 网页适配和独立媒体工作进程。
-- `src/preload`：仅对本地界面暴露的窄 IPC 接口。
-- `src/renderer`：工作台、资源列表、轨道选择、历史与账号设置。
-- `scripts`、`tests`：固定组件准备、真实媒体验证与回归测试。
-
-自有代码使用 [MIT](LICENSE)。第三方二进制与原生库遵循各自许可，详见 [第三方组件说明](THIRD_PARTY_NOTICES.md)。
-
-B 站方案另外检查了 DownKyiCore 和 BBDown 的高规格、备用 CDN 与续传设计，见 [参考记录与代码复用边界](docs/REFERENCES.md)。
+详见[架构](docs/ARCHITECTURE.md)与[研究参考](docs/REFERENCES.md)。自有代码采用 [MIT](LICENSE)，第三方二进制、运行时及库遵循各自许可，不能把整个安装包笼统标为 MIT，见[第三方组件说明](THIRD_PARTY_NOTICES.md)。

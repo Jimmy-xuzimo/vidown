@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-10-17T07:20:33.4760066Z",
+  "scope": "Local installer and portable archives have identical payloads; selected payload files match the packaged application. Installer wizard was not executed.",
+  "artifacts": [
+    {
+      "file": "Vidown-Setup-1.0.0.exe",
+      "bytes": 246518047,
+      "sha256": "522fd7e94c83edd0cb9439b9d00c6b27e2b59cba75b59e74fa1539e985cda11a",
+      "payloadSHA256": "70ded29111ab8bcc808a9357b3f59096cf2b124862bb012a4a3748532a784a3e"
+    },
+    {
+      "file": "Vidown-Portable-1.0.0.exe",
+      "bytes": 246235289,
+      "sha256": "7c5f6f442adf272519f095fb44d21513f64af06e1c9439ad11110b08c985f1d6",
+      "payloadSHA256": "70ded29111ab8bcc808a9357b3f59096cf2b124862bb012a4a3748532a784a3e"
+    }
+  ],
+  "checks": [
+    {
+      "file": "Vidown.exe",
+      "matchesTestedApplication": true,
+      "sha256": "8ca8cff0a8188a3012a062c7365312ead69f9a5718c042af0789787c2205fb97"
+    },
+    {
+      "file": "resources/app.asar",
+      "matchesTestedApplication": true,
+      "sha256": "a395f10fb9f9ca57f5c3182216cd91bb41423bb5cda257e771e194363d14f9b7"
+    },
+    {
+      "file": "resources/icon.ico",
+      "matchesTestedApplication": true,
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5"
+    },
+    {
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "matchesTestedApplication": true,
+      "sha256": "678b41930efe2504fa9f94534353d8d9850584adc6b65b82e288bafd418ff4a6"
+    },
+    {
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "matchesTestedApplication": true,
+      "sha256": "7afc411fdc230aba29d76aaa888000aaba97a36bb31c021c44c2a9bc47de7400"
+    },
+    {
+      "file": "resources/THIRD_PARTY_NOTICES.md",
+      "matchesTestedApplication": true,
+      "sha256": "efec121d70b085725428197dde83061f3180ebbbe6e99e0085cc27548ab234f5"
+    }
+  ]
+}

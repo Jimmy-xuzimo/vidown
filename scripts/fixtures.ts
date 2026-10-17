@@ -1,3 +1,4 @@
+import { listenLoopback } from "../src/core/loopback";
 import { createServer } from "node:http";
 import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import { join, resolve, extname } from "node:path";
@@ -210,11 +211,20 @@ export async function createFixtures(directory: string, tools: Tools) {
   let manifestChanged = false;
   let origin = "",
     mediaOrigin = "";
+  let pageIsolation: { appAPI: string | null; node: string | null } | undefined;
   const server = createServer(async (req, res) => {
     try {
       res.setHeader("Access-Control-Allow-Origin", origin);
       res.setHeader("Access-Control-Allow-Credentials", "true");
       const url = new URL(req.url ?? "/", "http://localhost");
+      if (url.pathname === "/isolation") {
+        pageIsolation = {
+          appAPI: url.searchParams.get("appAPI"),
+          node: url.searchParams.get("node"),
+        };
+        res.writeHead(204).end();
+        return;
+      }
       if (url.pathname === "/login") {
         res
           .writeHead(302, {
@@ -229,7 +239,7 @@ export async function createFixtures(directory: string, tools: Tools) {
         res
           .writeHead(200, { "content-type": "text/html" })
           .end(
-            `<!doctype html><title>Vidown session fixture</title><h1>Vidown session fixture</h1><video controls src="${mediaOrigin}/auth/direct.mp4"></video><script>fetch("${mediaOrigin}/auth/master.m3u8",{credentials:"include"});</script>`,
+            `<!doctype html><title>Vidown session fixture</title><h1>Vidown session fixture</h1><video controls src="${mediaOrigin}/auth/direct.mp4"></video><script>fetch("${mediaOrigin}/auth/master.m3u8",{credentials:"include"});fetch('/isolation?appAPI='+encodeURIComponent(typeof window.vidown)+'&node='+encodeURIComponent(typeof require));</script>`,
           );
         return;
       }
@@ -334,20 +344,17 @@ export async function createFixtures(directory: string, tools: Tools) {
       else res.destroy();
     }
   });
-  await new Promise<void>((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
-  });
+  await listenLoopback(server);
   origin = `http://127.0.0.1:${(server.address() as any).port}`;
   const mediaServer = createServer(server.listeners("request")[0] as any);
-  await new Promise<void>((resolve, reject) => {
-    mediaServer.once("error", reject);
-    mediaServer.listen(0, "127.0.0.1", resolve);
-  });
+  await listenLoopback(mediaServer);
   mediaOrigin = `http://127.0.0.1:${(mediaServer.address() as any).port}`;
   return {
     origin,
     root,
+    get pageIsolation() {
+      return pageIsolation;
+    },
     get requests() {
       return requests;
     },

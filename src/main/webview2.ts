@@ -241,6 +241,7 @@ export class WebView2Browser extends BrowserManager {
           loading: message.loading,
         });
         void this.applyNativeZoom(id).catch(() => {});
+        if (this.visible && id === this.active) this.show();
         this.changed();
       }
     } else if (message.type === "capture")
@@ -317,27 +318,25 @@ export class WebView2Browser extends BrowserManager {
     this.syncing = (async () => {
       const cookies: any[] = await this.request("cookies");
       const previous = await this.session.cookies.get({});
+      const key = (c: { name: string; domain?: string; path?: string }) =>
+        JSON.stringify([c.name, c.domain, c.path]);
+      const currentKeys = new Set(cookies.map(key));
+      const previousByKey = new Map(previous.map((c) => [key(c), c]));
       for (const old of previous)
-        if (
-          !cookies.some(
-            (c) =>
-              c.name === old.name &&
-              c.domain === old.domain &&
-              c.path === old.path,
-          )
-        )
+        if (!currentKeys.has(key(old)))
           await this.session.cookies.remove(
             `${old.secure ? "https" : "http"}://${old.domain?.replace(/^\./, "")}${old.path}`,
             old.name,
           );
       for (const c of cookies) {
-        const old = previous.find(
-          (o) =>
-            o.name === c.name && o.domain === c.domain && o.path === c.path,
-        );
+        const old = previousByKey.get(key(c));
         if (
           old?.value === c.value &&
-          old?.expirationDate === (c.expirationDate ?? undefined)
+          old?.expirationDate === (c.expirationDate ?? undefined) &&
+          old?.secure === c.secure &&
+          old?.httpOnly === c.httpOnly &&
+          old?.sameSite ===
+            (c.sameSite === "none" ? "no_restriction" : c.sameSite)
         )
           continue;
         await this.session.cookies.set({
@@ -426,7 +425,7 @@ export class WebView2Browser extends BrowserManager {
     if (!this.child || !this.active) return;
     const dpi = screen.getDisplayMatching(this.win.getBounds()).scaleFactor;
     void this.request("bounds", {
-      visible: true,
+      visible: this.actualUrls.get(this.active) !== "about:blank",
       ...Object.fromEntries(
         Object.entries(this.bounds).map(([k, v]) => [k, Math.round(v * dpi)]),
       ),

@@ -1,0 +1,19 @@
+{
+  "generatedAt": "2026-10-17T08:30:04.940Z",
+  "results": [
+    {
+      "name": "hls-timestamp-reset-discontinuity",
+      "status": "passed",
+      "expectedDuration": 6,
+      "actualDuration": 6,
+      "output": "work/protocol-edge-verification/中文目录和'引号/discontinuity.m3u8 [3fc56e19].mp4"
+    },
+    {
+      "name": "dash-two-periods-same-representations",
+      "status": "passed",
+      "expectedDuration": 12,
+      "actualDuration": 12,
+      "output": "work/protocol-edge-verification/中文目录和'引号/multi-period.mpd [11b75692].mp4"
+    }
+  ]
+}

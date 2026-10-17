@@ -60,43 +60,109 @@ try {
       await page.locator("body").innerText(),
     ),
   );
-  originalClipboard = await app.evaluate(
-    async ({ clipboard }) => await clipboard.readText(),
-  );
-  const copied =
-    "https://example.test/watch?quality=original&signature=controlled-test#part-2";
-  await app.evaluate(
-    async ({ clipboard }, text) => await clipboard.writeText(text),
-    copied,
-  );
-  await until(
-    async () =>
-      (await page.getByLabel("视频链接", { exact: true }).inputValue()) ===
+  if (process.env.VIDOWN_VERIFY_SKIP_CLIPBOARD === "1") {
+    await page.evaluate(() => window.vidown.settings({ clipboard: false }));
+    results.push({
+      name: "os-clipboard-check-explicitly-skipped-in-environment-that-replaces-clipboard-content",
+      status: "skipped",
+    });
+  } else {
+    originalClipboard = await app.evaluate(
+      async ({ clipboard }) => await clipboard.readText(),
+    );
+    const copied =
+      "https://example.test/watch?quality=original&signature=controlled-test#part-2";
+    await app.evaluate(
+      async ({ clipboard }, text) => await clipboard.writeText(text),
       copied,
-  );
-  assert.equal(
-    (await page.evaluate(() => window.vidown.snapshot())).tasks.length,
-    0,
-  );
-  await page.evaluate(() => window.vidown.settings({ clipboard: false }));
-  await app.evaluate(
-    async ({ clipboard }) =>
-      await clipboard.writeText("https://ignored.example.test/"),
-  );
-  await page.waitForTimeout(900);
-  assert.equal(
-    await page.getByLabel("视频链接", { exact: true }).inputValue(),
-    copied,
-  );
-  results.push({
-    name: "generic-ui-fixed-compact-and-clipboard-autofill-preserves-query-and-fragment-without-starting-download",
-    status: "passed",
-  });
+    );
+    try {
+      await until(
+        async () =>
+          (await page.getByLabel("视频链接", { exact: true }).inputValue()) ===
+          copied,
+        5000,
+      );
+    } catch {
+      const clipboardMatches = await app.evaluate(
+        async ({ clipboard }, expected) =>
+          (await clipboard.readText()) === expected,
+        copied,
+      );
+      const clipboardEnabled = (
+        await page.evaluate(() => window.vidown.snapshot())
+      ).settings.clipboard;
+      throw new Error(
+        JSON.stringify({
+          check: "clipboard-autofill",
+          clipboardMatches,
+          clipboardEnabled,
+        }),
+      );
+    }
+    assert.equal(
+      (await page.evaluate(() => window.vidown.snapshot())).tasks.length,
+      0,
+    );
+    await page.evaluate(() => window.vidown.settings({ clipboard: false }));
+    await app.evaluate(
+      async ({ clipboard }) =>
+        await clipboard.writeText("https://ignored.example.test/"),
+    );
+    await page.waitForTimeout(900);
+    assert.equal(
+      await page.getByLabel("视频链接", { exact: true }).inputValue(),
+      copied,
+    );
+    results.push({
+      name: "generic-ui-fixed-compact-and-clipboard-autofill-preserves-query-and-fragment-without-starting-download",
+      status: "passed",
+    });
+  }
   await page.evaluate(
     (path) => window.vidown.settings({ downloadDir: path }),
     join(root, "downloads"),
   );
   await page.getByRole("button", { name: "浏览器探测", exact: true }).click();
+  assert.equal(
+    await page
+      .getByRole("button", { name: /导入.*Cookie|导入 cookies\.txt/ })
+      .count(),
+    0,
+  );
+  await page.getByRole("button", { name: "新标签页", exact: true }).click();
+  await until(
+    async () =>
+      (await page.evaluate(() => window.vidown.snapshot())).tabs.length === 1,
+  );
+  await page.getByRole("button", { name: "新标签页", exact: true }).waitFor();
+  await until(
+    async () =>
+      !(await page
+        .getByRole("button", { name: "新标签页", exact: true })
+        .isDisabled()),
+  );
+  await page.getByRole("region", { name: "新标签页", exact: true }).waitFor();
+  await until(
+    async () =>
+      !(
+        await app!.evaluate(async () =>
+          (globalThis as any).__vidownBrowser.geometry(),
+        )
+      ).visible,
+  );
+  assert.equal(
+    await page.locator(".browser-welcome h2").innerText(),
+    "把精彩，完整保存。",
+  );
+  await page.screenshot({
+    path: join(root, "welcome-1.0.0.png"),
+    animations: "disabled",
+  });
+  results.push({
+    name: "soft-local-welcome-page-and-native-blank-surface-hidden",
+    status: "passed",
+  });
   await page.evaluate(
     (url) => window.vidown.browser({ action: "new", url }),
     fixture.origin + "/login",
@@ -136,9 +202,15 @@ try {
     Buffer.from(preview, "base64"),
   );
   for (const size of [
+    [900, 600],
     [1000, 640],
     [1400, 900],
   ]) {
+    await app.evaluate(
+      ({ BrowserWindow }, factor) =>
+        BrowserWindow.getAllWindows()[0].webContents.setZoomFactor(factor),
+      size[0] === 1000 ? 1.25 : 1,
+    );
     await app.evaluate(
       ({ BrowserWindow }, [width, height]) =>
         BrowserWindow.getAllWindows()[0].setContentSize(width, height),
@@ -152,10 +224,22 @@ try {
           BrowserWindow.getAllWindows()[0].getBounds(),
         ).scaleFactor,
         zoom: BrowserWindow.getAllWindows()[0].webContents.getZoomFactor(),
+        contentOrigin: screen.dipToScreenPoint({
+          x: BrowserWindow.getAllWindows()[0].getContentBounds().x,
+          y: BrowserWindow.getAllWindows()[0].getContentBounds().y,
+        }),
       }));
       return (
         !!rect &&
         native.bounds.visible &&
+        Math.abs(
+          native.bounds.screenX -
+            (native.contentOrigin.x + rect.x * native.dpi * native.zoom),
+        ) <= 2 &&
+        Math.abs(
+          native.bounds.screenY -
+            (native.contentOrigin.y + rect.y * native.dpi * native.zoom),
+        ) <= 2 &&
         Math.abs(native.bounds.width - rect.width * native.dpi * native.zoom) <=
           2 &&
         Math.abs(
@@ -164,6 +248,13 @@ try {
       );
     });
   }
+  const chrome = await page.locator(".browser-tools").boundingBox();
+  const surface = await page.locator(".browser-surface").boundingBox();
+  assert(chrome && surface && chrome.y + chrome.height <= surface.y + 1);
+  assert.equal(
+    await app.evaluate(({ Menu }) => Menu.getApplicationMenu()),
+    null,
+  );
   await page.getByLabel("网页缩放", { exact: true }).selectOption("0.75");
   await until(
     async () =>
@@ -181,7 +272,7 @@ try {
       ).visible,
   );
   results.push({
-    name: "native-child-resizes-to-viewport-zoom-75-percent-and-hides-on-workbench",
+    name: "native-screen-origin-and-size-align-at-900px-and-ui-125-percent-with-visible-toolbar-and-page-75-percent",
     status: "passed",
   });
   await app.evaluate(

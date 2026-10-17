@@ -18,7 +18,7 @@
     {
       "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
       "status": "passed",
-      "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\packaged-verification\\downloads\\master.m3u8 [31cb84b5].mp4"
+      "output": "work/packaged-verification/downloads/master.m3u8 [31cb84b5].mp4"
     },
     {
       "name": "appearance-settings-during-transfer-preserve-authenticated-download",

@@ -126,11 +126,9 @@ try {
     animations: "disabled",
   });
   const isolation = portable
-    ? await (
-        await until(() =>
-          application.windows().find((p) => p.url().includes("/player")),
-        )
-      ).evaluate(() => ({ appAPI: typeof window.vidown, node: typeof require }))
+    ? // WebView2 is a separate process and does not appear in Electron CDP targets.
+      // The controlled page reports its own capability types to the fixture server.
+      await until(() => fixture.pageIsolation)
     : await application.evaluate(async ({ webContents }) => {
         const native = globalThis.__vidownBrowser;
         if (native?.backendName.startsWith("Windows WebView2"))

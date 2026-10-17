@@ -372,6 +372,7 @@ export class BrowserManager {
         t.loading = view.webContents.isLoading();
       }
       this.applyZoom(id);
+      if (this.visible && this.active === id) this.show();
       this.changed();
     };
     view.webContents.on("did-navigate", update);
@@ -437,7 +438,9 @@ export class BrowserManager {
   show(): void {
     this.visible = true;
     const view = this.active ? this.views.get(this.active) : undefined;
-    if (view) {
+    if (view && this.info.get(this.active!)?.url === "about:blank")
+      this.win.contentView.removeChildView(view);
+    if (view && this.info.get(this.active!)?.url !== "about:blank") {
       this.win.contentView.addChildView(view);
       view.setBounds(this.bounds);
       this.applyZoom(this.active!);

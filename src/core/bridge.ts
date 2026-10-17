@@ -7,6 +7,7 @@ import { Readable, Transform } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { createWriteStream, createReadStream } from "node:fs";
 import { digest, httpUrl, redact } from "./safety";
+import { listenLoopback } from "./loopback";
 
 export type SessionFetch = (
   url: string,
@@ -223,10 +224,7 @@ export class TransportBridge {
       this.active.add(pending);
       void pending.finally(() => this.active.delete(pending));
     });
-    await new Promise<void>((resolve, reject) => {
-      this.server!.once("error", reject);
-      this.server!.listen(0, "127.0.0.1", resolve);
-    });
+    await listenLoopback(this.server);
     const address = this.server.address();
     if (!address || typeof address === "string")
       throw new Error("Bridge did not bind");

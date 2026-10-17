@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-10-17T08:47:54.008Z",
+  "scope": "Local static website in headless system Edge; not proof of GitHub Pages deployment",
+  "results": [
+    {
+      "name": "responsive-390px-no-overflow-valid-images-and-section-links",
+      "status": "passed"
+    },
+    {
+      "name": "responsive-768px-no-overflow-valid-images-and-section-links",
+      "status": "passed"
+    },
+    {
+      "name": "responsive-1440px-no-overflow-valid-images-and-section-links",
+      "status": "passed"
+    },
+    {
+      "name": "reduced-motion-and-no-browser-runtime-or-resource-errors",
+      "status": "passed"
+    }
+  ]
+}

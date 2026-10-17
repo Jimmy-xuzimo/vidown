@@ -5,8 +5,7 @@ import { resolve, join } from "node:path";
 import { randomUUID } from "node:crypto";
 
 const executable = resolve(
-  process.env.VIDOWN_VERIFY_EXECUTABLE ||
-    "release/win-unpacked/Vidown Preview.exe",
+  process.env.VIDOWN_VERIFY_EXECUTABLE || "release/win-unpacked/Vidown.exe",
 );
 const root = resolve(
   process.env.VIDOWN_VERIFY_REPORT_DIR || "work/startup-verification",

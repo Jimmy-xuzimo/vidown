@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-17T07:41:30.398Z",
+  "packaged": true,
+  "results": [
+    {
+      "name": "os-clipboard-check-explicitly-skipped-in-environment-that-replaces-clipboard-content",
+      "status": "skipped"
+    },
+    {
+      "name": "soft-local-welcome-page-and-native-blank-surface-hidden",
+      "status": "passed"
+    },
+    {
+      "name": "native-screen-origin-and-size-align-at-900px-and-ui-125-percent-with-visible-toolbar-and-page-75-percent",
+      "status": "passed"
+    },
+    {
+      "name": "actual-system-webview2-embedded-child-window-network-detection-and-no-page-application-api",
+      "status": "passed"
+    },
+    {
+      "name": "native-login-cookie-survives-restart-and-workbench-authenticated-hls-download-merge-and-verification",
+      "status": "passed"
+    },
+    {
+      "name": "native-localstorage-indexeddb-persistence-and-real-blob-download-through-native-task-with-identical-file-hash",
+      "status": "passed"
+    },
+    {
+      "name": "clear-login-removes-native-profile-cookie-and-transfer-session-authorization",
+      "status": "passed"
+    }
+  ]
+}

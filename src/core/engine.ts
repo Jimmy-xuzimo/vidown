@@ -308,7 +308,7 @@ export async function execute(
     )
   )
     throw new Error(
-      "HDR／杜比视界的兼容导出需要显式色彩转换；本验证版只允许保留源规格，未执行降级。",
+      "HDR／杜比视界的兼容导出需要显式色彩转换；当前版本只允许保留源规格，未执行降级。",
     );
   const ext = containerFor(
     streams.map(codecTrack),

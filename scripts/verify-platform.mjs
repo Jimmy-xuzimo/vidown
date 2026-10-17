@@ -18,8 +18,7 @@ const env = {
 delete env.ELECTRON_RUN_AS_NODE;
 const application = await _electron.launch({
   executablePath: resolve(
-    process.env.VIDOWN_VERIFY_EXECUTABLE ||
-      "release/win-unpacked/Vidown Preview.exe",
+    process.env.VIDOWN_VERIFY_EXECUTABLE || "release/win-unpacked/Vidown.exe",
   ),
   args: [],
   cwd: resolve("."),

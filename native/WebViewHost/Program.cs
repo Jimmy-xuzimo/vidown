@@ -44,6 +44,17 @@ sealed class BrowserHost : Form
     [DllImport("user32.dll", EntryPoint = "GetWindowLongW")] static extern int GetWindowLong(IntPtr hwnd, int index);
     [DllImport("user32.dll", EntryPoint = "SetWindowLongW")] static extern int SetWindowLong(IntPtr hwnd, int index, int value);
     [DllImport("user32.dll")] static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int width, int height, uint flags);
+    [StructLayout(LayoutKind.Sequential)] struct Rect { public int Left, Top, Right, Bottom; }
+    [StructLayout(LayoutKind.Sequential)] struct NativePoint { public int X, Y; }
+    [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hwnd, out Rect rect);
+    [DllImport("user32.dll")] static extern bool ClientToScreen(IntPtr hwnd, ref NativePoint point);
+    object Geometry() {
+        GetWindowRect(Handle, out var rect);
+        var origin = new NativePoint(); ClientToScreen(parent, ref origin);
+        return new { parent = GetParent(Handle).ToInt64().ToString(), x = rect.Left-origin.X, y=rect.Top-origin.Y,
+            screenX=rect.Left, screenY=rect.Top, clientScreenX=origin.X, clientScreenY=origin.Y,
+            width=rect.Right-rect.Left, height=rect.Bottom-rect.Top, visible=Visible };
+    }
     readonly IntPtr parent;
     readonly string data;
     readonly Dictionary<string, WebView2> tabs = new();
@@ -192,7 +203,7 @@ sealed class BrowserHost : Form
     {
         if (!tabs.ContainsKey(id)) throw new Exception("标签页不存在");
         active = id;
-        foreach (var pair in tabs) pair.Value.Visible = shown && pair.Key == active;
+        foreach (var pair in tabs) pair.Value.Visible = shown && pair.Key == active && pair.Value.Source?.Scheme is "http" or "https";
         tabs[id].BringToFront();
     }
     async Task<object?> Execute(WebView2 view, string code)
@@ -236,11 +247,13 @@ sealed class BrowserHost : Form
                         value = Convert.ToBase64String(stream.ToArray());
                     }
                     break;
-                case "geometry": value = new { parent = GetParent(Handle).ToInt64().ToString(), x = Left, y = Top, width = Width, height = Height, visible = Visible }; break;
+                case "geometry": value = Geometry(); break;
                 case "cookies": value = Cookies(await cookieView!.CoreWebView2.CookieManager.GetCookiesAsync(null)); break;
                 case "setCookies":
                     var manager = cookieView!.CoreWebView2.CookieManager;
+                    var imported = 0;
                     foreach (var item in input.GetProperty("cookies").EnumerateArray()) {
+                      try {
                         var c = manager.CreateCookie(Str(item,"name"), Str(item,"value"), Str(item,"domain"), Str(item,"path","/"));
                         c.IsHttpOnly = item.GetProperty("httpOnly").GetBoolean();
                         c.IsSecure = item.GetProperty("secure").GetBoolean();
@@ -249,8 +262,13 @@ sealed class BrowserHost : Form
                             "strict" => CoreWebView2CookieSameSiteKind.Strict,
                             _ => CoreWebView2CookieSameSiteKind.Lax
                         };
+                        if (item.TryGetProperty("expirationDate", out var expiry) && expiry.ValueKind == JsonValueKind.Number)
+                            c.Expires = DateTimeOffset.FromUnixTimeSeconds((long)expiry.GetDouble()).UtcDateTime;
                         manager.AddOrUpdateCookie(c);
+                        imported++;
+                      } catch { /* One invalid cookie must not block the remaining selected-site cookies. */ }
                     }
+                    value = imported;
                     break;
                 case "logout":
                     foreach (var tab in tabs.Values) tab.Dispose();

@@ -1,0 +1,152 @@
+{
+  "generatedAt": "2026-10-17T08:29:56.108Z",
+  "platform": "win32",
+  "results": [
+    {
+      "name": "authenticated-hls-separated-audio",
+      "status": "passed",
+      "output": "work/media-verification/results/master.m3u8 [99dd27c4].mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "width": 640,
+          "height": 360
+        },
+        {
+          "type": "audio",
+          "codec": "aac",
+          "sampleRate": "48000"
+        }
+      ],
+      "duration": "6.037333"
+    },
+    {
+      "name": "aes128-key-rotation",
+      "status": "passed",
+      "output": "work/media-verification/results/index.m3u8 [5b257fa4].mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "width": 640,
+          "height": 360
+        }
+      ],
+      "duration": "6.000000"
+    },
+    {
+      "name": "hls-fmp4-initialization",
+      "status": "passed",
+      "output": "work/media-verification/results/index.m3u8 [08a4c3cf].mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "width": 640,
+          "height": 360
+        }
+      ],
+      "duration": "6.000000"
+    },
+    {
+      "name": "hls-byte-range",
+      "status": "passed",
+      "output": "work/media-verification/results/index.m3u8 [cd7cac25].mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "width": 640,
+          "height": 360
+        }
+      ],
+      "duration": "6.000000"
+    },
+    {
+      "name": "dash-template-timeline-separated-audio",
+      "status": "passed",
+      "output": "work/media-verification/results/manifest.mpd [8e663992].mp4",
+      "streams": [
+        {
+          "type": "video",
+          "codec": "h264",
+          "width": 640,
+          "height": 360
+        },
+        {
+          "type": "audio",
+          "codec": "aac",
+          "sampleRate": "48000"
+        }
+      ],
+      "duration": "6.000000"
+    },
+    {
+      "name": "generated-hdr10-10bit-and-flac-96khz-24bit-source-preservation",
+      "status": "passed",
+      "output": "work/media-verification/results/HDR10 + Hi-Res 原规格验证 [328cb318].mkv",
+      "frameMetadata": [
+        {
+          "side_data_type": "Mastering display metadata",
+          "red_x": "34000/50000",
+          "red_y": "16000/50000",
+          "green_x": "13250/50000",
+          "green_y": "34500/50000",
+          "blue_x": "7500/50000",
+          "blue_y": "3000/50000",
+          "white_point_x": "15635/50000",
+          "white_point_y": "16450/50000",
+          "min_luminance": "1/10000",
+          "max_luminance": "10000000/10000"
+        },
+        {
+          "side_data_type": "Content light level metadata",
+          "max_content": 1000,
+          "max_average": 400
+        }
+      ]
+    },
+    {
+      "name": "direct-pause-resume-with-etag-range",
+      "status": "passed",
+      "reusedBytes": 32768,
+      "output": "work/media-verification/results/暂停恢复验证 [3a6fae09].mp4"
+    },
+    {
+      "name": "changed-validator-restarts-instead-of-appending",
+      "status": "passed",
+      "output": "work/media-verification/results/暂停恢复验证 [e4917da7].mp4"
+    },
+    {
+      "name": "hls-pause-resume-across-new-bridge-without-refetching-completed-segments",
+      "status": "passed",
+      "reusedSegments": 5,
+      "output": "work/media-verification/results/index.m3u8 [d6c12daa].mp4"
+    },
+    {
+      "name": "changed-manifest-refuses-old-segment-checkpoint",
+      "status": "passed"
+    },
+    {
+      "name": "bilibili-premium-8k-hdr-dolby-hires",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "x-authenticated",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "telegram-private-media",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "real-dolby-rpu-preservation",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    }
+  ]
+}

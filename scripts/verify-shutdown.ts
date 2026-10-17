@@ -30,7 +30,7 @@ env.VIDOWN_HEADLESS = "1";
 delete env.ELECTRON_RUN_AS_NODE;
 const launch = () =>
   _electron.launch({
-    executablePath: resolve("release/win-unpacked/Vidown Preview.exe"),
+    executablePath: resolve("release/win-unpacked/Vidown.exe"),
     args: [],
     env,
   });

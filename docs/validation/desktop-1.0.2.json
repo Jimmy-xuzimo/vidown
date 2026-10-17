@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-10-17T08:36:27.444Z",
+  "packaged": true,
+  "portable": false,
+  "results": [
+    {
+      "name": "telegram-web-mode-requires-no-native-api-credentials",
+      "status": "passed"
+    },
+    {
+      "name": "sandboxed-browser-session-and-real-network-capture",
+      "status": "passed"
+    },
+    {
+      "name": "hls-shows-real-received-bytes-and-speed-before-track-completion",
+      "status": "passed"
+    },
+    {
+      "name": "ui-browser-cookie-to-worker-hls-audio-merge-verification",
+      "status": "passed",
+      "output": "work/packaged-verification/downloads/master.m3u8 [1d5126ba].mp4"
+    },
+    {
+      "name": "appearance-settings-during-transfer-preserve-authenticated-download",
+      "status": "passed"
+    },
+    {
+      "name": "renderer-no-runtime-errors-and-no-exposed-request-secrets",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-10-17T08:33:26.284Z",
+  "packaged": true,
+  "results": [
+    {
+      "name": "responsive-native-view-fits-window-and-ui-zoom-with-webpage-zoom-controls",
+      "status": "passed"
+    },
+    {
+      "name": "encrypted-session-cookie-survives-restart-and-workbench-downloads-without-reopening-login-page",
+      "status": "passed"
+    },
+    {
+      "name": "site-zoom-local-storage-and-indexeddb-survive-restart",
+      "status": "passed"
+    },
+    {
+      "name": "explicit-clear-login-removes-native-cookies-and-encrypted-restart-backup",
+      "status": "passed"
+    }
+  ]
+}

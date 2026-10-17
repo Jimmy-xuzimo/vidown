@@ -1,0 +1,153 @@
+{
+  "generatedAt": "2026-10-17T08:45:54.764Z",
+  "version": "1.0.2",
+  "scope": "Local NSIS archive inspection, matching application/engines/native host. Installer wizard, clean-machine install and uninstall are not tested.",
+  "artifacts": [
+    {
+      "file": "Vidown-Setup-1.0.2.exe",
+      "bytes": 246515300,
+      "sha256": "3a2c5c17db1319fea716417e2b97b5ea4ba7b5e0db035a0ad82bc3d378117bdc",
+      "payloadSHA256": "3c4cc023a1bc020e0925e8fb31bc203f46f9fc35be5a8044e3365d7796be2264"
+    },
+    {
+      "file": "Vidown-Portable-1.0.2.exe",
+      "bytes": 246232541,
+      "sha256": "c48acd094b57b3cf0fc3ceb99779e87cb9b0dfacce79bdf1272ab51a9b3f4a74",
+      "payloadSHA256": "3c4cc023a1bc020e0925e8fb31bc203f46f9fc35be5a8044e3365d7796be2264"
+    }
+  ],
+  "checks": [
+    {
+      "artifact": "Setup",
+      "file": "Vidown.exe",
+      "matchesTestedApplication": true,
+      "sha256": "cff930561669606a73dd5f7fb7b7c29b05b8bc17917cb9402a5a405179144e21"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/app.asar",
+      "matchesTestedApplication": true,
+      "sha256": "78169d14091df1f35f5556f63ed20b65e84f20ba73f735e067b7db960841be10"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/icon.ico",
+      "matchesTestedApplication": true,
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "matchesTestedApplication": true,
+      "sha256": "678b41930efe2504fa9f94534353d8d9850584adc6b65b82e288bafd418ff4a6"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "matchesTestedApplication": true,
+      "sha256": "7afc411fdc230aba29d76aaa888000aaba97a36bb31c021c44c2a9bc47de7400"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/THIRD_PARTY_NOTICES.md",
+      "matchesTestedApplication": true,
+      "sha256": "efec121d70b085725428197dde83061f3180ebbbe6e99e0085cc27548ab234f5"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/tools/ffmpeg.exe",
+      "matchesTestedApplication": true,
+      "sha256": "3256173f3f8bffd7df12227c68adf68025edb1832273a9530688a7bb1ed8edec"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/tools/ffprobe.exe",
+      "matchesTestedApplication": true,
+      "sha256": "f0d36ecbbdd3bcfac3efa078c96c7271c2e68b3810595552ac3b7f17e9a65c52"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/tools/yt-dlp.exe",
+      "matchesTestedApplication": true,
+      "sha256": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/tools/N_m3u8DL-RE.exe",
+      "matchesTestedApplication": true,
+      "sha256": "35e7c16983f0315bba2a3f37dc392fdfa074be614c8effb642b78376b18ba272"
+    },
+    {
+      "artifact": "Setup",
+      "file": "resources/tools/tools.lock.json",
+      "matchesTestedApplication": true,
+      "sha256": "042e2c38c8950fea0ae02e592a88ab39a0a8b8332b02118f509a53ed3ba38829"
+    },
+    {
+      "artifact": "Portable",
+      "file": "Vidown.exe",
+      "matchesTestedApplication": true,
+      "sha256": "cff930561669606a73dd5f7fb7b7c29b05b8bc17917cb9402a5a405179144e21"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/app.asar",
+      "matchesTestedApplication": true,
+      "sha256": "78169d14091df1f35f5556f63ed20b65e84f20ba73f735e067b7db960841be10"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/icon.ico",
+      "matchesTestedApplication": true,
+      "sha256": "b84d603b303eb8c292be4b8dcc287f9fb4f8c78ef57dcf865463103879bd3ca5"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/webview2-host/Vidown.WebView2.exe",
+      "matchesTestedApplication": true,
+      "sha256": "678b41930efe2504fa9f94534353d8d9850584adc6b65b82e288bafd418ff4a6"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/webview2-host/Vidown.WebView2.dll",
+      "matchesTestedApplication": true,
+      "sha256": "7afc411fdc230aba29d76aaa888000aaba97a36bb31c021c44c2a9bc47de7400"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/THIRD_PARTY_NOTICES.md",
+      "matchesTestedApplication": true,
+      "sha256": "efec121d70b085725428197dde83061f3180ebbbe6e99e0085cc27548ab234f5"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/tools/ffmpeg.exe",
+      "matchesTestedApplication": true,
+      "sha256": "3256173f3f8bffd7df12227c68adf68025edb1832273a9530688a7bb1ed8edec"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/tools/ffprobe.exe",
+      "matchesTestedApplication": true,
+      "sha256": "f0d36ecbbdd3bcfac3efa078c96c7271c2e68b3810595552ac3b7f17e9a65c52"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/tools/yt-dlp.exe",
+      "matchesTestedApplication": true,
+      "sha256": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/tools/N_m3u8DL-RE.exe",
+      "matchesTestedApplication": true,
+      "sha256": "35e7c16983f0315bba2a3f37dc392fdfa074be614c8effb642b78376b18ba272"
+    },
+    {
+      "artifact": "Portable",
+      "file": "resources/tools/tools.lock.json",
+      "matchesTestedApplication": true,
+      "sha256": "042e2c38c8950fea0ae02e592a88ab39a0a8b8332b02118f509a53ed3ba38829"
+    }
+  ]
+}

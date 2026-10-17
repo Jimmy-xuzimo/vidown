@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-10-17T07:20:18.185Z",
+  "packaged": true,
+  "results": [
+    {
+      "name": "clean-branding-real-package-version-and-no-idle-media-worker",
+      "status": "passed"
+    },
+    {
+      "name": "mode-palette-density-and-effects-persist-after-restart",
+      "status": "passed"
+    },
+    {
+      "name": "bare-address-completion-fixed-38px-tabs-single-line-leading-title-ellipsis-and-adjacent-plus",
+      "status": "passed"
+    },
+    {
+      "name": "single-delete-confirmation-default-retains-file-and-cancel-keeps-record",
+      "status": "passed"
+    },
+    {
+      "name": "explicit-file-deletion-moves-real-controlled-file-to-windows-recycle-bin",
+      "status": "passed"
+    },
+    {
+      "name": "clear-history-preserves-paused-work-and-refuses-to-trash-directories",
+      "status": "passed"
+    },
+    {
+      "name": "pointer-glow-setting-and-rendering-completely-removed",
+      "status": "passed"
+    }
+  ]
+}

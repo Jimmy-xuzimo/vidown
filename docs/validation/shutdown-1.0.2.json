@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-10-17T08:33:19.601Z",
+  "status": "passed",
+  "scope": "Normal desktop close during an actual HLS download; native child processes exit, source requests stop and restart retains an interrupted task. OS-level forced termination is not covered.",
+  "childProcessesStopped": 1,
+  "shutdownAndRestartElapsedMs": 1636,
+  "checks": [
+    "in-flight download stops before utility parent exits",
+    "no further source requests after close",
+    "restart marks unfinished task interrupted",
+    "no false completion"
+  ]
+}

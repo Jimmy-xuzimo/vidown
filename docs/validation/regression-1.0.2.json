@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-10-17T08:50:37.482908+00:00",
+  "version": "1.0.2",
+  "scope": "Current automated controlled protocol and desktop regression. Real accounts, clean-machine install/uninstall, forced OS termination and non-Windows applications are not covered.",
+  "unitTests": 33,
+  "suites": [
+    {
+      "suite": "controlled-media",
+      "status": "passed",
+      "checks": 10
+    },
+    {
+      "suite": "protocol-edges",
+      "status": "passed",
+      "checks": 2
+    },
+    {
+      "suite": "mirrors",
+      "status": "passed",
+      "checks": 6
+    },
+    {
+      "suite": "webview2",
+      "status": "passed",
+      "checks": 7
+    },
+    {
+      "suite": "interface",
+      "status": "passed",
+      "checks": 7
+    },
+    {
+      "suite": "desktop",
+      "status": "passed",
+      "checks": 6
+    },
+    {
+      "suite": "tasks",
+      "status": "passed",
+      "checks": 3
+    },
+    {
+      "suite": "shutdown",
+      "status": "passed",
+      "checks": 4
+    },
+    {
+      "suite": "browser-session",
+      "status": "passed",
+      "checks": 4
+    },
+    {
+      "suite": "web-downloads-chromium",
+      "status": "passed",
+      "checks": 14
+    },
+    {
+      "suite": "startup",
+      "status": "passed",
+      "checks": 0
+    },
+    {
+      "suite": "website",
+      "status": "passed",
+      "checks": 4
+    },
+    {
+      "suite": "portable-desktop",
+      "status": "passed",
+      "checks": 6
+    },
+    {
+      "suite": "public-format-extraction-no-login",
+      "status": "passed",
+      "checks": 3
+    },
+    {
+      "suite": "package-payload-comparison",
+      "status": "passed",
+      "checks": 22
+    }
+  ],
+  "pendingRealPlatformAcceptance": [
+    {
+      "name": "bilibili-premium-8k-hdr-dolby-hires",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "x-authenticated",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "telegram-private-media",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    },
+    {
+      "name": "real-dolby-rpu-preservation",
+      "status": "pending",
+      "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+    }
+  ]
+}

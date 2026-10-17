@@ -107,6 +107,23 @@ try {
     status: "passed",
   });
   await page.getByRole("button", { name: "设置与账号", exact: true }).click();
+  assert.equal(
+    await page.getByText("导入浏览器 Cookie", { exact: true }).count(),
+    0,
+  );
+  assert.equal(
+    await page
+      .getByRole("button", { name: /导入.*Cookie|导入 cookies\.txt/ })
+      .count(),
+    0,
+  );
+  assert.deepEqual(
+    await page.evaluate(() => [
+      "cookieSources" in window.vidown,
+      "importCookies" in window.vidown,
+    ]),
+    [false, false],
+  );
   await page.getByLabel("颜色模式", { exact: true }).selectOption("dark");
   await page
     .getByRole("button", { name: "青玉 自然绿调", exact: true })
@@ -134,10 +151,14 @@ try {
   });
   assert.equal(await page.getByLabel("界面密度", { exact: true }).count(), 0);
   await page.getByRole("switch", { name: "界面动效", exact: true }).uncheck();
-  await page.getByRole("switch", { name: "鼠标微光", exact: true }).uncheck();
-  await until(
-    async () =>
-      !(await page.evaluate(() => window.vidown.snapshot())).settings.hoverGlow,
+  assert.equal(
+    await page.getByRole("switch", { name: "鼠标微光", exact: true }).count(),
+    0,
+  );
+  assert.equal(
+    "hoverGlow" in
+      (await page.evaluate(() => window.vidown.snapshot())).settings,
+    false,
   );
   await app.close();
   app = await launch();
@@ -151,9 +172,8 @@ try {
       persisted.theme,
       persisted.density,
       persisted.animations,
-      persisted.hoverGlow,
     ],
-    ["light", "ocean", "compact", false, false],
+    ["light", "ocean", "compact", false],
   );
   results.push({
     name: "mode-palette-density-and-effects-persist-after-restart",
@@ -306,41 +326,16 @@ try {
   });
 
   await page.getByRole("button", { name: "设置与账号", exact: true }).click();
-  await page.getByRole("switch", { name: "鼠标微光", exact: true }).check();
-  await until(
-    async () =>
-      (await page.evaluate(() => window.vidown.snapshot())).settings.hoverGlow,
-  );
-  await page.evaluate(() => {
-    const original = window.requestAnimationFrame.bind(window);
-    (window as any).testFrames = 0;
-    window.requestAnimationFrame = (cb) => {
-      (window as any).testFrames++;
-      return original(cb);
-    };
-  });
-  await page.mouse.move(30, 30);
-  await page.waitForTimeout(200);
-  const target = await page
-    .getByRole("button", { name: "玫瑰 温暖粉调", exact: true })
-    .boundingBox();
-  await page.mouse.move(target!.x + 15, target!.y + 15);
-  await page.waitForTimeout(100);
-  assert((await page.locator(".pointer-lit").count()) > 0);
-  const frames = await page.evaluate(() => (window as any).testFrames);
-  await page.waitForTimeout(600);
-  assert.equal(await page.evaluate(() => (window as any).testFrames), frames);
-  await page.getByRole("switch", { name: "鼠标微光", exact: true }).uncheck();
-  await until(async () => (await page.locator(".pointer-lit").count()) === 0);
-  const noGlowFrames = await page.evaluate(() => (window as any).testFrames);
-  await page.mouse.move(target!.x + 20, target!.y + 20);
-  await page.waitForTimeout(100);
   assert.equal(
-    await page.evaluate(() => (window as any).testFrames),
-    noGlowFrames,
+    await page.getByRole("switch", { name: "鼠标微光", exact: true }).count(),
+    0,
   );
+  await page.mouse.move(30, 30);
+  await page.mouse.move(250, 250);
+  assert.equal(await page.locator(".pointer-lit").count(), 0);
+  assert.equal(await page.locator("html").getAttribute("data-glow"), null);
   results.push({
-    name: "hover-light-is-event-driven-no-idle-animation-frames-and-toggle-removes-listeners",
+    name: "pointer-glow-setting-and-rendering-completely-removed",
     status: "passed",
   });
 } finally {

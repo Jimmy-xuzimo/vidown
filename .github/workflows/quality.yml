@@ -26,16 +26,17 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: "24"
           cache: npm
       # Source checks do not need Electron install-time native execution.
       - run: npm ci --ignore-scripts
       - run: npm run format:check
+      - run: npx prettier --check site .github/workflows
       - run: npm run check
       - run: git diff --check
       - uses: actions/setup-dotnet@v4
         if: runner.os == 'Windows'
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: "8.0.x"
       - run: npm run native:build
         if: runner.os == 'Windows'

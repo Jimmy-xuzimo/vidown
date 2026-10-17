@@ -1,0 +1,28 @@
+{
+  "generatedAt": "2026-10-17T08:47:06.667Z",
+  "version": "1.0.2",
+  "scope": "Public format extraction in isolated profile using local proxy; no account, no full download, no signed URLs or credentials in report. Does not verify paid/private/highest account formats.",
+  "results": [
+    {
+      "platform": "bilibili",
+      "status": "parsed",
+      "videoTracks": 12,
+      "audioTracks": 3,
+      "maxHeight": 1080
+    },
+    {
+      "platform": "x",
+      "status": "parsed",
+      "videoTracks": 4,
+      "audioTracks": 3,
+      "maxHeight": 1080
+    },
+    {
+      "platform": "youtube",
+      "status": "parsed",
+      "videoTracks": 37,
+      "audioTracks": 12,
+      "maxHeight": 2160
+    }
+  ]
+}
