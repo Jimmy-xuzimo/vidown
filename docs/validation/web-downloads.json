@@ -1,10 +1,14 @@
 {
-  "generatedAt": "2026-10-17T04:12:13.072Z",
+  "generatedAt": "2026-10-17T04:45:15.819Z",
   "packaged": true,
-  "scope": "Controlled Web A compatible DOM and real blob/media validation. Real Telegram account and private messages remain unverified.",
+  "scope": "Controlled Web A and Web K DOM, service-worker URL routing, real blob/media validation. Real Telegram account and private messages remain unverified.",
   "results": [
     {
       "name": "paste-message-link-parses-webpage-and-saves-real-blob-media-through-native-task-with-identical-file-hash",
+      "status": "passed"
+    },
+    {
+      "name": "failed-new-probe-clears-stale-task-success-notice",
       "status": "passed"
     },
     {
@@ -29,6 +33,30 @@
     },
     {
       "name": "cancel-native-media-download-stops-the-actual-http-response-and-never-publishes-output",
+      "status": "passed"
+    },
+    {
+      "name": "webk-captured-service-worker-media-uses-native-page-save-with-identical-file-hash-and-zero-http-replays",
+      "status": "passed"
+    },
+    {
+      "name": "webk-current-page-viewer-refuses-changed-media-before-saving",
+      "status": "passed"
+    },
+    {
+      "name": "webk-stale-captured-resource-cannot-save-the-current-different-video",
+      "status": "passed"
+    },
+    {
+      "name": "webk-protected-message-reports-permission-instead-of-502",
+      "status": "passed"
+    },
+    {
+      "name": "webk-download-button-detected-with-current-glyph-icon-as-well-as-legacy-class",
+      "status": "passed"
+    },
+    {
+      "name": "pasted-message-link-reuses-existing-webk-client-origin-and-exact-message",
       "status": "passed"
     }
   ]

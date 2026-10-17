@@ -157,6 +157,7 @@ function App() {
   }, [snapshot?.tabs.find((t) => t.id === snapshot.activeTab)?.url]);
   async function attempt(action: () => Promise<unknown>) {
     setError("");
+    setNotice("");
     try {
       return await action();
     } catch (e: any) {

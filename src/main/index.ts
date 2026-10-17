@@ -26,7 +26,7 @@ import {
 import { BrowserManager } from "./browser";
 import { SessionKeeper } from "./session";
 import { WebDownloads } from "./web-downloads";
-import { isTelegramLink } from "../shared/telegram";
+import { isTelegramLink, isTelegramWeb } from "../shared/telegram";
 import type { Tools } from "../core/engine";
 import type {
   PrivateAsset,
@@ -184,12 +184,25 @@ async function probeInput(input: {
   const url = httpUrl(
     candidate?.url ?? input.url ?? browser.currentUrl(input.tabId) ?? "",
   );
-  if (isTelegramLink(url)) {
-    const ref = await browser.probeTelegram(url);
+  const telegramPage =
+    candidate && isTelegramWeb(candidate.pageUrl)
+      ? browser.currentUrl(candidate.tabId)
+      : undefined;
+  if (
+    candidate &&
+    isTelegramWeb(candidate.pageUrl) &&
+    !isTelegramWeb(telegramPage ?? "")
+  )
+    throw new Error("Telegram 资源所属页面已关闭或更换，请重新播放后探测");
+  if (telegramPage || isTelegramLink(url)) {
+    const ref = await browser.probeTelegram(telegramPage ?? url, {
+      tabId: candidate?.tabId ?? input.tabId,
+      mediaUrl: candidate?.url,
+    });
     const asset: PrivateAsset = {
       id: randomUUID(),
       title: ref.title,
-      pageUrl: publicUrl(url),
+      pageUrl: publicUrl(telegramPage ?? url),
       context: { id: randomUUID(), profile: "browser" },
       tracks: [
         {
@@ -435,6 +448,7 @@ async function download(input: {
         error: classifyError(error),
         resumable: false,
       });
+      throw error;
     }
     return;
   }

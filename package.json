@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.4",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",

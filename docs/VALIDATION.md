@@ -118,3 +118,13 @@ X 开发验收使用 `VIDOWN_PLATFORM_ROOT=work/x-verification` 隔离报告与�
 Telegram 自动解析以官方 Web A 的消息 DOM 和允许的下载菜单为基础，使用网页自身提供的保存操作，支持 Chromium 的 blob 下载接收；不读取网页内部密钥。受控测试使用隔离协议页面、与 Web A 相同的消息／菜单 DOM 契约以及真实生成 MP4，完成粘贴消息链接、显示选项、加入任务、保存及 ffprobe／首尾解码检查，原文件与成品 SHA-256 相同。禁止保存的消息及伪装为 MP4 的无效内容未成为成功任务。具体范围见 [网页下载报告](validation/web-downloads.json)。这是受控集成证据，不是实网 Telegram 登录、私有消息或 Web K 验收。上游网页结构变化时必须明确失败，不能下载另一条消息。
 
 Telegram Web A 路由参考其 [tgaddr 参数](https://github.com/Ajaxy/telegram-tt/blob/master/src/util/routing.ts)、[消息定位属性](https://github.com/Ajaxy/telegram-tt/blob/master/src/components/middle/message/Message.tsx)和[下载菜单](https://github.com/Ajaxy/telegram-tt/blob/master/src/components/middle/message/MessageContextMenu.tsx)，只实现网页互操作，不引入其源代码。
+
+## alpha.4 Telegram Web K 解析 502 修复
+
+用户截图中 webk.telegram.org 已登录且正在播放，资源栏的 video/mp4 被旧路由当成普通 HTTP 媒体。旧版只识别 web.telegram.org，无法通过独立请求保留 Telegram 页面 service worker 的客户端上下文，实际报“媒体请求返回 502”。本次补齐官方客户端域名、按候选所属标签选择网页适配器，禁止重放内部播放地址；消息链接沿用现有 A／K 客户端，不强制切换导致丢失网页登录上下文。
+
+Web K 通过可见消息 DOM 或当前视频查看器定位媒体，只点击网页已提供且可用的保存操作；视频地址或页面指纹变化时停止。未提供保存权限、未加载媒体、网页结构变化、网页另要求选择档位会分别说明。新解析会清除旧成功通知；保存触发失败也会把错误返回界面。
+
+受控 Web A／K 集成测试共 14 项，包含截图同类的 video/mp4 资源入口、解析期间零额外内部地址重放、原文件与成品 SHA-256 一致、旧资源与新视频不匹配拒绝、禁止保存明确报错、旧类名／新字形按钮识别和粘贴私有消息链接保留 Web K origin。使用隔离 profile、生成 MP4 与仿真 DOM，**不代表真实账号或该私有消息已经下载通过**。未关闭或修改用户正在使用的 alpha.3 登录资料；需使用 alpha.4 对当前消息实测。
+
+互操作结构参考 [Web K media viewer](https://github.com/morethanwords/tweb/tree/master/src/components/mediaViewer)、[消息菜单](https://github.com/morethanwords/tweb/blob/master/src/components/chat/contextMenu.ts)及[网页下载流程](https://github.com/morethanwords/tweb/blob/master/src/lib/appDownloadManager.ts)，独立实现 DOM 适配，不复制其业务代码。三端源码 CI 以单独的提交和报告为准。

@@ -58,10 +58,45 @@ try {
   // An isolated protocol fixture uses the same DOM contract as Web A, with real MP4 bytes and blob download.
   // It proves the integration, not real Telegram authentication or media access.
   await app.evaluate(({ session }, base64) => {
-    session.fromPartition("persist:vidown-browser").protocol.handle(
-      "https",
-      () =>
-        new Response(
+    session
+      .fromPartition("persist:vidown-browser")
+      .protocol.handle("https", (request) => {
+        const url = new URL(request.url);
+        if (url.hostname === "webk.telegram.org") {
+          if (url.pathname.startsWith("/stream/")) {
+            const renderer =
+              request.headers.get("sec-fetch-dest") === "video" ||
+              request.headers.has("range");
+            if (!renderer)
+              (globalThis as any).telegramStreamReplays =
+                ((globalThis as any).telegramStreamReplays ?? 0) + 1;
+            return new Response(
+              renderer
+                ? Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))
+                : "client required",
+              {
+                status: renderer ? 200 : 502,
+                headers: { "content-type": "video/mp4" },
+              },
+            );
+          }
+          return new Response(
+            `<!doctype html><style>.hide{display:none} video{width:320px;height:180px}</style>
+          <title>Controlled Web K fixture</title>
+          <div class="bubbles"><div class="bubble" data-mid="4294967338" data-peer-id="-12345">Controlled K message</div></div>
+          <div class="media-viewer-whole"><div class="media-viewer-author"><div class="media-viewer-name">Controlled K</div></div>
+          <div class="media-viewer-caption">Original video</div><div class="media-viewer-mover active"><video src="/stream/controlled-original" autoplay muted></video></div>
+          <div class="media-viewer-buttons"><button class="btn-icon tgico-download">Download</button></div></div>
+          <script>
+          function save(){const data=Uint8Array.from(atob('${base64}'),c=>c.charCodeAt(0));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'video/mp4'}));a.download='K-original.mp4';a.click();}
+          document.querySelector('.btn-icon').onclick=save;
+          document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelector('.btn-menu-item')?.remove()});
+          document.querySelector('.bubble').oncontextmenu=e=>{e.preventDefault();const b=document.createElement('button');b.className='btn-menu-item';b.innerHTML='<span class="tgico-download"></span>Download';b.onclick=save;document.body.append(b)};
+          </script>`,
+            { headers: { "content-type": "text/html" } },
+          );
+        }
+        return new Response(
           `<!doctype html>
       <title>Controlled web media fixture</title><div class="Message" data-message-id="42">Controlled video</div>
       <script>
@@ -75,8 +110,8 @@ try {
       };
       </script>`,
           { headers: { "content-type": "text/html" } },
-        ),
-    );
+        );
+      });
   }, source.toString("base64"));
   await page
     .getByLabel("视频链接", { exact: true })
@@ -98,6 +133,23 @@ try {
   );
   results.push({
     name: "paste-message-link-parses-webpage-and-saves-real-blob-media-through-native-task-with-identical-file-hash",
+    status: "passed",
+  });
+  await page
+    .getByLabel("视频链接", { exact: true })
+    .fill("https://t.me/+invalid-invite");
+  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page
+    .getByText("请粘贴具体 Telegram 消息链接，不是频道首页或邀请链接", {
+      exact: true,
+    })
+    .waitFor();
+  assert.equal(
+    await page.getByText("已加入下载队列", { exact: true }).count(),
+    0,
+  );
+  results.push({
+    name: "failed-new-probe-clears-stale-task-success-notice",
     status: "passed",
   });
   await page.getByRole("button", { name: "设置与账号", exact: true }).click();
@@ -125,14 +177,17 @@ try {
     document.querySelector<HTMLElement>(".Message")!.innerText =
       "Changed message";
   });
-  await page.evaluate(
-    (a) =>
-      window.vidown.download({
-        assetId: a.id,
-        trackIds: [a.tracks[0].id],
-        output: "source",
-      }),
-    stale,
+  await assert.rejects(
+    page.evaluate(
+      (a) =>
+        window.vidown.download({
+          assetId: a.id,
+          trackIds: [a.tracks[0].id],
+          output: "source",
+        }),
+      stale,
+    ),
+    /消息或聊天已变化/,
   );
   assert.equal(
     (await page.evaluate(() => window.vidown.snapshot())).tasks[0].state,
@@ -265,6 +320,128 @@ try {
     name: "cancel-native-media-download-stops-the-actual-http-response-and-never-publishes-output",
     status: "passed",
   });
+
+  await page.evaluate(() =>
+    window.vidown.browser({ action: "new", url: "https://webk.telegram.org/" }),
+  );
+  const kTab = (await page.evaluate(() => window.vidown.snapshot())).activeTab!;
+  const kPage = await until(async () =>
+    app.windows().find((p) => p.url().startsWith("https://webk.telegram.org/")),
+  );
+  await kPage.locator("video").waitFor();
+  const captured = await until(async () =>
+    (await page.evaluate(() => window.vidown.snapshot())).candidates.find(
+      (c) => c.tabId === kTab && c.host === "webk.telegram.org",
+    ),
+  );
+  const replaysBefore = await app.evaluate(
+    () => (globalThis as any).telegramStreamReplays ?? 0,
+  );
+  const kAsset = await page.evaluate(
+    (id) => window.vidown.probe({ candidateId: id }),
+    captured.id,
+  );
+  assert.equal(kAsset.tracks[0].protocol, "browser");
+  assert.equal(
+    await app.evaluate(() => (globalThis as any).telegramStreamReplays ?? 0),
+    replaysBefore,
+  );
+  await page.evaluate(
+    (a) =>
+      window.vidown.download({
+        assetId: a.id,
+        trackIds: [a.tracks[0].id],
+        output: "source",
+      }),
+    kAsset,
+  );
+  const kDone = await until(async () => {
+    const t = (await page.evaluate(() => window.vidown.snapshot())).tasks.find(
+      (t) => t.title === "Original video",
+    );
+    if (t?.state === "failed") throw new Error(t.error);
+    return t?.state === "completed" && t;
+  });
+  assert.equal(digest(await readFile(kDone.output!)), digest(source));
+  results.push({
+    name: "webk-captured-service-worker-media-uses-native-page-save-with-identical-file-hash-and-zero-http-replays",
+    status: "passed",
+  });
+
+  const viewAsset = await page.evaluate(
+    (tabId) => window.vidown.probe({ tabId }),
+    kTab,
+  );
+  await kPage.locator("video").evaluate((v: HTMLVideoElement) => {
+    v.src = "/stream/different-video";
+  });
+  await assert.rejects(
+    page.evaluate(
+      (a) =>
+        window.vidown.download({
+          assetId: a.id,
+          trackIds: [a.tracks[0].id],
+          output: "source",
+        }),
+      viewAsset,
+    ),
+    /视频已变化|不一致/,
+  );
+  results.push({
+    name: "webk-current-page-viewer-refuses-changed-media-before-saving",
+    status: "passed",
+  });
+  await assert.rejects(
+    page.evaluate(
+      (id) => window.vidown.probe({ candidateId: id }),
+      captured.id,
+    ),
+    /不一致/,
+  );
+  results.push({
+    name: "webk-stale-captured-resource-cannot-save-the-current-different-video",
+    status: "passed",
+  });
+  await kPage
+    .locator(".media-viewer-whole")
+    .evaluate((v) => v.classList.add("no-forwards"));
+  await assert.rejects(
+    page.evaluate((tabId) => window.vidown.probe({ tabId }), kTab),
+    /禁止保存/,
+  );
+  results.push({
+    name: "webk-protected-message-reports-permission-instead-of-502",
+    status: "passed",
+  });
+  await kPage
+    .locator(".media-viewer-whole")
+    .evaluate((v) => v.classList.remove("no-forwards"));
+  await kPage.locator(".btn-icon").evaluate((b) => {
+    b.classList.remove("tgico-download");
+    b.innerHTML = '<span class="tgico">\ue973</span>';
+  });
+  assert.equal(
+    (await page.evaluate((tabId) => window.vidown.probe({ tabId }), kTab))
+      .tracks[0].protocol,
+    "browser",
+  );
+  results.push({
+    name: "webk-download-button-detected-with-current-glyph-icon-as-well-as-legacy-class",
+    status: "passed",
+  });
+  const linked = await page.evaluate(() =>
+    window.vidown.probe({ url: "https://t.me/c/12345/42" }),
+  );
+  assert.equal(new URL(kPage.url()).hostname, "webk.telegram.org");
+  assert.equal(linked.tracks[0].protocol, "browser");
+  assert.equal(
+    app.windows().filter((p) => p.url().includes("web.telegram.org")).length,
+    1,
+  );
+  results.push({
+    name: "pasted-message-link-reuses-existing-webk-client-origin-and-exact-message",
+    status: "passed",
+  });
 } finally {
   await app.close().catch(() => {});
   await fixture.close();
@@ -275,7 +452,7 @@ try {
         generatedAt: new Date().toISOString(),
         packaged: !!process.env.VIDOWN_VERIFY_EXECUTABLE,
         scope:
-          "Controlled Web A compatible DOM and real blob/media validation. Real Telegram account and private messages remain unverified.",
+          "Controlled Web A and Web K DOM, service-worker URL routing, real blob/media validation. Real Telegram account and private messages remain unverified.",
         results,
       },
       null,
