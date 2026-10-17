@@ -7,16 +7,16 @@
 | 验证                   | 结果                | 范围                                                                                                                                                                                                                                |
 | ---------------------- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 类型检查及生产代码构建 | 通过                | `npm run build`                                                                                                                                                                                                                     |
-| 单元／本地集成测试     | 26 项通过，5 个文件 | 格式转换与组合、备用源、X 未知编码、DASH Period、规格拒绝、停滞超时、缓存清理；数据库升级、阶段顺序、无效状态迁移拒绝、事件写入失败时事务回滚及高版本数据库保护；过期 Cookie 备份拒绝恢复、新版 Cookie 优先、重复保存不延长备份期限 |
-| 实际引擎受控媒体       | 11 项通过           | HLS 分离音频、AES-128 密钥轮换、fMP4、Byte Range、DASH 模板／时间线、生成 HDR10＋FLAC、直链暂停恢复、源验证器变化、HLS 停进程恢复且 5 个已完成片段不从源重取、清单变化拒绝续接、TDLib 原生库查询                                    |
-| 已打包 Windows 应用    | 5 项通过            | 包内 TDLib；沙箱浏览器登录／捕获；分片完成前真实接收字节及速度；跨源 Cookie 的界面→工作进程→合并→检查；界面无运行时错误且无请求机密暴露                                                                                             |
+| 单元／本地集成测试     | 28 项通过，6 个文件 | 格式转换与组合、备用源、X 未知编码、DASH Period、规格拒绝、停滞超时、缓存清理；数据库升级、阶段顺序、无效状态迁移拒绝、事件写入失败时事务回滚及高版本数据库保护；过期 Cookie 备份拒绝恢复、新版 Cookie 优先、重复保存不延长备份期限 |
+| 实际引擎受控媒体       | 10 项通过           | HLS 分离音频、AES-128 密钥轮换、fMP4、Byte Range、DASH 模板／时间线、生成 HDR10＋FLAC、直链暂停恢复、源验证器变化、HLS 停进程恢复且 5 个已完成片段不从源重取、清单变化拒绝续接                                                      |
+| 已打包 Windows 应用    | 5 项通过            | 无需 Telegram 原生 API 配置；沙箱浏览器登录／捕获；分片完成前真实接收字节及速度；跨源 Cookie 的界面→工作进程→合并→检查；界面无运行时错误且无请求机密暴露                                                                            |
 | 协议边界真实媒体       | 2 项通过            | HLS 时间戳重置的 discontinuity；相同轨道与实际编码配置的两个连续 DASH Period，完整解码及总时长正确；中文／引号路径                                                                                                                  |
 | 备用源隔离             | 通过                | 主源保留部分故意损坏的字节后发生 503；即使备用源 ETag 相同，也从零开始、不继承 Authorization，源文件字节哈希一致                                                                                                                    |
 | 下载中正常关闭         | 通过                | 真实 N_m3u8DL-RE 子进程退出，源请求停止，重启状态 interrupted；未覆盖操作系统强制杀进程                                                                                                                                             |
 | 桌面任务控制           | 3 项通过            | 并发 1 的排队取消、实际下载暂停后停止源请求、恢复后完整成品、终态不能重新入队、阶段事件持久化、重启隐藏无效继续入口                                                                                                                 |
 | 生产 npm 依赖审计      | 0 个已知漏洞        | `npm audit --omit=dev`；构建工具链仍有 8 项中等严重性通告，正式发行前处理，不对其作“零漏洞”声明                                                                                                                                     |
 
-Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启动、包内 TDLib／工具、跨源 Cookie 与音视频合并。最终结果见 [便携版报告](validation/windows-portable.json) 及 [预览包大小与 SHA-256](validation/windows-preview-artifact.json)。这是未签名的本地实验预览包。
+Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启动、包内工具、跨源 Cookie 与音视频合并。最终结果见 [便携版报告](validation/windows-portable.json) 及 [预览包大小与 SHA-256](validation/windows-preview-artifact.json)。这是未签名的本地实验预览包。
 
 上述媒体测试由本地 FFmpeg 生成真实片段，通过真实 HTTP 服务、N_m3u8DL-RE、FFmpeg、ffprobe 执行，不使用下载成功的模拟返回值。对应 [协议报告](validation/controlled-media.json)、[Windows 打包报告](validation/windows-packaged.json)、[组件版本与 SHA-256](validation/tools-windows-x64.json)。受控套件内的真实平台条目标为 pending，真实平台结果单独记录于下节。
 
@@ -82,7 +82,7 @@ Windows 便携 EXE 直接启动后执行相同桌面检查，包含自解压启�
 
 ## 尚未通过的验收
 
-B 站其他真实 FLAC 采样率组合、番剧会员权限及试看边界；X 登录内容、单帖多视频；Telegram 真实应用身份、登录、私有消息、取消及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period 变体／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。早期站内 Hi-Res 搜索收到平台 412 后未反复请求，后来通过公开项目问题记录找到并验证上述 FLAC 样本。
+B 站其他真实 FLAC 采样率组合、番剧会员权限及试看边界；X 登录内容、单帖多视频；Telegram 真实网页登录、私有消息、网页结构变化及限流；Dolby 硬件播放；更多 HLS 时间轴／DASH 多 Period 变体／异常网络与磁盘场景；跨重启自动续传；macOS／Linux 实机与独立运行时；干净 Windows 虚拟机和正式安装包／签名／完整源码分发材料。早期站内 Hi-Res 搜索收到平台 412 后未反复请求，后来通过公开项目问题记录找到并验证上述 FLAC 样本。
 
 已打包程序在当前 Windows 机器上通过测试，并不等同于干净系统、三端及所有平台验收。应用目前是本地 M0 实验预览，发行状态以 [路线图](ROADMAP.md) 为准。
 
@@ -102,6 +102,7 @@ npm run verify:shutdown
 npm run verify:tasks
 npm run verify:browser-session
 npm run verify:workbench-login # 需要此前用户在本机留下的登录档案
+npm run verify:web-downloads # 受控网页与真实 blob 保存，不代表 Telegram 账号验收
 npm run verify:x-complete
 npm run verify:bilibili-flac # 需要此前用户在本机留下的登录档案
 ```
@@ -109,3 +110,11 @@ npm run verify:bilibili-flac # 需要此前用户在本机留下的登录档案
 真实 B 站验证：`npm run verify:platform -- https://www.bilibili.com/video/BV1NGZtBwELa/`，在打开的应用中登录；另一终端执行 `npm run verify:platform-download`、`npm run verify:preservation`。这些是指定音视频分轨样本的开发验收工具，不是通用的自动最高规格批量下载入口。保真脚本支持 HTTP 或 HLS 保留源文件，校验平台完整时长、H.264／HEVC 完整码流哈希及开头／中间／结尾各 3 秒解码；Dolby 样本额外检查 DOVI 配置。登录档案在被 Git 忽略的 `work/platform-verification/profile` 内，不能随报告上传。
 
 X 开发验收使用 `VIDOWN_PLATFORM_ROOT=work/x-verification` 隔离报告与档案；本次手动取消后执行 `node --import tsx scripts/verify-x-smoke.ts`，仅使用已完成的前三个视频片段与限时音频验证。该脚本明确依赖此次任务保留的分片目录结构，不能视为通用下载功能。
+
+## alpha.3 统一登录与网页文件保存
+
+按用户要求，所有网站只使用统一浏览器登录和工作台链接表单。移除 Telegram 专属入口、API ID／Hash 输入和 TDLib 工作进程及运行依赖；新标签页使用空白页，不默认打开某个站点。临时 Cookie 的加密备份之外，真实 Chromium 的 Local Storage 与 IndexedDB 跨重启保存检查通过；不能仅凭 Cookie 判断 Telegram 网页登录是否保留。
+
+Telegram 自动解析以官方 Web A 的消息 DOM 和允许的下载菜单为基础，使用网页自身提供的保存操作，支持 Chromium 的 blob 下载接收；不读取网页内部密钥。受控测试使用隔离协议页面、与 Web A 相同的消息／菜单 DOM 契约以及真实生成 MP4，完成粘贴消息链接、显示选项、加入任务、保存及 ffprobe／首尾解码检查，原文件与成品 SHA-256 相同。禁止保存的消息及伪装为 MP4 的无效内容未成为成功任务。具体范围见 [网页下载报告](validation/web-downloads.json)。这是受控集成证据，不是实网 Telegram 登录、私有消息或 Web K 验收。上游网页结构变化时必须明确失败，不能下载另一条消息。
+
+Telegram Web A 路由参考其 [tgaddr 参数](https://github.com/Ajaxy/telegram-tt/blob/master/src/util/routing.ts)、[消息定位属性](https://github.com/Ajaxy/telegram-tt/blob/master/src/components/middle/message/Message.tsx)和[下载菜单](https://github.com/Ajaxy/telegram-tt/blob/master/src/components/middle/message/MessageContextMenu.tsx)，只实现网页互操作，不引入其源代码。

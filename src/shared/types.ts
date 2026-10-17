@@ -1,4 +1,4 @@
-export type Protocol = "hls" | "dash" | "http" | "telegram";
+export type Protocol = "hls" | "dash" | "http" | "browser";
 export type TaskState =
   | "queued"
   | "downloading"
@@ -78,6 +78,8 @@ export interface TaskRecord {
   output?: string;
   updatedAt: number;
   resumable: boolean;
+  pausable?: boolean;
+  source?: "browser";
 }
 export interface TaskEvent {
   taskId: string;
@@ -109,11 +111,10 @@ export interface Snapshot {
   activeTab?: string;
   settings: Settings;
   tools: Record<string, string>;
-  telegram: { state: string; detail?: string };
 }
 export type WorkerRequest = {
   id: string;
-  action: "probe" | "download" | "abort";
+  action: "probe" | "download" | "verify-file" | "abort";
   payload: any;
 };
 export type WorkerResponse = {
@@ -158,11 +159,5 @@ export interface DesktopAPI {
   settings(input: Partial<Settings>): Promise<void>;
   directory(): Promise<string | undefined>;
   diagnostics(): Promise<string | undefined>;
-  telegram(input: {
-    action: string;
-    value?: string;
-    apiId?: number;
-    apiHash?: string;
-  }): Promise<unknown>;
   onUpdate(callback: (snapshot: Snapshot) => void): () => void;
 }

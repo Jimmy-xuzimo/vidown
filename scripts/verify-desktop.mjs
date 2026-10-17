@@ -96,12 +96,9 @@ try {
   await page.getByRole("heading", { name: "把精彩，完整保存。" }).waitFor();
   const initial = await page.evaluate(() => window.vidown.snapshot());
   assert.equal(initial.tasks.length, 0);
-  await until(async () => {
-    const snap = await page.evaluate(() => window.vidown.snapshot());
-    return snap.tools.tdlib === "1.8.67";
-  });
+  assert.equal(initial.telegram, undefined);
   results.push({
-    name: "native-tdlib-worker-loads-and-reports-version",
+    name: "telegram-web-mode-requires-no-native-api-credentials",
     status: "passed",
   });
   await page.screenshot({ path: join(root, "01-workbench.png") });

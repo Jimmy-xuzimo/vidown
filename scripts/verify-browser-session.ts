@@ -128,6 +128,24 @@ try {
     name: "responsive-native-view-fits-window-and-ui-zoom-with-webpage-zoom-controls",
     status: "passed",
   });
+  const remote = app.windows().find((p) => p.url().includes("/player"))!;
+  await remote.evaluate(async () => {
+    localStorage.setItem("session-fixture", "retained");
+    await new Promise<void>((resolve, reject) => {
+      const request = indexedDB.open("session-fixture", 1);
+      request.onupgradeneeded = () =>
+        request.result.createObjectStore("values");
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        const tx = request.result.transaction("values", "readwrite");
+        tx.objectStore("values").put("retained", "key");
+        tx.oncomplete = () => {
+          request.result.close();
+          resolve();
+        };
+      };
+    });
+  });
   const nativeStorage = await app.evaluate(
     ({ session }) =>
       session.fromPartition("persist:vidown-browser").storagePath,
@@ -177,8 +195,31 @@ try {
     fixture.origin + "/player",
   );
   assert.equal((await browserReady()).zoomFactor, 0.75);
+  const restoredRemote = app
+    .windows()
+    .find((p) => p.url().includes("/player"))!;
+  assert.deepEqual(
+    await restoredRemote.evaluate(async () => {
+      const idb = await new Promise<unknown>((resolve, reject) => {
+        const request = indexedDB.open("session-fixture", 1);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const result = request.result
+            .transaction("values")
+            .objectStore("values")
+            .get("key");
+          result.onsuccess = () => {
+            request.result.close();
+            resolve(result.result);
+          };
+        };
+      });
+      return [localStorage.getItem("session-fixture"), idb];
+    }),
+    ["retained", "retained"],
+  );
   results.push({
-    name: "site-zoom-preference-survives-restart",
+    name: "site-zoom-local-storage-and-indexeddb-survive-restart",
     status: "passed",
   });
   await page.evaluate(() => window.vidown.browser({ action: "logout" }));

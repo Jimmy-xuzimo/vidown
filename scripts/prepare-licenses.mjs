@@ -17,10 +17,6 @@ const sources = [
     "yt-dlp-source-Unlicense.txt",
     "https://raw.githubusercontent.com/yt-dlp/yt-dlp/2026.08.19/LICENSE",
   ],
-  [
-    "TDLib-Boost-1.0.txt",
-    "https://raw.githubusercontent.com/tdlib/td/d1085f9cebc5a62379991ae1652673954f229c1f/LICENSE_1_0.txt",
-  ],
 ];
 for (const [name, url] of sources) {
   const response = await fetch(url);
@@ -29,10 +25,7 @@ for (const [name, url] of sources) {
   await writeFile(join(root, name), await response.text());
 }
 const pkg = JSON.parse(await readFile("package.json", "utf8"));
-for (const name of [
-  ...Object.keys(pkg.dependencies),
-  "@prebuilt-tdlib/win32-x64",
-]) {
+for (const name of Object.keys(pkg.dependencies)) {
   const directory = resolve("node_modules", name);
   for (const file of await readdir(directory))
     if (/^(LICEN[CS]E|COPYING|NOTICE)(\.|$)/i.test(file))

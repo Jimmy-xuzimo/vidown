@@ -2,7 +2,14 @@ import type { TaskState } from "../shared/types";
 
 const transitions: Record<TaskState, readonly TaskState[]> = {
   queued: ["downloading", "paused", "cancelled", "failed", "interrupted"],
-  downloading: ["merging", "paused", "cancelled", "failed", "interrupted"],
+  downloading: [
+    "merging",
+    "verifying",
+    "paused",
+    "cancelled",
+    "failed",
+    "interrupted",
+  ],
   merging: ["verifying", "paused", "cancelled", "failed", "interrupted"],
   verifying: ["completed", "paused", "cancelled", "failed", "interrupted"],
   paused: ["queued", "cancelled", "interrupted"],

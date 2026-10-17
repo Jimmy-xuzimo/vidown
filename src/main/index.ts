@@ -11,7 +11,7 @@ import {
 import { join, resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile, readdir, rm } from "node:fs/promises";
-import { randomUUID, randomBytes } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { Store } from "../core/store";
 import { TransportBridge, limitedBody } from "../core/bridge";
 import { chooseTracks, publicAsset } from "../core/formats";
@@ -25,6 +25,8 @@ import {
 } from "../core/safety";
 import { BrowserManager } from "./browser";
 import { SessionKeeper } from "./session";
+import { WebDownloads } from "./web-downloads";
+import { isTelegramLink } from "../shared/telegram";
 import type { Tools } from "../core/engine";
 import type {
   PrivateAsset,
@@ -47,18 +49,18 @@ let win: BrowserWindow,
   tools: Tools,
   work: string;
 let sessionKeeper: SessionKeeper;
+let webDownloads: WebDownloads;
 const assets = new Map<string, PrivateAsset>();
 const plans = new Map<string, DownloadPlan>();
 const running = new Map<
   string,
-  { bridge: TransportBridge; promise: Promise<unknown>; fileId?: number }
+  { bridge: TransportBridge; promise: Promise<unknown> }
 >();
 const stopping = new Map<string, "paused" | "cancelled" | "interrupted">();
 let shuttingDown = false,
   shutdownComplete = false;
-let settings: Settings,
-  telegramState = { state: "未配置", detail: undefined as string | undefined };
-let engine: Electron.UtilityProcess, telegram: Electron.UtilityProcess;
+let settings: Settings;
+let engine: Electron.UtilityProcess;
 const engineCalls = new Map<
   string,
   {
@@ -66,10 +68,6 @@ const engineCalls = new Map<
     reject: (error: Error) => void;
     progress?: (data: any) => void;
   }
->();
-const telegramCalls = new Map<
-  string,
-  { resolve: (value: any) => void; reject: (error: Error) => void }
 >();
 let clipboardTimer: NodeJS.Timeout | undefined;
 let lastClipboard = "";
@@ -81,14 +79,15 @@ function snapshot(): Snapshot {
     revision: ++snapshotRevision,
     tasks: store.list().map((t) => ({
       ...t,
-      resumable: t.resumable && plans.has(t.id),
+      resumable: webDownloads?.has(t.id)
+        ? webDownloads.resumable(t.id)
+        : t.resumable && plans.has(t.id),
     })),
     candidates: browser.publicCandidates(),
     tabs: browser.list(),
     activeTab: browser.active,
     settings,
     tools: toolsStatus,
-    telegram: telegramState,
   };
 }
 function changed(): void {
@@ -110,20 +109,13 @@ function patchTask(id: string, patch: Partial<TaskRecord>): void {
 }
 function callWorker(
   id: string,
-  action: "probe" | "download",
+  action: "probe" | "download" | "verify-file",
   payload: any,
   progress?: (data: any) => void,
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     engineCalls.set(id, { resolve, reject, progress });
     engine.postMessage({ id, action, payload: { ...payload, tools, work } });
-  });
-}
-function callTelegram(action: string, payload: any = {}): Promise<any> {
-  const id = randomUUID();
-  return new Promise((resolve, reject) => {
-    telegramCalls.set(id, { resolve, reject });
-    telegram.postMessage({ id, action, payload });
   });
 }
 function secureStorageAvailable(): boolean {
@@ -192,25 +184,25 @@ async function probeInput(input: {
   const url = httpUrl(
     candidate?.url ?? input.url ?? browser.currentUrl(input.tabId) ?? "",
   );
-  if (/^https?:\/\/(?:t\.me|telegram\.me)\//i.test(url)) {
-    const media = await callTelegram("probe", { url });
+  if (isTelegramLink(url)) {
+    const ref = await browser.probeTelegram(url);
     const asset: PrivateAsset = {
       id: randomUUID(),
-      title: media.title,
+      title: ref.title,
       pageUrl: publicUrl(url),
-      context: { id: randomUUID(), profile: "telegram" },
-      duration: media.duration,
-      warnings: [],
+      context: { id: randomUUID(), profile: "browser" },
       tracks: [
         {
           id: randomUUID(),
-          kind: media.audio ? "audio" : "muxed",
-          protocol: "telegram",
-          url: String(media.fileId),
-          label: "Telegram 原始媒体",
-          width: media.width,
-          height: media.height,
+          kind: "muxed",
+          protocol: "browser",
+          url: "browser-message",
+          selector: JSON.stringify(ref),
+          label: "网页原始媒体 · 保存后确认参数",
         },
+      ],
+      warnings: [
+        "使用已登录 Telegram 网页的原始下载操作；预览清晰度不代表原文件规格。网页准备文件期间字节进度可能不可用。",
       ],
     };
     assets.set(asset.id, asset);
@@ -284,7 +276,7 @@ function schedule(): void {
   if (active >= settings.concurrency) return;
   for (const t of store
     .list()
-    .filter((t) => t.state === "queued")
+    .filter((t) => t.state === "queued" && t.source !== "browser")
     .reverse()
     .slice(0, settings.concurrency - active))
     void run(t.id);
@@ -303,7 +295,6 @@ async function run(id: string): Promise<void> {
   const placeholder = {
     bridge: undefined as unknown as TransportBridge,
     promise: Promise.resolve() as Promise<unknown>,
-    fileId: undefined as number | undefined,
   };
   running.set(id, placeholder);
   let receivedBytes = 0,
@@ -333,12 +324,12 @@ async function run(id: string): Promise<void> {
         }
       });
       placeholder.bridge = bridge;
-      let actual: DownloadPlan = {
+      const actual: DownloadPlan = {
         ...plan,
         tracks: plan.tracks.map((t) => ({
           ...t,
           identity: digest(t.url),
-          url: t.protocol === "telegram" ? t.url : bridge.register(t.url),
+          url: bridge.register(t.url),
           fallbacks: t.fallbacks?.map((source) => ({
             identity: digest(source.url),
             url: bridge.register(source.url),
@@ -352,15 +343,6 @@ async function run(id: string): Promise<void> {
         networkBytes: 0,
         speed: undefined,
       });
-      if (plan.tracks.some((t) => t.protocol === "telegram")) {
-        const fileId = Number(plan.tracks[0].url);
-        placeholder.fileId = fileId;
-        const file = await callTelegram("download", { fileId });
-        actual = {
-          ...actual,
-          tracks: actual.tracks.map((t) => ({ ...t, url: file.path })),
-        };
-      }
       if (stopping.has(id)) throw new Error("操作已中断");
       const output = await callWorker(
         id,
@@ -419,6 +401,8 @@ async function download(input: {
   if (!["source", "compatible"].includes(input.output))
     throw new Error("未知输出策略");
   const tracks = chooseTracks(asset, input.trackIds);
+  if (tracks.some((t) => t.protocol === "browser") && input.output !== "source")
+    throw new Error("网页媒体使用原文件保存，请选择保留源规格");
   const id = randomUUID();
   const plan: DownloadPlan = {
     id,
@@ -434,11 +418,26 @@ async function download(input: {
       title: asset.title,
       state: "queued",
       updatedAt: Date.now(),
-      resumable: true,
+      resumable: tracks[0].protocol !== "browser",
+      source: tracks[0].protocol === "browser" ? "browser" : undefined,
+      pausable: tracks[0].protocol !== "browser",
     },
     seal(plan),
   );
   changed();
+  if (tracks[0].protocol === "browser") {
+    const ref = JSON.parse(tracks[0].selector!);
+    try {
+      await webDownloads.capture(id, ref.wc, () => browser.saveTelegram(ref));
+    } catch (error) {
+      patchTask(id, {
+        state: "failed",
+        error: classifyError(error),
+        resumable: false,
+      });
+    }
+    return;
+  }
   schedule();
 }
 async function taskAction(input: {
@@ -446,6 +445,10 @@ async function taskAction(input: {
   action: string;
 }): Promise<void> {
   const t = task(input.id);
+  if (input.action !== "open" && webDownloads.has(t.id)) {
+    webDownloads.action(t.id, input.action);
+    return;
+  }
   const job = running.get(t.id);
   switch (input.action) {
     case "open":
@@ -457,7 +460,6 @@ async function taskAction(input: {
       if (job) {
         stopping.set(t.id, desired);
         engine.postMessage({ id: t.id, action: "abort", payload: {} });
-        if (job.fileId) void callTelegram("cancel", { fileId: job.fileId });
         await job.bridge?.close();
         await job.promise;
       } else if (
@@ -524,34 +526,6 @@ async function saveSettings(input: Partial<Settings>): Promise<void> {
     }, 2000);
   }
 }
-async function telegramAction(input: any): Promise<any> {
-  if (input.action === "init") {
-    if (
-      !Number.isInteger(input.apiId) ||
-      input.apiId <= 0 ||
-      !/^[0-9a-f]{32}$/i.test(input.apiHash ?? "")
-    )
-      throw new Error("请输入你为 Vidown 注册的 Telegram API ID 和 API Hash");
-    const key = randomBytes(32).toString("base64");
-    const protectedConfig = seal({
-      apiId: input.apiId,
-      apiHash: input.apiHash,
-      key,
-    });
-    if (!protectedConfig)
-      throw new Error("系统安全存储不可用，不能保存 Telegram 会话密钥");
-    store.saveSettings({ ...store.settings(), telegram: protectedConfig });
-    return callTelegram("init", {
-      apiId: input.apiId,
-      apiHash: input.apiHash,
-      key,
-      directory: join(app.getPath("userData"), "telegram"),
-    });
-  }
-  if (!["phone", "code", "password", "logout"].includes(input.action))
-    throw new Error("未知 Telegram 操作");
-  return callTelegram(input.action, { value: input.value });
-}
 async function diagnostics(): Promise<string | undefined> {
   const result = await dialog.showSaveDialog(win, {
     defaultPath: "Vidown-diagnostics.json",
@@ -599,7 +573,6 @@ function registerIPC(): void {
       return result.filePaths[0];
     },
     diagnostics,
-    telegram: telegramAction,
   };
   for (const [name, handler] of Object.entries(methods))
     ipcMain.handle("vidown:" + name, async (event, input) => {
@@ -709,59 +682,16 @@ async function boot(): Promise<void> {
       c.reject(new Error("下载工作进程退出，请重启应用"));
     engineCalls.clear();
   });
-  telegram = utilityProcess.fork(join(__dirname, "telegram.cjs"), [], {
-    serviceName: "Vidown Telegram Worker",
-  });
-  telegram.on("message", (message: any) => {
-    if (message.event === "auth") {
-      telegramState = { state: message.state, detail: message.detail };
-      changed();
-      return;
-    }
-    if (message.event === "file") {
-      for (const [id, job] of running)
-        if (job.fileId === message.fileId)
-          patchTask(id, { bytes: message.bytes });
-      return;
-    }
-    const call = telegramCalls.get(message.id);
-    if (call) {
-      telegramCalls.delete(message.id);
-      message.type === "error"
-        ? call.reject(new Error(message.data))
-        : call.resolve(message.data);
-    }
-  });
-  telegram.on("exit", () => {
-    for (const c of telegramCalls.values())
-      c.reject(new Error("Telegram 工作进程退出"));
-    telegramCalls.clear();
-    telegramState = { state: "工作进程退出", detail: undefined };
-    changed();
-  });
-  void callTelegram("version")
-    .then((version) => {
-      toolsStatus.tdlib = version;
-      changed();
-    })
-    .catch((error) => {
-      toolsStatus.tdlib = classifyError(error);
-      changed();
-    });
-  if (saved.telegram) {
-    try {
-      const config = unseal(saved.telegram);
-      void callTelegram("init", {
-        ...config,
-        directory: join(app.getPath("userData"), "telegram"),
-      }).catch((error) => {
-        telegramState = { state: "error", detail: classifyError(error) };
-        changed();
-      });
-    } catch {
-      telegramState = { state: "需要重新配置", detail: undefined };
-    }
-  }
+  webDownloads = new WebDownloads(
+    browser.session,
+    (wc) => browser.owns(wc),
+    store,
+    work,
+    () => settings.downloadDir,
+    changed,
+    (id, file) => callWorker(id, "verify-file", { file }),
+    (id) => engine.postMessage({ id, action: "abort", payload: {} }),
+  );
   registerIPC();
   await saveSettings(settings);
   if (process.env.ELECTRON_RENDERER_URL)
@@ -798,10 +728,10 @@ app.on("before-quit", (event) => {
     engine?.postMessage({ id, action: "abort", payload: {} });
   const jobs: Promise<unknown>[] = [];
   if (sessionKeeper) jobs.push(sessionKeeper.close());
+  if (webDownloads) jobs.push(webDownloads.close());
   for (const [id, job] of running) {
     stopping.set(id, "interrupted");
     engine?.postMessage({ id, action: "abort", payload: {} });
-    if (job.fileId) jobs.push(callTelegram("cancel", { fileId: job.fileId }));
     if (job.bridge) jobs.push(job.bridge.close());
     jobs.push(job.promise);
   }
@@ -821,7 +751,6 @@ app.on("before-quit", (event) => {
     } finally {
       if (timer) clearTimeout(timer);
       engine?.kill();
-      telegram?.kill();
       shutdownComplete = true;
       app.quit();
     }

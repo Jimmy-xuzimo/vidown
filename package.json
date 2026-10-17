@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -37,13 +37,12 @@
     "format:check": "prettier --check src scripts tests *.ts *.json *.md docs",
     "verify:platform": "node scripts/verify-platform.mjs",
     "verify:platform-download": "node scripts/verify-platform-download.mjs",
-    "verify:preservation": "node --import tsx scripts/verify-preservation.ts"
+    "verify:preservation": "node --import tsx scripts/verify-preservation.ts",
+    "verify:web-downloads": "node --import tsx scripts/verify-web-downloads.ts"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.2",
-    "koffi": "3.3.3",
     "m3u8-parser": "7.2.0",
-    "prebuilt-tdlib": "0.1008067.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -71,10 +70,6 @@
     "files": [
       "dist/**/*",
       "package.json"
-    ],
-    "asarUnpack": [
-      "node_modules/koffi/**/*",
-      "node_modules/@prebuilt-tdlib/**/*"
     ],
     "extraResources": [
       {
@@ -121,7 +116,6 @@
   "allowScripts": {
     "electron@44.8.0": true,
     "esbuild@0.28.2": true,
-    "koffi@3.3.3": true,
     "electron-winstaller@5.4.0": true
   }
 }

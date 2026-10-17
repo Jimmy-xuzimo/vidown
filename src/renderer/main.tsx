@@ -26,14 +26,6 @@ const labels: Record<string, string> = {
   failed: "下载失败",
   interrupted: "上次中断",
 };
-const authLabels: Record<string, string> = {
-  authorizationStateWaitPhoneNumber: "请输入手机号",
-  authorizationStateWaitCode: "请输入登录验证码",
-  authorizationStateWaitPassword: "请输入两步验证密码",
-  authorizationStateReady: "已登录",
-  authorizationStateWaitTdlibParameters: "初始化中",
-  authorizationStateClosed: "已退出",
-};
 function Icon({ name, size = 20 }: { name: string; size?: number }) {
   const paths: Record<string, React.ReactNode> = {
     download: (
@@ -105,7 +97,7 @@ function App() {
   const [snapshot, setSnapshot] = useState<Snapshot>();
   const [section, setSection] = useState("download");
   const [url, setUrl] = useState("");
-  const [address, setAddress] = useState("https://www.bilibili.com");
+  const [address, setAddress] = useState("");
   const [asset, setAsset] = useState<MediaAsset>();
   const [video, setVideo] = useState("");
   const [audio, setAudio] = useState("");
@@ -114,9 +106,6 @@ function App() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
-  const [apiId, setApiId] = useState("");
-  const [apiHash, setApiHash] = useState("");
-  const [authValue, setAuthValue] = useState("");
   const [resourcesVisible, setResourcesVisible] = useState(true);
   const browserArea = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -164,7 +153,7 @@ function App() {
   }, [section, snapshot?.activeTab]);
   useEffect(() => {
     const t = snapshot?.tabs.find((t) => t.id === snapshot.activeTab);
-    if (t) setAddress(t.url);
+    if (t) setAddress(t.url === "about:blank" ? "" : t.url);
   }, [snapshot?.tabs.find((t) => t.id === snapshot.activeTab)?.url]);
   async function attempt(action: () => Promise<unknown>) {
     setError("");
@@ -263,7 +252,7 @@ function App() {
             <br />
             让每一步下载都有依据。
           </p>
-          <small>1.0.0-alpha.2</small>
+          <small>1.0.0-alpha.3</small>
         </div>
       </aside>
       <main className="workspace">
@@ -498,7 +487,6 @@ function App() {
                     void attempt(() =>
                       api.browser({
                         action: "new",
-                        url: "https://www.bilibili.com",
                       }),
                     )
                   }
@@ -797,104 +785,6 @@ function App() {
                 save={(input) => attempt(() => api.settings(input))}
                 choose={() => api.directory()}
               />
-              <section className="card">
-                <div className="section-title">
-                  <h2>Telegram</h2>
-                  <span className="tag">
-                    {authLabels[snapshot.telegram.state] ??
-                      snapshot.telegram.state}
-                  </span>
-                </div>
-                <p className="muted">
-                  填写为 Vidown
-                  注册的应用身份。手机号、验证码和两步密码仅在本地输入。
-                </p>
-                {snapshot.telegram.detail && (
-                  <p className="inline-warning">{snapshot.telegram.detail}</p>
-                )}
-                <div className="format-fields">
-                  <label>
-                    API ID
-                    <input
-                      aria-label="Telegram API ID"
-                      value={apiId}
-                      onChange={(e) => setApiId(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    API Hash
-                    <input
-                      aria-label="Telegram API Hash"
-                      type="password"
-                      autoComplete="off"
-                      value={apiHash}
-                      onChange={(e) => setApiHash(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <div className="button-row">
-                  <button
-                    className="secondary"
-                    onClick={() =>
-                      void attempt(async () => {
-                        await api.telegram({
-                          action: "init",
-                          apiId: Number(apiId),
-                          apiHash,
-                        });
-                        setApiHash("");
-                      })
-                    }
-                  >
-                    初始化 Telegram
-                  </button>
-                  <button
-                    className="text-button"
-                    onClick={() =>
-                      void attempt(() => api.telegram({ action: "logout" }))
-                    }
-                  >
-                    退出 Telegram
-                  </button>
-                </div>
-                <div className="auth-row">
-                  <input
-                    aria-label="Telegram 登录信息"
-                    type={
-                      snapshot.telegram.state ===
-                      "authorizationStateWaitPassword"
-                        ? "password"
-                        : "text"
-                    }
-                    autoComplete="off"
-                    placeholder={
-                      authLabels[snapshot.telegram.state] ??
-                      "手机号（含国际区号）"
-                    }
-                    value={authValue}
-                    onChange={(e) => setAuthValue(e.target.value)}
-                  />
-                  <button
-                    className="primary"
-                    onClick={() =>
-                      void attempt(async () => {
-                        const action =
-                          snapshot.telegram.state ===
-                          "authorizationStateWaitCode"
-                            ? "code"
-                            : snapshot.telegram.state ===
-                                "authorizationStateWaitPassword"
-                              ? "password"
-                              : "phone";
-                        await api.telegram({ action, value: authValue });
-                        setAuthValue("");
-                      })
-                    }
-                  >
-                    提交登录信息
-                  </button>
-                </div>
-              </section>
               <section className="card">
                 <h2>浏览器会话与诊断</h2>
                 <p className="muted">

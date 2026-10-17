@@ -11,7 +11,6 @@ const api: DesktopAPI = {
   settings: (input) => invoke("settings", input),
   directory: () => invoke("directory"),
   diagnostics: () => invoke("diagnostics"),
-  telegram: (input) => invoke("telegram", input),
   onUpdate(callback) {
     const handler = (_event: unknown, data: any) => callback(data);
     ipcRenderer.on("vidown:update", handler);

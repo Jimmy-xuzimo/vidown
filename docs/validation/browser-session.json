@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-17T03:24:33.982Z",
+  "generatedAt": "2026-10-17T03:56:09.597Z",
   "packaged": true,
   "results": [
     {
@@ -11,7 +11,7 @@
       "status": "passed"
     },
     {
-      "name": "site-zoom-preference-survives-restart",
+      "name": "site-zoom-local-storage-and-indexeddb-survive-restart",
       "status": "passed"
     },
     {

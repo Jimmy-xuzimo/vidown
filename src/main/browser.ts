@@ -7,6 +7,8 @@ import {
 import { randomUUID } from "node:crypto";
 import type { BrowserTab, SourceCandidate, Protocol } from "../shared/types";
 import { httpUrl, publicUrl } from "../core/safety";
+import { telegramWebUrl, telegramMessageId } from "../shared/telegram";
+import { telegramMessageAction } from "./telegram-web";
 
 export class BrowserManager {
   readonly session: Session;
@@ -65,6 +67,77 @@ export class BrowserManager {
   }
   currentUrl(id?: string): string | undefined {
     return this.views.get(id ?? this.active ?? "")?.webContents.getURL();
+  }
+  owns(contents: Electron.WebContents): boolean {
+    return [...this.views.values()].some((v) => v.webContents === contents);
+  }
+  async openTelegram(url: string): Promise<void> {
+    const entry = [...this.views.entries()].find(([, v]) => {
+      try {
+        return new URL(v.webContents.getURL()).hostname === "web.telegram.org";
+      } catch {
+        return false;
+      }
+    });
+    if (!entry) {
+      await this.create(url);
+      return;
+    }
+    this.select(entry[0]);
+    // A new message deep link needs a full load so Web A reads its initial tgaddr parameter.
+    if (new URL(url).hash) await entry[1].webContents.loadURL(url);
+  }
+  async probeTelegram(url: string): Promise<{
+    wc: number;
+    messageId: string;
+    fingerprint: string;
+    title: string;
+  }> {
+    const messageId = telegramMessageId(url);
+    await this.openTelegram(telegramWebUrl(url));
+    this.hide();
+    const view = this.views.get(this.active!);
+    if (!view) throw new Error("浏览器标签已关闭，请重新解析");
+    const end = Date.now() + 20000;
+    let last = "请先在内置浏览器登录 Telegram 网页";
+    while (Date.now() < end) {
+      try {
+        if (new URL(view.webContents.getURL()).hostname !== "web.telegram.org")
+          throw new Error("Telegram 页面已离开");
+        const result = await view.webContents.executeJavaScript(
+          `(${telegramMessageAction.toString()})(${JSON.stringify({ messageId })})`,
+          true,
+        );
+        return {
+          wc: view.webContents.id,
+          messageId,
+          fingerprint: result.fingerprint,
+          title: result.title,
+        };
+      } catch (error) {
+        last = error instanceof Error ? error.message : String(error);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    throw new Error(last);
+  }
+  async saveTelegram(ref: {
+    wc: number;
+    messageId: string;
+    fingerprint: string;
+  }): Promise<void> {
+    const view = [...this.views.values()].find(
+      (v) => v.webContents.id === ref.wc,
+    );
+    if (
+      !view ||
+      new URL(view.webContents.getURL()).hostname !== "web.telegram.org"
+    )
+      throw new Error("Telegram 网页已关闭或更换，请重新解析");
+    await view.webContents.executeJavaScript(
+      `(${telegramMessageAction.toString()})(${JSON.stringify({ messageId: ref.messageId, fingerprint: ref.fingerprint, save: true })})`,
+      true,
+    );
   }
   publicCandidates(): SourceCandidate[] {
     return [...this.candidates.values()]
@@ -166,7 +239,7 @@ export class BrowserManager {
     for (const other of this.views.keys()) this.applyZoom(other);
     this.changed();
   }
-  async create(url = "https://www.bilibili.com"): Promise<string> {
+  async create(url = "about:blank"): Promise<string> {
     const id = randomUUID();
     const view = new WebContentsView({
       webPreferences: {
@@ -294,7 +367,9 @@ export class BrowserManager {
       /* webRequest capture remains available if devtools owns the debugger. */
     }
     this.select(id);
-    void view.webContents.loadURL(httpUrl(url)).catch(() => update());
+    void view.webContents
+      .loadURL(url === "about:blank" ? url : httpUrl(url))
+      .catch(() => update());
     return id;
   }
   select(id: string): void {

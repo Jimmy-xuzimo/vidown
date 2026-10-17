@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-10-17T04:04:23.426Z",
+  "packaged": true,
+  "scope": "Controlled Web A compatible DOM and real blob/media validation. Real Telegram account and private messages remain unverified.",
+  "results": [
+    {
+      "name": "paste-message-link-parses-webpage-and-saves-real-blob-media-through-native-task-with-identical-file-hash",
+      "status": "passed"
+    },
+    {
+      "name": "no-site-specific-login-entry-or-api-form",
+      "status": "passed"
+    },
+    {
+      "name": "message-fingerprint-change-refuses-saving-a-different-message",
+      "status": "passed"
+    },
+    {
+      "name": "missing-save-permission-or-changed-page-does-not-produce-a-downloadable-asset",
+      "status": "passed"
+    },
+    {
+      "name": "fake-mp4-is-rejected-by-real-media-validation-and-never-marked-completed",
+      "status": "passed"
+    },
+    {
+      "name": "cancelled-webpage-preparation-cannot-later-save-a-file-or-become-completed",
+      "status": "passed"
+    },
+    {
+      "name": "cancel-native-media-download-stops-the-actual-http-response-and-never-publishes-output",
+      "status": "passed"
+    }
+  ]
+}

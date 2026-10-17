@@ -11,7 +11,6 @@ export default defineConfig({
         input: {
           index: resolve("src/main/index.ts"),
           worker: resolve("src/main/worker.ts"),
-          telegram: resolve("src/main/telegram-worker.ts"),
         },
         output: { format: "cjs", entryFileNames: "[name].cjs" },
       },

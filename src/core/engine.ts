@@ -200,9 +200,7 @@ export async function execute(
       message: `下载轨道 ${index + 1}/${plan.tracks.length}`,
     });
     let input: string;
-    if (track.protocol === "telegram") {
-      input = track.url;
-    } else if (track.protocol === "http") {
+    if (track.protocol === "http") {
       const locations = [
         { url: track.url, identity: track.identity },
         ...(track.fallbacks ?? []),

@@ -1,7 +1,6 @@
 import { resolve, join } from "node:path";
 import { mkdir, readFile, writeFile, stat } from "node:fs/promises";
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
 import { randomUUID } from "node:crypto";
 import { TransportBridge } from "../src/core/bridge";
 import { parseManifest } from "../src/core/manifest";
@@ -335,18 +334,6 @@ try {
     await streamBridge.close();
   }
   assert(fixture.requests.every((r) => r.authorized));
-  const require = createRequire(import.meta.url);
-  const k = require("koffi");
-  const lib = k.load(require("prebuilt-tdlib").getTdjson());
-  const ex = lib.func("const char *td_execute(const char *request)");
-  const version = JSON.parse(
-    ex(JSON.stringify({ "@type": "getOption", name: "version" })),
-  );
-  results.push({
-    name: "tdlib-native-library",
-    status: "passed",
-    version: version.value,
-  });
   results.push(
     ...[
       "bilibili-premium-8k-hdr-dolby-hires",

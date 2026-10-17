@@ -1,5 +1,6 @@
 import { probe, execute, type Tools } from "../core/engine";
 import { classifyError } from "../core/safety";
+import { verifyBrowserFile } from "../core/browser-file";
 import type { WorkerRequest, WorkerResponse } from "../shared/types";
 const port = (process as any).parentPort;
 const active = new Map<string, AbortController>();
@@ -20,9 +21,15 @@ port.on("message", async ({ data }: { data: WorkerRequest }) => {
     const result =
       data.action === "probe"
         ? await probe(payload.input, tools, work, controller.signal)
-        : await execute(payload.plan, tools, work, controller.signal, (event) =>
-            send({ id: data.id, type: "progress", data: event }),
-          );
+        : data.action === "verify-file"
+          ? await verifyBrowserFile(payload.file, tools, controller.signal)
+          : await execute(
+              payload.plan,
+              tools,
+              work,
+              controller.signal,
+              (event) => send({ id: data.id, type: "progress", data: event }),
+            );
     send({ id: data.id, type: "result", data: result });
   } catch (error) {
     send({ id: data.id, type: "error", data: classifyError(error) });
