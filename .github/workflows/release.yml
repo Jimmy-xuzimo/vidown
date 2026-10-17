@@ -14,7 +14,7 @@ on:
         required: true
         default: main
       publish:
-        description: "Publish after all five builds pass (tag must point to this commit)"
+        description: "Create version tag and publish after all five builds pass"
         type: boolean
         default: false
 

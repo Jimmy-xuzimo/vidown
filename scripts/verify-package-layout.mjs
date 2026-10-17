@@ -114,7 +114,15 @@ if (process.platform === "darwin") {
     `release/${process.arch === "arm64" ? "linux-arm64-unpacked" : "linux-unpacked"}`,
   );
   for (const format of ["AppImage", "deb", "tar.gz"]) {
-    const file = `Vidown-${version}-Linux-${process.arch}.${format}`;
+    const arch =
+      process.arch === "x64"
+        ? format === "AppImage"
+          ? "x86_64"
+          : format === "deb"
+            ? "amd64"
+            : "x64"
+        : process.arch;
+    const file = `Vidown-${version}-Linux-${arch}.${format}`;
     assert(files.includes(file), `Missing ${file}`);
     const directory = join(runRoot, format);
     await mkdir(directory);

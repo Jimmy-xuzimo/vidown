@@ -9,18 +9,6 @@ assert.equal(tag, `v${version}`);
 const commit = execFileSync("git", ["rev-parse", "HEAD"], {
   encoding: "utf8",
 }).trim();
-const target = JSON.parse(
-  execFileSync(
-    "gh",
-    ["api", `repos/${process.env.GITHUB_REPOSITORY}/commits/${tag}`],
-    { encoding: "utf8" },
-  ),
-);
-assert.equal(
-  target.sha,
-  commit,
-  "Release tag does not identify the tested source commit",
-);
 const root = "release/publish";
 const files = await readdir(root);
 for (const platform of [
@@ -30,6 +18,14 @@ for (const platform of [
   "Linux-x64",
   "Linux-arm64",
 ]) {
+  const report = JSON.parse(
+    await readFile(
+      join(root, `Vidown-${version}-${platform}-verification.json`),
+      "utf8",
+    ),
+  );
+  assert.equal(report.commit, commit, `Untested source commit in ${platform}`);
+  assert.equal(report.version, version);
   const sums = await readFile(
     join(root, `Vidown-${version}-${platform}-SHA256SUMS.txt`),
     "utf8",
@@ -47,6 +43,38 @@ for (const platform of [
   }
 }
 const gh = (...args) => execFileSync("gh", args, { stdio: "inherit" });
+const commitEndpoint = `repos/${process.env.GITHUB_REPOSITORY}/commits/${tag}`;
+let target;
+try {
+  target = JSON.parse(
+    execFileSync("gh", ["api", commitEndpoint], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+    }),
+  );
+} catch (error) {
+  if (!error.stderr?.toString().includes("HTTP 404")) throw error;
+  // Create only after every native build, report and checksum has passed. The
+  // workflow's GITHUB_TOKEN does not recursively trigger another tag workflow.
+  gh(
+    "api",
+    `repos/${process.env.GITHUB_REPOSITORY}/git/refs`,
+    "--method",
+    "POST",
+    "-f",
+    `ref=refs/tags/${tag}`,
+    "-f",
+    `sha=${commit}`,
+  );
+  target = JSON.parse(
+    execFileSync("gh", ["api", commitEndpoint], { encoding: "utf8" }),
+  );
+}
+assert.equal(
+  target.sha,
+  commit,
+  "Release tag does not identify the tested source commit",
+);
 let exists = false;
 try {
   execFileSync("gh", ["release", "view", tag], { stdio: "pipe" });
