@@ -93,8 +93,6 @@ if (!exists)
     "release",
     "create",
     materialsTag,
-    "--target",
-    commit,
     "--verify-tag",
     "--prerelease",
     "--latest=false",

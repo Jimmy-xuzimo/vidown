@@ -119,8 +119,6 @@ try {
     "release",
     "create",
     materialsTag,
-    "--target",
-    commit,
     "--verify-tag",
     "--latest=false",
     "--prerelease",
