@@ -272,7 +272,7 @@ export async function execute(
       const folder = join(taskDir, `stream-${index}`);
       await mkdir(folder, { recursive: true });
       input = await downloadAdaptive(track, text, folder, tools, signal);
-    } else throw new Error("该轨道需要 Telegram 专用下载流程");
+    } else throw new Error("该轨道需要 专用下载流程");
     const info = await mediaInfo(input, tools, signal);
     if (
       !info.streams?.some((s: any) => ["video", "audio"].includes(s.codec_type))

@@ -140,7 +140,7 @@ try {
     .fill("https://t.me/+invalid-invite");
   await page.getByRole("button", { name: "探测资源", exact: true }).click();
   await page
-    .getByText("请粘贴具体 Telegram 消息链接，不是频道首页或邀请链接", {
+    .getByText("请粘贴具体消息链接，不是频道首页或邀请链接", {
       exact: true,
     })
     .waitFor();

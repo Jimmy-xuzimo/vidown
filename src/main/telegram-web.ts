@@ -40,7 +40,7 @@ export async function telegramMessageAction(input: {
       ].filter(visible);
       if (viewers.length !== 1)
         throw new Error(
-          "请在 Telegram 网页中打开要保存的视频，再提取当前页面；也可以粘贴具体消息链接",
+          "请在网页中打开要保存的视频，再提取当前页面；也可以粘贴具体消息链接",
         );
       target = viewers[0];
       const videos = [
@@ -49,7 +49,7 @@ export async function telegramMessageAction(input: {
         ),
       ].filter(visible);
       if (videos.length !== 1 || !(videos[0].currentSrc || videos[0].src))
-        throw new Error("Telegram 视频尚未载入或正在切换，请播放后重新解析");
+        throw new Error("视频尚未载入或正在切换，请播放后重新解析");
       const video = videos[0];
       const src = video.currentSrc || video.src;
       if (
@@ -72,9 +72,9 @@ export async function telegramMessageAction(input: {
         target
           .querySelector<HTMLElement>(".media-viewer-name")
           ?.innerText.trim() ||
-        "Telegram 视频";
+        "视频";
       if (target.classList.contains("no-forwards"))
-        throw new Error("此 Telegram 消息禁止保存，网页没有提供下载权限");
+        throw new Error("此消息禁止保存，网页没有提供下载权限");
       button = [
         ...target.querySelectorAll<HTMLElement>(
           ".media-viewer-buttons .btn-icon",
@@ -82,11 +82,10 @@ export async function telegramMessageAction(input: {
       ].find((node) => downloadIcon(node) && enabled(node));
       if (!button)
         throw new Error(
-          "此 Telegram 视频没有可用的网页下载按钮；可能禁止保存、权限尚未载入或网页结构已变化",
+          "此视频没有可用的网页下载按钮；可能禁止保存、权限尚未载入或网页结构已变化",
         );
     } else {
-      if (!/^[1-9]\d*$/.test(input.messageId))
-        throw new Error("无效 Telegram 消息编号");
+      if (!/^[1-9]\d*$/.test(input.messageId)) throw new Error("无效消息编号");
       const messages = [
         ...document.querySelectorAll<HTMLElement>(
           ".bubble[data-mid], .grouped-item[data-mid]",
@@ -100,9 +99,7 @@ export async function telegramMessageAction(input: {
           ].includes(node.dataset.mid!),
       );
       if (messages.length !== 1)
-        throw new Error(
-          "未找到唯一的指定 Telegram 消息；请打开目标视频后提取当前页面",
-        );
+        throw new Error("未找到唯一的指定消息；请打开目标视频后提取当前页面");
       target = messages[0];
       if (target.querySelectorAll(".grouped-item").length > 1)
         throw new Error(
@@ -114,7 +111,7 @@ export async function telegramMessageAction(input: {
         target.dataset.mid,
         target.innerText,
       ].join("\n");
-      title = target.innerText.trim() || "Telegram 媒体";
+      title = target.innerText.trim() || "媒体";
     }
     if (input.fingerprint && input.fingerprint !== identity)
       throw new Error("消息或视频已变化，请重新解析，防止保存错误内容");
@@ -150,7 +147,7 @@ export async function telegramMessageAction(input: {
           new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
         );
         throw new Error(
-          "此 Telegram 消息没有可用的媒体下载操作；可能禁止保存或网页结构已变化",
+          "此消息没有可用的媒体下载操作；可能禁止保存或网页结构已变化",
         );
       }
     }
@@ -169,7 +166,7 @@ export async function telegramMessageAction(input: {
           new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
         );
         throw new Error(
-          "网页要求选择保存清晰度，请在 Telegram 网页的下载菜单中选择；实际保存的媒体会自动加入下载任务",
+          "网页要求选择保存清晰度，请在网页的下载菜单中选择；实际保存的媒体会自动加入下载任务",
         );
       }
     } else if (input.messageId) {
@@ -185,15 +182,13 @@ export async function telegramMessageAction(input: {
   }
   if (!input.messageId)
     throw new Error(
-      "此 Telegram 网页请使用具体消息的 t.me 链接解析；当前视频预览暂不支持自动定位",
+      "此网页请使用具体消息的 t.me 链接解析；当前视频预览暂不支持自动定位",
     );
   const message = document.querySelector<HTMLElement>(
     `.Message[data-message-id="${input.messageId}"]`,
   );
   if (!message)
-    throw new Error(
-      "未找到指定 Telegram 消息；请确认已在内置浏览器登录并有权访问该消息",
-    );
+    throw new Error("未找到指定消息；请确认已在内置浏览器登录并有权访问该消息");
   const fingerprint = location.href + "\n" + message.innerText;
   if (input.fingerprint && input.fingerprint !== fingerprint)
     throw new Error("消息或聊天已变化，请重新粘贴链接解析，防止保存错误内容");
@@ -234,7 +229,7 @@ export async function telegramMessageAction(input: {
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
     throw new Error(
-      "此 Telegram 消息没有可用的媒体下载操作；消息可能禁止保存、尚未载入或网页结构已变化",
+      "此消息没有可用的媒体下载操作；消息可能禁止保存、尚未载入或网页结构已变化",
     );
   }
   if (/cancel|取消|отмен/i.test(button.innerText))
@@ -245,7 +240,7 @@ export async function telegramMessageAction(input: {
       new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
     );
   return {
-    title: (message.innerText.trim() || "Telegram 媒体").slice(0, 100),
+    title: (message.innerText.trim() || "媒体").slice(0, 100),
     fingerprint,
     url: location.href,
   };

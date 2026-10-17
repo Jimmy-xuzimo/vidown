@@ -11,6 +11,7 @@ import type {
 import "./style.css";
 import { useAppearance } from "./appearance";
 import { canRemoveHistory } from "../shared/history";
+import brandIcon from "../../assets/icon.svg";
 declare global {
   interface Window {
     vidown: DesktopAPI;
@@ -105,6 +106,7 @@ function App() {
   const [audio, setAudio] = useState("");
   const [output, setOutput] = useState<"source" | "compatible">("source");
   const [busy, setBusy] = useState(false);
+  const [creatingTab, setCreatingTab] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [search, setSearch] = useState("");
@@ -112,6 +114,14 @@ function App() {
   const browserArea = useRef<HTMLDivElement>(null);
   const [deletion, setDeletion] = useState<{ ids?: string[]; count: number }>();
   useAppearance(snapshot?.settings);
+  useEffect(
+    () =>
+      api.onClipboard((copied) => {
+        setUrl(copied);
+        setNotice("已填入复制的链接");
+      }),
+    [],
+  );
   useEffect(() => {
     const acceptSnapshot = (next: Snapshot) =>
       setSnapshot((previous) =>
@@ -223,9 +233,7 @@ function App() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">
-            <Icon name="download" size={24} />
-          </div>
+          <img className="brand-mark" src={brandIcon} alt="" />
           <div>vidown</div>
         </div>
         <div className="sidebar-label">工作空间</div>
@@ -300,7 +308,7 @@ function App() {
                   aria-label="视频链接"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="粘贴 B 站、X、Telegram 或流媒体链接…"
+                  placeholder="粘贴视频、音频或网页链接…"
                 />
                 <button
                   className="primary"
@@ -462,8 +470,7 @@ function App() {
                 }
               />
               <div className="footnote">
-                本版本用于验证下载链路。B 站会员规格、X 登录、Telegram
-                私有内容仍需实际账号验收。
+                可用规格以源文件与当前账号权限为准。
               </div>
             </>
           )}
@@ -515,9 +522,15 @@ function App() {
                   className="new-tab"
                   aria-label="新标签页"
                   title="新标签页"
-                  onClick={() =>
-                    void attempt(() => api.browser({ action: "new" }))
-                  }
+                  disabled={creatingTab}
+                  onClick={async () => {
+                    setCreatingTab(true);
+                    try {
+                      await attempt(() => api.browser({ action: "new" }));
+                    } finally {
+                      setCreatingTab(false);
+                    }
+                  }}
                 >
                   <Icon name="plus" size={18} />
                 </button>
@@ -526,6 +539,7 @@ function App() {
                 className="browser-address"
                 onSubmit={(e) => {
                   e.preventDefault();
+                  if (creatingTab) return;
                   void attempt(() =>
                     api.browser({
                       action: "navigate",
@@ -566,7 +580,11 @@ function App() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                 />
-                <button className="primary" type="submit">
+                <button
+                  className="primary"
+                  type="submit"
+                  disabled={creatingTab}
+                >
                   访问
                 </button>
                 <button
@@ -1103,19 +1121,6 @@ function AppearancePanel({
             <option value="light">浅色</option>
           </select>
         </label>
-        <label>
-          界面密度
-          <select
-            aria-label="界面密度"
-            value={value.density}
-            onChange={(e) =>
-              void change({ density: e.target.value as Settings["density"] })
-            }
-          >
-            <option value="comfortable">舒适</option>
-            <option value="compact">紧凑</option>
-          </select>
-        </label>
       </div>
       <div className="theme-choices" aria-label="界面主题">
         {themes.map((t) => (
@@ -1137,6 +1142,19 @@ function AppearancePanel({
             <small>{t.note}</small>
           </button>
         ))}
+      </div>
+      <div className="preference-row">
+        <div>
+          <strong>自动填入复制的链接</strong>
+          <p>监听剪贴板中的网址，填入下载工作台，不会自动开始下载。</p>
+        </div>
+        <input
+          type="checkbox"
+          role="switch"
+          aria-label="自动填入复制的链接"
+          checked={value.clipboard}
+          onChange={(e) => void change({ clipboard: e.target.checked })}
+        />
       </div>
       <div className="preference-row">
         <div>

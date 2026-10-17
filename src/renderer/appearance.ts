@@ -10,7 +10,7 @@ const fallback: Appearance = {
   theme: "iris",
   animations: true,
   hoverGlow: true,
-  density: "comfortable",
+  density: "compact",
 };
 export function applyAppearance(value: Appearance) {
   const root = document.documentElement;
@@ -22,7 +22,7 @@ export function applyAppearance(value: Appearance) {
       : value.colorMode;
   root.dataset.theme = value.theme;
   root.dataset.motion = value.animations ? "on" : "off";
-  root.dataset.density = value.density;
+  root.dataset.density = "compact";
   root.dataset.glow = value.hoverGlow ? "on" : "off";
 }
 try {

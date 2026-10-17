@@ -83,7 +83,7 @@ export class WebDownloads {
       return;
     }
     const job = this.jobs.get(id);
-    if (!job) throw new Error("请回到 Telegram 网页重新保存此媒体");
+    if (!job) throw new Error("请回到 网页重新保存此媒体");
     if (action === "cancel") {
       job.cancel = "cancelled";
       if (job.verifying) this.abort(id);

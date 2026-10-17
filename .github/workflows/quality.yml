@@ -28,8 +28,14 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      # Source checks do not need Electron or TDLib install-time native execution.
+      # Source checks do not need Electron install-time native execution.
       - run: npm ci --ignore-scripts
       - run: npm run format:check
       - run: npm run check
       - run: git diff --check
+      - uses: actions/setup-dotnet@v4
+        if: runner.os == 'Windows'
+        with:
+          dotnet-version: '8.0.x'
+      - run: npm run native:build
+        if: runner.os == 'Windows'

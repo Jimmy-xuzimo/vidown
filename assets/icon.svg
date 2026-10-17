@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="dusk" x1=".12" y1="0" x2=".85" y2="1">
+      <stop stop-color="#22377d"/><stop offset=".36" stop-color="#6351be"/>
+      <stop offset=".66" stop-color="#d06aa7"/><stop offset="1" stop-color="#ffb779"/>
+    </linearGradient>
+    <radialGradient id="blue" cx="0" cy="1" r="1">
+      <stop stop-color="#35ced9" stop-opacity=".9"/>
+      <stop offset=".75" stop-color="#5175ca" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="sun"><stop stop-color="#ffd6a3" stop-opacity=".85"/><stop offset="1" stop-color="#ffaab0" stop-opacity="0"/></radialGradient>
+    <linearGradient id="front" x2="1" y2="1"><stop stop-color="#303f87"/><stop offset="1" stop-color="#383f72"/></linearGradient>
+    <linearGradient id="arrow" x1="0" y1="0" x2=".6" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#d8f7ff"/></linearGradient>
+    <linearGradient id="ledge" x2="1"><stop stop-color="#85e9ef"/><stop offset=".5" stop-color="#def9ff"/><stop offset="1" stop-color="#e9d0ff"/></linearGradient>
+    <clipPath id="tile"><rect x="40" y="40" width="432" height="432" rx="106"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <path fill="url(#dusk)" d="M40 40h432v432H40z"/>
+    <path fill="url(#blue)" d="M40 40h432v432H40z"/>
+    <circle cx="381" cy="205" r="150" fill="url(#sun)"/>
+    <circle cx="383" cy="215" r="37" fill="#ffd9b5" opacity=".7"/>
+    <!-- City layers remain behind the download silhouette. -->
+    <path d="M40 323h37v-72h31v-37h30v83h22v-53h40v81h39v-31h31v35h33v-52h27v-32h31v-52h23v-37h8v37h25v75h30v-29h35v57h35v176H40z" fill="#6465a8" opacity=".48"/>
+    <path d="M40 362h31v-50h41v-41h34v91h27v-39h34v38h92v-35h30v-43h36v76h26v-61h43v25h38v-23h40v172H40z" fill="url(#front)" opacity=".8"/>
+    <path d="M122 288h5v12h-5zm0 26h5v12h-5zm218-14h5v12h-5zm0 24h5v12h-5zm61-10h5v12h-5zm16 0h5v12h-5z" fill="#f6bcae" opacity=".48"/>
+    <path d="M235 133q-8 0-8 8v102h-39q-11 0-3 9l64 66q7 7 14 0l64-66q8-9-3-9h-39V141q0-8-8-8z" fill="#172952" opacity=".16" transform="translate(0 9)"/>
+    <path d="M235 133q-8 0-8 8v102h-39q-11 0-3 9l64 66q7 7 14 0l64-66q8-9-3-9h-39V141q0-8-8-8z" fill="url(#arrow)"/>
+    <path d="M171 333v21q0 18 18 18h134q18 0 18-18v-21" fill="none" stroke="url(#ledge)" stroke-width="22" stroke-linecap="round"/>
+    <rect x="41" y="41" width="430" height="430" rx="105" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2"/>
+  </g>
+</svg>

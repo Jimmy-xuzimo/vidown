@@ -106,7 +106,7 @@ export interface Settings {
   theme: "iris" | "ocean" | "jade" | "rose";
   animations: boolean;
   hoverGlow: boolean;
-  density: "comfortable" | "compact";
+  density: "compact";
 }
 export interface Snapshot {
   version: string;
@@ -171,4 +171,5 @@ export interface DesktopAPI {
   directory(): Promise<string | undefined>;
   diagnostics(): Promise<string | undefined>;
   onUpdate(callback: (snapshot: Snapshot) => void): () => void;
+  onClipboard(callback: (url: string) => void): () => void;
 }

@@ -5,3 +5,7 @@ declare module "m3u8-parser" {
     end(): void;
   }
 }
+declare module "*.svg" {
+  const url: string;
+  export default url;
+}

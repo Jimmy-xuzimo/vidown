@@ -32,6 +32,7 @@ import {
   digest,
 } from "../core/safety";
 import { BrowserManager } from "./browser";
+import { WebView2Browser } from "./webview2";
 import { SessionKeeper } from "./session";
 import { WebDownloads } from "./web-downloads";
 import { isTelegramLink, isTelegramWeb } from "../shared/telegram";
@@ -102,7 +103,7 @@ function snapshot(): Snapshot {
     tabs: browser.list(),
     activeTab: browser.active,
     settings,
-    tools: toolsStatus,
+    tools: { ...toolsStatus, browser: browser.backendName },
   };
 }
 function changed(): void {
@@ -174,6 +175,7 @@ function unseal(value: string): any {
   return JSON.parse(safeStorage.decryptString(Buffer.from(value, "base64")));
 }
 async function cookies(): Promise<string> {
+  await browser.synchronize();
   const all = await browser.session.cookies.get({});
   return (
     "# Netscape HTTP Cookie File\n" +
@@ -228,6 +230,7 @@ async function probeInput(input: {
         ? completeAddress(input.url)
         : (browser.currentUrl(input.tabId) ?? "")),
   );
+  await browser.synchronize();
   const telegramPage =
     candidate && isTelegramWeb(candidate.pageUrl)
       ? browser.currentUrl(candidate.tabId)
@@ -237,7 +240,7 @@ async function probeInput(input: {
     isTelegramWeb(candidate.pageUrl) &&
     !isTelegramWeb(telegramPage ?? "")
   )
-    throw new Error("Telegram 资源所属页面已关闭或更换，请重新播放后探测");
+    throw new Error("资源所属页面已关闭或更换，请重新播放后探测");
   if (telegramPage || isTelegramLink(url)) {
     const ref = await browser.probeTelegram(telegramPage ?? url, {
       tabId: candidate?.tabId ?? input.tabId,
@@ -259,7 +262,7 @@ async function probeInput(input: {
         },
       ],
       warnings: [
-        "使用已登录 Telegram 网页的原始下载操作；预览清晰度不代表原文件规格。网页准备文件期间字节进度可能不可用。",
+        "使用已登录网页的原始下载操作；预览清晰度不代表原文件规格。网页准备文件期间字节进度可能不可用。",
       ],
     };
     assets.set(asset.id, asset);
@@ -552,7 +555,7 @@ function saveSettings(input: Partial<Settings>): Promise<void> {
   return pending;
 }
 async function applySettings(input: Partial<Settings>): Promise<void> {
-  const next = { ...settings, ...input };
+  const next = { ...settings, ...input, density: "compact" as const };
   if (
     !Number.isInteger(next.concurrency) ||
     next.concurrency < 1 ||
@@ -571,7 +574,6 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   if (
     !["system", "dark", "light"].includes(next.colorMode) ||
     !["iris", "ocean", "jade", "rose"].includes(next.theme) ||
-    !["comfortable", "compact"].includes(next.density) ||
     typeof next.animations !== "boolean" ||
     typeof next.hoverGlow !== "boolean"
   )
@@ -580,9 +582,7 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
     await mkdir(resolve(next.downloadDir), { recursive: true });
   next.downloadDir = resolve(next.downloadDir);
   if (!settingsInitialized || next.proxy !== settings.proxy) {
-    await browser.session.setProxy(
-      next.proxy ? { proxyRules: next.proxy } : { mode: "system" },
-    );
+    await browser.configureProxy(next.proxy);
     if (settingsInitialized) await browser.session.closeAllConnections();
   }
   const clipboardChanged =
@@ -590,20 +590,39 @@ async function applySettings(input: Partial<Settings>): Promise<void> {
   settings = next;
   settingsInitialized = true;
   nativeTheme.themeSource = settings.colorMode;
-  store.saveSettings({ ...store.settings(), ...settings });
+  store.saveSettings({
+    ...store.settings(),
+    ...settings,
+    clipboardAutofillVersion: 1,
+  });
   changed();
   schedule();
   if (clipboardChanged && clipboardTimer) clearInterval(clipboardTimer);
   if (clipboardChanged && settings.clipboard) {
-    lastClipboard = await clipboard.readText();
-    clipboardTimer = setInterval(async () => {
-      const text = await clipboard.readText();
+    lastClipboard = "";
+    const readClipboard = async () => {
+      const text = (await clipboard.readText()).trim();
       if (text !== lastClipboard) {
         lastClipboard = text;
-        if (/^https?:\/\/\S+$/.test(text))
-          win.webContents.send("vidown:clipboard", publicUrl(text));
+        if (
+          /^(?:https?:\/\/|(?:[\p{L}\d-]+\.)+[\p{L}]{2,}(?:[/:?#]|$)|localhost[:/?#]|127\.)/iu.test(
+            text,
+          )
+        ) {
+          try {
+            const url = completeAddress(text);
+            if (!win.isDestroyed())
+              win.webContents.send("vidown:clipboard", url);
+          } catch {
+            /* Non-web clipboard content is ignored. */
+          }
+        }
       }
-    }, 2000);
+    };
+    clipboardTimer = setInterval(readClipboard, 600);
+    win.webContents.once("did-finish-load", () =>
+      setTimeout(() => void readClipboard(), 150),
+    );
   }
 }
 let historyBusy = false;
@@ -725,6 +744,7 @@ function registerIPC(): void {
 }
 async function boot(): Promise<void> {
   await app.whenReady();
+  if (process.platform === "win32") app.setAppUserModelId("top.xuzimo.vidown");
   await mkdir(app.getPath("userData"), { recursive: true });
   work = join(app.getPath("userData"), "work");
   await mkdir(work, { recursive: true });
@@ -738,12 +758,13 @@ async function boot(): Promise<void> {
     downloadDir: saved.downloadDir ?? join(app.getPath("videos"), "Vidown"),
     concurrency: saved.concurrency ?? 2,
     proxy: saved.proxy ?? "",
-    clipboard: saved.clipboard ?? false,
+    clipboard:
+      saved.clipboardAutofillVersion === 1 ? (saved.clipboard ?? true) : true,
     colorMode: saved.colorMode ?? "system",
     theme: saved.theme ?? "iris",
     animations: saved.animations ?? true,
     hoverGlow: saved.hoverGlow ?? true,
-    density: saved.density ?? "comfortable",
+    density: "compact",
   };
   const dir = app.isPackaged
     ? join(process.resourcesPath, "tools")
@@ -776,6 +797,9 @@ async function boot(): Promise<void> {
     minWidth: 900,
     minHeight: 600,
     title: "Vidown",
+    icon: app.isPackaged
+      ? join(process.resourcesPath, "icon.ico")
+      : join(app.getAppPath(), "assets/icon.ico"),
     backgroundColor:
       settings.colorMode === "light" ||
       (settings.colorMode === "system" && !nativeTheme.shouldUseDarkColors)
@@ -794,12 +818,19 @@ async function boot(): Promise<void> {
   });
   win.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   win.webContents.on("will-navigate", (event) => event.preventDefault());
-  browser = new BrowserManager(
+  const BrowserHost =
+    process.platform === "win32" &&
+    process.env.VIDOWN_BROWSER_BACKEND !== "chromium"
+      ? WebView2Browser
+      : BrowserManager;
+  browser = new BrowserHost(
     win,
     changed,
     saved.browserZoom ?? {},
     (browserZoom) => store.saveSettings({ ...store.settings(), browserZoom }),
   );
+  if (process.env.VIDOWN_TEST_DATA)
+    (globalThis as any).__vidownBrowser = browser;
   sessionKeeper = new SessionKeeper(
     browser.session,
     () => store.settings().browserSession,
@@ -865,8 +896,6 @@ app.on("before-quit", (event) => {
   for (const id of engineCalls.keys())
     engine?.postMessage({ id, action: "abort", payload: {} });
   const jobs: Promise<unknown>[] = [];
-  if (sessionKeeper)
-    jobs.push(initialization.catch(() => {}).then(() => sessionKeeper.close()));
   if (webDownloads) jobs.push(webDownloads.close());
   for (const [id, job] of running) {
     stopping.set(id, "interrupted");
@@ -890,6 +919,9 @@ app.on("before-quit", (event) => {
     } finally {
       if (timer) clearTimeout(timer);
       engine?.kill();
+      await initialization.catch(() => {});
+      if (browser) await browser.shutdown().catch(() => {});
+      if (sessionKeeper) await sessionKeeper.close().catch(() => {});
       shutdownComplete = true;
       app.quit();
     }

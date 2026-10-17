@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -28,8 +28,8 @@
     "verify:x-complete": "node --import tsx scripts/verify-x-complete.ts",
     "verify:bilibili-flac": "node --import tsx scripts/verify-bilibili-flac.ts",
     "verify:desktop": "node --import tsx scripts/verify-desktop.mjs",
-    "pack": "npm run build && electron-builder --dir",
-    "dist": "npm run build && electron-builder",
+    "pack": "npm run build && npm run native:build && electron-builder --dir",
+    "dist": "npm run build && npm run native:build && electron-builder",
     "check": "npm run build && npm test",
     "runtime:prepare": "node scripts/prepare-runtime.mjs",
     "setup": "npm run runtime:prepare && npm run tools:prepare",
@@ -40,7 +40,9 @@
     "verify:preservation": "node --import tsx scripts/verify-preservation.ts",
     "verify:web-downloads": "node --import tsx scripts/verify-web-downloads.ts",
     "verify:startup": "node --import tsx scripts/verify-startup.ts",
-    "verify:interface": "node --import tsx scripts/verify-interface.ts"
+    "verify:interface": "node --import tsx scripts/verify-interface.ts",
+    "native:build": "node scripts/build-native.mjs",
+    "verify:webview2": "node --import tsx scripts/verify-webview2.ts"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.2",
@@ -93,14 +95,23 @@
       {
         "from": "THIRD_PARTY_NOTICES.md",
         "to": "THIRD_PARTY_NOTICES.md"
+      },
+      {
+        "from": "assets/icon.ico",
+        "to": "icon.ico"
+      },
+      {
+        "from": "resources/webview2-host",
+        "to": "webview2-host"
       }
     ],
     "win": {
       "target": [
-        "nsis"
+        "nsis",
+        "portable"
       ],
       "icon": "assets/icon.ico",
-      "signAndEditExecutable": false
+      "signExecutable": false
     },
     "compression": "normal",
     "nsis": {
@@ -125,6 +136,9 @@
         "AppImage"
       ],
       "category": "Utility"
+    },
+    "portable": {
+      "artifactName": "Vidown-Portable-${version}.exe"
     }
   },
   "allowScripts": {

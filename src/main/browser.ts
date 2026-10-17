@@ -22,20 +22,21 @@ export class BrowserManager {
     SourceCandidate & { url: string; headers: Record<string, string> }
   >();
   private views = new Map<string, WebContentsView>();
-  private info = new Map<string, BrowserTab>();
+  protected info = new Map<string, BrowserTab>();
   private headers = new Map<number, Record<string, string>>();
-  private capturedHeaders = new Map<string, Record<string, string>>();
-  private manifestBodies = new Map<string, string>();
-  private bounds = { x: 270, y: 110, width: 700, height: 560 };
-  private visible = false;
+  protected capturedHeaders = new Map<string, Record<string, string>>();
+  protected manifestBodies = new Map<string, string>();
+  protected bounds = { x: 270, y: 110, width: 700, height: 560 };
+  protected visible = false;
   active?: string;
   constructor(
-    private win: BrowserWindow,
-    private changed: () => void,
-    private zoomPreferences: Record<string, number> = {},
-    private saveZoom: (value: Record<string, number>) => void = () => {},
+    protected win: BrowserWindow,
+    protected changed: () => void,
+    protected zoomPreferences: Record<string, number> = {},
+    protected saveZoom: (value: Record<string, number>) => void = () => {},
+    partition = "persist:vidown-browser",
   ) {
-    this.session = session.fromPartition("persist:vidown-browser");
+    this.session = session.fromPartition(partition);
     this.session.setPermissionRequestHandler((_wc, _permission, callback) =>
       callback(false),
     );
@@ -69,6 +70,18 @@ export class BrowserManager {
   }
   list(): BrowserTab[] {
     return [...this.info.values()];
+  }
+  get backendName(): string {
+    return "Chromium";
+  }
+  async synchronize(): Promise<void> {}
+  async configureProxy(proxy: string): Promise<void> {
+    await this.session.setProxy(
+      proxy ? { proxyRules: proxy } : { mode: "system" },
+    );
+  }
+  async shutdown(): Promise<void> {
+    this.close();
   }
   currentUrl(id?: string): string | undefined {
     return this.views.get(id ?? this.active ?? "")?.webContents.getURL();
@@ -110,13 +123,13 @@ export class BrowserManager {
       view = this.views.get(id ?? "");
       if (!view || !isTelegramWeb(view.webContents.getURL()))
         throw new Error(
-          "请先在内置浏览器打开 Telegram 并播放目标视频，再提取当前页面",
+          "请先在内置浏览器打开目标网页并播放目标视频，再提取当前页面",
         );
       if (
         options.mediaUrl &&
         new URL(view.webContents.getURL()).origin !== new URL(url).origin
       )
-        throw new Error("Telegram 资源所属页面已变化，请重新播放后探测");
+        throw new Error("资源所属页面已变化，请重新播放后探测");
     } else {
       messageId = telegramMessageId(url);
       const entries = [...this.views.entries()];
@@ -138,14 +151,14 @@ export class BrowserManager {
     if (!view) throw new Error("浏览器标签已关闭，请重新解析");
     if (!options.tabId) this.hide();
     const end = Date.now() + (messageId ? 20000 : 1500);
-    let last = "请先在内置浏览器登录 Telegram 网页";
+    let last = "请先在内置浏览器登录目标网页";
     while (Date.now() < end) {
       try {
         if (
           view.webContents.isDestroyed() ||
           !isTelegramWeb(view.webContents.getURL())
         )
-          throw new Error("Telegram 页面已离开");
+          throw new Error("页面已离开");
         const result = await view.webContents.executeJavaScript(
           `(${telegramMessageAction.toString()})(${JSON.stringify({ messageId, mediaUrl: options.mediaUrl })})`,
           true,
@@ -174,7 +187,7 @@ export class BrowserManager {
       (v) => v.webContents.id === ref.wc,
     );
     if (!view || !isTelegramWeb(view.webContents.getURL()))
-      throw new Error("Telegram 网页已关闭或更换，请重新解析");
+      throw new Error("网页已关闭或更换，请重新解析");
     await view.webContents.executeJavaScript(
       `(${telegramMessageAction.toString()})(${JSON.stringify({ messageId: ref.messageId, mediaUrl: ref.mediaUrl, fingerprint: ref.fingerprint, save: true })})`,
       true,
@@ -205,7 +218,7 @@ export class BrowserManager {
       result.Referer = pageUrl;
     return result;
   }
-  private capture(
+  protected capture(
     tabId: string,
     url: string,
     type: string,

@@ -132,7 +132,7 @@ try {
     path: join(root, "02-light-ocean-settings.png"),
     animations: "disabled",
   });
-  await page.getByLabel("界面密度", { exact: true }).selectOption("compact");
+  assert.equal(await page.getByLabel("界面密度", { exact: true }).count(), 0);
   await page.getByRole("switch", { name: "界面动效", exact: true }).uncheck();
   await page.getByRole("switch", { name: "鼠标微光", exact: true }).uncheck();
   await until(
@@ -161,7 +161,12 @@ try {
   });
 
   await page.getByRole("button", { name: "浏览器探测", exact: true }).click();
-  await page.getByRole("button", { name: "新标签页", exact: true }).click();
+  await page.locator("button.new-tab").click();
+  await until(
+    async () =>
+      (await page.evaluate(() => window.vidown.snapshot())).tabs.length === 1,
+  );
+  await page.locator("button.new-tab").waitFor({ state: "visible" });
   await page
     .getByLabel("浏览器地址", { exact: true })
     .fill(`127.0.0.1:${port}/long`);
@@ -174,7 +179,11 @@ try {
   const firstHeight = (await page
     .locator(".browser-tab.selected")
     .boundingBox())!.height;
-  await page.getByRole("button", { name: "新标签页", exact: true }).click();
+  await page.locator("button.new-tab").click();
+  await until(async () => {
+    const state = await page.evaluate(() => window.vidown.snapshot());
+    return state.tabs.length === 2 && state.activeTab === state.tabs[1].id;
+  });
   await page
     .getByLabel("浏览器地址", { exact: true })
     .fill(`127.0.0.1:${port}/short`);
@@ -205,7 +214,13 @@ try {
   assert(layout.heights.every((h) => h === firstHeight && h === 38));
   assert.equal(layout.nowrap, "nowrap");
   assert.equal(layout.ellipsis, "ellipsis");
-  assert(layout.clipped && layout.plusAfter);
+  assert(
+    layout.clipped && layout.plusAfter,
+    JSON.stringify({
+      layout,
+      tabs: (await page.evaluate(() => window.vidown.snapshot())).tabs,
+    }),
+  );
   assert(
     (await page.evaluate(() => window.vidown.snapshot())).tabs.every((t) =>
       t.url.startsWith(`http://127.0.0.1:${port}/`),

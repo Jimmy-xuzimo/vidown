@@ -30,7 +30,7 @@ export function isTelegramLink(value: string): boolean {
 
 export function telegramWebUrl(value?: string, existing?: string): string {
   if (!value) return "https://web.telegram.org/a/";
-  if (!isTelegramLink(value)) throw new Error("请输入 Telegram 网页或消息链接");
+  if (!isTelegramLink(value)) throw new Error("请输入网页或消息链接");
   const u = new URL(value.trim());
   if (isTelegramWeb(value)) {
     u.protocol = "https:";
@@ -51,20 +51,19 @@ export function telegramWebUrl(value?: string, existing?: string): string {
 }
 
 export function telegramMessageId(value: string): string {
-  if (!isTelegramLink(value)) throw new Error("无效 Telegram 消息链接");
+  if (!isTelegramLink(value)) throw new Error("无效消息链接");
   const u = new URL(value);
   if (isTelegramWeb(value)) {
     const deep = new URLSearchParams(u.hash.slice(1).replace(/^\?/, "")).get(
       "tgaddr",
     );
     if (deep) return telegramMessageId(deep);
-    throw new Error("请粘贴 Telegram 消息的 t.me 链接，以准确定位媒体");
+    throw new Error("请粘贴具体消息链接，以准确定位媒体");
   }
   const match =
     /^\/(?:s\/)?(?:c\/\d+|[a-zA-Z0-9_]+)\/(?:\d+\/)?([1-9]\d*)\/?$/.exec(
       u.pathname,
     );
-  if (!match)
-    throw new Error("请粘贴具体 Telegram 消息链接，不是频道首页或邀请链接");
+  if (!match) throw new Error("请粘贴具体消息链接，不是频道首页或邀请链接");
   return match[1];
 }

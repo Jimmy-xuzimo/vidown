@@ -4,6 +4,10 @@ release/
 resources/tools/*
 !resources/tools/.gitkeep
 work/
+native/**/bin/
+native/**/obj/
+resources/webview2-host/
 *.log
 .env*
 coverage/
+assets/icon-render.png
