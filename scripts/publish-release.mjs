@@ -90,6 +90,29 @@ for (const file of groups.materials.filter((file) =>
   );
 }
 try {
+  execFileSync(
+    "gh",
+    [
+      "api",
+      `repos/${process.env.GITHUB_REPOSITORY}/git/ref/tags/${materialsTag}`,
+    ],
+    { stdio: "pipe" },
+  );
+} catch (error) {
+  if (!error.stderr?.toString().includes("HTTP 404")) throw error;
+  // Explicit ref creation avoids release creation's broader workflow-tag permission.
+  gh(
+    "api",
+    `repos/${process.env.GITHUB_REPOSITORY}/git/refs`,
+    "--method",
+    "POST",
+    "-f",
+    `ref=refs/tags/${materialsTag}`,
+    "-f",
+    `sha=${commit}`,
+  );
+}
+try {
   execFileSync("gh", ["release", "view", materialsTag], { stdio: "pipe" });
 } catch {
   gh(
@@ -98,6 +121,7 @@ try {
     materialsTag,
     "--target",
     commit,
+    "--verify-tag",
     "--latest=false",
     "--prerelease",
     "--title",

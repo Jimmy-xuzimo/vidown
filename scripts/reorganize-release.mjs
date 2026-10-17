@@ -70,6 +70,21 @@ const notes = await readFile("docs/RELEASE_NOTES.md", "utf8");
 assert(notes.includes(materialsUrl));
 let exists = false;
 try {
+  api(`git/ref/tags/${materialsTag}`);
+} catch (error) {
+  if (!error.stderr?.toString().includes("HTTP 404")) throw error;
+  gh(
+    "api",
+    `repos/${repo}/git/refs`,
+    "--method",
+    "POST",
+    "-f",
+    `ref=refs/tags/${materialsTag}`,
+    "-f",
+    `sha=${commit}`,
+  );
+}
+try {
   api(`releases/tags/${materialsTag}`);
   exists = true;
 } catch {}
@@ -80,6 +95,7 @@ if (!exists)
     materialsTag,
     "--target",
     commit,
+    "--verify-tag",
     "--prerelease",
     "--latest=false",
     "--title",
