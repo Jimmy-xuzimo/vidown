@@ -45,7 +45,9 @@ const evidence = {
   version,
   platform,
   arch: process.arch,
-  commit: process.env.GITHUB_SHA,
+  commit: execFileSync("git", ["rev-parse", "HEAD"], {
+    encoding: "utf8",
+  }).trim(),
   run: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
   signing:
     process.platform === "darwin"
@@ -56,6 +58,10 @@ const evidence = {
   suites: {},
   tools: JSON.parse(await readFile("resources/tools/tools.lock.json", "utf8")),
 };
+if (process.platform === "win32")
+  evidence.packagePayload = JSON.parse(
+    await readFile(`docs/validation/artifacts-${version}.json`, "utf8"),
+  );
 for (const suite of [
   "media-verification",
   "protocol-edge-verification",
@@ -63,7 +69,7 @@ for (const suite of [
   "packaged-verification",
   ...(process.platform === "win32"
     ? ["webview2-verification", "portable-release-verification"]
-    : []),
+    : ["package-layout"]),
 ]) {
   const data = JSON.parse(
     await readFile(join("work", suite, "report.json"), "utf8"),

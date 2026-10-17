@@ -16,7 +16,7 @@ macOS 当前设置最低 15.0；Linux 在 Ubuntu 24.04 构建，不承诺兼容�
 2. `scripts/build-media.sh` 从固定提交构建 FFmpeg n9.0.2 和 x264，静态链接，不读取运行器上随机安装的编解码库。配置关闭自动发现；Windows 使用系统 Schannel，macOS 使用系统 Secure Transport，Linux FFmpeg 不包含独立 TLS 库（应用的网络传输由 Chromium／下载引擎完成）。记录完整配置和源码归档。FFmpeg 原生 HEVC 解码／无损合并仍可用；不额外捆绑 HEVC 编码器。
 3. `scripts/build-extractor.py` 在专属虚拟环境中，从固定 yt-dlp 提交及其锁定默认依赖构建 PyInstaller 独立程序，包含 EJS。保存全部已安装 Python 分发的精确 sdist、CPython 源码、实际依赖清单、许可文本及构建脚本。没有混入用户浏览器 Cookie、其他环境里的包或可选 curl-cffi 模拟库。非交互程序不包含 Readline／Tk。
 4. `npm run setup` 在 `VIDOWN_TOOLS_FROM_SOURCE=1` 下校验本轮提取器哈希、下载并验证 N_m3u8DL-RE 的上游摘要，准备 Electron 和许可文件。`npm run dist -- --<win|mac|linux> --<x64|arm64> --publish never --config.electronDist=node_modules/electron/dist` 构建对应包。
-5. 每个运行器执行类型／生产构建、单元测试、实际协议样本、时间轴边界、备用源隔离，以及**打包后**浏览器探测→鉴权下载→合并→验证。Windows 加测原生 WebView2 和便携 EXE。任一失败，发布作业不运行。
+5. 工作流先固定一次应用提交，全部运行器使用同一个 SHA。每个运行器执行类型／生产构建、单元测试、实际协议样本、时间轴边界、备用源隔离，以及**打包后**浏览器探测→鉴权下载→合并→验证。Windows 加测原生 WebView2 和便携 EXE；其他系统展开实际安装容器，核对载荷哈希与权限，再启动实际 ZIP／AppImage 中的程序。任一失败，发布作业不运行。
 6. `collect-release.mjs` 保存安装包、独立的 `*-sources.tar.gz`、`*-verification.json` 和 `*-SHA256SUMS.txt`。最终发布作业重算五组校验值，再上传同一 Release。资料与二进制在同一下载位置，不以指向上游最新分支的链接替代对应源码。
 
 源码归档包含 FFmpeg、x264、yt-dlp、CPython、Python 依赖、构建配方、FFmpeg 配置与 Python 包版本。对应应用源码由同一 Git 标签提供。每次构建记录 Actions 运行地址；不保证不同编译器、时间戳及签名下二进制逐字节可复现。

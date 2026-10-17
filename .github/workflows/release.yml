@@ -26,8 +26,20 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  resolve:
+    name: Resolve immutable source commit
+    runs-on: ubuntu-24.04
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - id: source
+        run: echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
   build:
     name: Package ${{ matrix.platform }}-${{ matrix.arch }}
+    needs: resolve
     runs-on: ${{ matrix.os }}
     timeout-minutes: 90
     strategy:
@@ -67,7 +79,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ needs.resolve.outputs.commit }}
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
@@ -162,6 +174,9 @@ jobs:
       - run: npm run verify:mirrors
       - name: Build native installers
         run: npm run dist -- --${{ matrix.flag }} --${{ matrix.arch }} --publish never --config.electronDist=node_modules/electron/dist
+      - name: Check actual installer payloads and executable permissions
+        if: runner.os != 'Windows'
+        run: node scripts/verify-package-layout.mjs
       - name: Packaged native browser and login checks
         if: runner.os == 'Windows'
         run: npm run verify:webview2
@@ -204,7 +219,7 @@ jobs:
 
   publish:
     name: Publish verified release files
-    needs: build
+    needs: [resolve, build]
     if: github.event_name == 'push' || inputs.publish
     runs-on: ubuntu-24.04
     permissions:
@@ -212,7 +227,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: ${{ needs.resolve.outputs.commit }}
       - uses: actions/download-artifact@v4
         with:
           pattern: release-*
