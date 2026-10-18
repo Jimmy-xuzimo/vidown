@@ -53,11 +53,10 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - name: Android toolchain
         run: sdkmanager "platforms;android-37.2" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.31.6"
-      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      - uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        id: native-cache
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
             android/third-party
             android/native-build
           key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/**', 'android/**/*.gradle.kts', 'android/gradle.properties') }}
@@ -65,6 +64,13 @@ jobs:
         run: |
           python android/tools/prepare-sources.py
           bash android/tools/build-native.sh
+      - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        if: steps.native-cache.outputs.cache-hit != 'true'
+        with:
+          path: |
+            android/third-party
+            android/native-build
+          key: ${{ steps.native-cache.outputs.cache-primary-key }}
       - name: Compile, unit tests and Android Lint
         working-directory: android
         run: bash gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:lintDebug --console=plain
