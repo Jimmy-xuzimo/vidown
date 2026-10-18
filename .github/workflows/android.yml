@@ -2,11 +2,23 @@ name: Native Android
 
 on:
   pull_request:
-    paths: ["android/**", ".github/workflows/android.yml"]
+    paths:
+      [
+        "android/**",
+        "!android/*.md",
+        "!android/verification/**",
+        ".github/workflows/android.yml",
+      ]
   push:
     branches: [main, android-native]
     tags: ["android-v*"]
-    paths: ["android/**", ".github/workflows/android.yml"]
+    paths:
+      [
+        "android/**",
+        "!android/*.md",
+        "!android/verification/**",
+        ".github/workflows/android.yml",
+      ]
   workflow_dispatch:
     inputs:
       signed_package:

@@ -3619,5 +3619,10 @@
             <sha256 value="1239e9dbe1397cd5971342956b2511bc3ace7b641842e4372a088dcfa8b9ad55" origin="Verified Maven Central artifact and repository checksum"/>
          </artifact>
       </component>
+      <component group="com.google.guava" name="guava-parent" version="33.3.1-android">
+         <artifact name="guava-parent-33.3.1-android.pom">
+            <sha256 value="6e11986ea7250b51f847157e2dc937f32a306804dfce0007a5e81ddb9b95c579" origin="Verified Maven Central artifact and repository checksum"/>
+         </artifact>
+      </component>
    </components>
 </verification-metadata>
