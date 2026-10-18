@@ -28,7 +28,23 @@ def main():
     destination=(ROOT/args.output).resolve();destination.mkdir(parents=True,exist_ok=True)
     (destination/'summary.json').unlink(missing_ok=True)
     def adb(*command,check=True):
-        return subprocess.run([args.adb,'-s',args.serial,*command],text=True,encoding='utf-8',errors='replace',capture_output=True,check=check).stdout
+        result=subprocess.run([args.adb,'-s',args.serial,*command],text=True,encoding='utf-8',errors='replace',capture_output=True)
+        if check and result.returncode:
+            raise RuntimeError('ADB '+command[0]+' failed: '+(result.stdout+result.stderr)[-6000:])
+        return result.stdout
+    def wait_system_ready():
+        # A first boot or display reconfiguration may restart system_server after
+        # sys.boot_completed becomes 1. Do not race package-manager startup.
+        deadline=time.monotonic()+180
+        stable=0
+        while time.monotonic()<deadline:
+            boot=adb('shell','getprop','sys.boot_completed',check=False).strip()
+            package=adb('shell','service','check','package',check=False)
+            activity=adb('shell','service','check','activity',check=False)
+            stable=stable+1 if boot=='1' and ': found' in package and ': found' in activity else 0
+            if stable>=5:return
+            time.sleep(1)
+        raise RuntimeError('Emulator package/activity services did not stabilize')
     deadline=time.monotonic()+180
     while adb('shell','getprop','sys.boot_completed',check=False).strip()!='1':
         if time.monotonic()>=deadline:raise RuntimeError('Emulator did not finish booting')
@@ -39,15 +55,26 @@ def main():
     if not name.startswith('Vidown_') and not os.environ.get('CI'):
         raise RuntimeError('Select a dedicated Vidown emulator')
     if not 34<=int(api)<=37:raise RuntimeError(f'Unexpected emulator API {api}')
+    wait_system_ready()
     # This script never closes an existing server or changes a browser profile.
     with urllib.request.urlopen('http://127.0.0.1:18763/health',timeout=10) as response:
         if json.load(response).get('fixture')!='vidown-android-v1':raise RuntimeError('Unexpected fixture listener')
     # Release is tested externally with check-release-ui.py so in-process test
     # dependencies do not alter the production shrinker's reachability graph.
     variant='debug'
+    install_retries=0
     for apk in [f'app/build/outputs/apk/{variant}/app-{variant}.apk',f'app/build/outputs/apk/androidTest/{variant}/app-{variant}-androidTest.apk']:
-        result=adb('install','-r',str(ROOT/'android'/apk))
-        if 'Success' not in result:raise RuntimeError('APK installation failed')
+        for attempt in range(3):
+            result=subprocess.run([args.adb,'-s',args.serial,'install','-r',str(ROOT/'android'/apk)],text=True,encoding='utf-8',errors='replace',capture_output=True)
+            details=result.stdout+result.stderr
+            if result.returncode==0 and 'Success' in details:break
+            (destination/'install-failure.txt').write_text(details,encoding='utf-8')
+            (destination/'provisioning-logcat.txt').write_text(adb('logcat','-d','-t','200',check=False),encoding='utf-8')
+            transient=any(s in details.lower() for s in ('device offline','broken pipe',"can't find service",'device not found','failed to read response'))
+            if not transient or attempt==2:raise RuntimeError('APK installation failed: '+details[-6000:])
+            install_retries+=1
+            print('Emulator service restarted during provisioning; waiting before reinstall',flush=True)
+            wait_system_ready()
     if args.public_network:
         if int(api)<37:raise RuntimeError('The local-network permission test requires API 37')
         adb('shell','pm','revoke','top.xuzimo.vidown','android.permission.ACCESS_LOCAL_NETWORK')
@@ -77,6 +104,7 @@ def main():
     result['layout']='landscape asserted by UI tests' if args.landscape else 'portrait asserted by UI tests' if args.portrait else 'device default'
     font_scale=adb('shell','settings','get','system','font_scale').strip()
     result['fontScale']=float(font_scale) if font_scale not in ('', 'null') else 1.0
+    result['provisioningRetries']=install_retries
     (destination/'summary.json').write_text(json.dumps(result,indent=2),encoding='utf-8')
     screenshots=destination/'screenshots';screenshots.mkdir(exist_ok=True)
     for old in screenshots.glob('*.png'):old.unlink()

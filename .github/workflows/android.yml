@@ -59,7 +59,7 @@ jobs:
           path: |
             android/third-party
             android/native-build
-          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/**', 'android/**/*.gradle.kts', 'android/gradle.properties') }}
+          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/sources.lock.json', 'android/tools/build-native.sh', 'android/tools/prepare-sources.py') }}
       - name: Build locked LGPL/native sources
         run: |
           python android/tools/prepare-sources.py
@@ -137,11 +137,9 @@ jobs:
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
             android/third-party
             android/native-build
-          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/**', 'android/**/*.gradle.kts', 'android/gradle.properties') }}
+          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/sources.lock.json', 'android/tools/build-native.sh', 'android/tools/prepare-sources.py') }}
       - name: Native source and signed packages
         run: |
           python android/tools/prepare-sources.py
@@ -179,6 +177,8 @@ jobs:
           api-level: 34
           target: google_apis
           arch: x86_64
+          profile: pixel_6
+          cores: 4
           ram-size: 4096M
           disk-size: 6G
           disable-animations: false
@@ -256,6 +256,8 @@ jobs:
           api-level: ${{ matrix.api }}
           target: ${{ matrix.target }}
           arch: x86_64
+          profile: pixel_6
+          cores: 4
           ram-size: 4096M
           disk-size: 6G
           disable-animations: false
