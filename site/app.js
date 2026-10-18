@@ -74,6 +74,11 @@ const english = {
   t71: "User guide",
   t72: "Third-party notices",
   t73: "Project-owned code is MIT licensed; third-party components retain their own licenses.",
+  t74: "Take your keepers with you.",
+  t75: "Native Kotlin and Material 3, adapted for phones, tablets and both orientations. Android 14+. One APK for ARM64 and x86_64.",
+  t76: "0.1.0-preview.4 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
+  t77: "Download Android APK",
+  t78: "Source & validation scope",
 };
 const root = document.documentElement;
 const languageButton = document.getElementById("language");

@@ -13,4 +13,9 @@ No framework, CDN, analytics, remote fonts or build step is required. To preview
 
 When publishing an app release, update the version and all five platform asset links together. Verify filenames against GitHub Releases and review Chinese/English feature and limitation copy in `index.html` and `app.js`. Keep app packages separate from the verification/materials release. Review OS requirements and signing status against current documentation.
 
+Android uses a separate preview card, version and release tag. Its single APK
+does not change the five desktop links or imply desktop feature/account parity.
+Link to `android/ACCEPTANCE.md` for the current Android validation scope. Verify
+the Android card in both languages, both themes and compact/wide layouts.
+
 Project-owned code is MIT licensed. Third-party components retain their own licenses; see the repository's third-party notices.

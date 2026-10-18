@@ -1,0 +1,5 @@
+{
+  "websiteOpensExternalBrowser": true,
+  "repositoryOpensExternalBrowser": true,
+  "note": "External Chrome first-run activity observed for both actions; exact destination URLs verified in application source."
+}

@@ -1,0 +1,8 @@
+{
+  "scope": "one public Bilibili sample, signed release, no account; extraction only, no long download",
+  "passed": false,
+  "视频Options": 1,
+  "parsed": true,
+  "音频Options": 0,
+  "outcome": "Source exposes a single muxed format without independent audio in this logged-out session"
+}

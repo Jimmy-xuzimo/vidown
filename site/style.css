@@ -564,6 +564,40 @@ a:hover {
 .download-footer a {
   line-height: 1.9;
 }
+.android-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  margin-top: 40px;
+  padding: clamp(24px, 4vw, 40px);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+}
+.android-preview h3 {
+  margin: 12px 0;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 500;
+}
+.android-preview p {
+  max-width: 620px;
+  line-height: 1.8;
+}
+.android-actions {
+  display: grid;
+  flex-shrink: 0;
+  gap: 18px;
+  text-align: center;
+  font-size: 13px;
+}
+@media (max-width: 760px) {
+  .android-preview {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
 .scope .section-top {
   margin-bottom: 34px;
 }

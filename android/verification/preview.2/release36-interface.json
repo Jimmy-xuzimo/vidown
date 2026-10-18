@@ -1,0 +1,6 @@
+{
+  "variant": "release",
+  "passed": true,
+  "serial": "emulator-5560",
+  "scope": "external accessibility navigation and screenshots; no Android error dialog; workbench, new tab, resources, theme controls"
+}

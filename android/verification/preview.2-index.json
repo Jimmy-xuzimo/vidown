@@ -1,0 +1,53 @@
+{
+  "version": "0.1.0-preview.2",
+  "date": "2026-10-18",
+  "distribution": "local signed preview; not published",
+  "appId": "top.xuzimo.vidown",
+  "minSdk": 34,
+  "compileSdk": "37.2",
+  "targetSdk": 37,
+  "packagedAbis": ["arm64-v8a", "x86_64"],
+  "executedAbis": ["x86_64"],
+  "artifacts": [
+    {
+      "file": "Vidown-Android-0.1.0-preview.2.apk",
+      "bytes": 452723061,
+      "sha256": "4a9035f35dbaad7080f08fc5d2c47dd635ae73a578bcd90776e9ee6120cfe114"
+    },
+    {
+      "file": "Vidown-Android-0.1.0-preview.2.aab",
+      "bytes": 210817363,
+      "sha256": "1bb4b19420c9f7ffdc12f279a529833bbaab5de04d9129ade7d5b50b06c8b2be"
+    }
+  ],
+  "jvmTests": 3,
+  "lint": {
+    "debug": {
+      "Error": 0,
+      "Fatal": 0,
+      "Warning": 25
+    },
+    "release": {
+      "Error": 0,
+      "Fatal": 0,
+      "Warning": 25
+    }
+  },
+  "controlledDeviceReports": [
+    "preview.2/phone34-landscape.json",
+    "preview.2/tablet37-16k.json",
+    "preview.2/phone35-ui.json",
+    "preview.2/phone36-ui.json",
+    "preview.2/phone34-large-font.json",
+    "preview.2/final-ui37.json"
+  ],
+  "releaseReport": "preview.2/release36-black-box.json",
+  "nativeReport": "preview.2/native-alignment.json",
+  "apkSignature": "official apksigner verify exit 0; v2, one signer",
+  "apkMapping": "official zipalign -c -P 16 4 exit 0",
+  "bundletoolValidation": "1.18.3 validate exit 0",
+  "ciExecuted": false,
+  "realAccountAcceptance": false,
+  "physicalDeviceAcceptance": false,
+  "note": "API 35 and large-font runs precede the compact-height rail fix, which does not affect normal-height windows. Final UI 37 and release 36 checks include keyboard focus dismissal. See ACCEPTANCE.md for exact scope."
+}

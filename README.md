@@ -8,6 +8,8 @@
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [使用指南](docs/USER_GUIDE.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
+**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.4 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
+
 ![Vidown 下载工作台](docs/images/workbench.png)
 
 ## 能做什么

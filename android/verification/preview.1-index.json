@@ -1,0 +1,55 @@
+{
+  "version": "0.1.0-preview.1",
+  "date": "2026-10-18",
+  "distribution": "local signed preview; not published",
+  "appId": "top.xuzimo.vidown",
+  "minSdk": 34,
+  "compileSdk": "37.2",
+  "targetSdk": 37,
+  "packagedAbis": ["arm64-v8a", "x86_64"],
+  "executedAbis": ["x86_64"],
+  "artifacts": [
+    {
+      "file": "Vidown-Android-0.1.0-preview.1.apk",
+      "bytes": 452616029,
+      "sha256": "b4b0c9183ef36c4016d5a1e3504df2992ee6d7f9178778e690b88af40f2be266"
+    },
+    {
+      "file": "Vidown-Android-0.1.0-preview.1.aab",
+      "bytes": 210629823,
+      "sha256": "aac2431cdd1027dd9535912146c5c91001f99d66b36a8f89cc3b7c7d7740d9b1"
+    }
+  ],
+  "jvmTests": 3,
+  "lint": {
+    "debug": {
+      "Error": 0,
+      "Fatal": 0,
+      "Warning": 25
+    },
+    "release": {
+      "Error": 0,
+      "Fatal": 0,
+      "Warning": 25
+    }
+  },
+  "controlledDeviceReports": [
+    "final-34-phone.json",
+    "final-35-phone.json",
+    "final-36-phone.json",
+    "final-37-phone.json",
+    "final-37-16k.json",
+    "ui34-landscape.json",
+    "ui34-large-font.json",
+    "public37-no-local-permission.json"
+  ],
+  "releaseReport": "release-black-box.json",
+  "nativeReport": "native-alignment.json",
+  "bundletoolValidation": "1.18.3 validate exit 0",
+  "apkSignature": "official apksigner verify exit 0; v2, one signer",
+  "apkMapping": "official zipalign -c -P 16 4 exit 0",
+  "ciExecuted": false,
+  "realAccountAcceptance": false,
+  "physicalDeviceAcceptance": false,
+  "note": "Final debug runs cover executable application code. Only notice whitespace changed before the final release rebuild. See ACCEPTANCE.md for unsupported cases and incomplete test matrices."
+}

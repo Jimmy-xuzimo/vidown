@@ -1,0 +1,5 @@
+{
+  "ffmpeg": {"url":"https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/946fcce07b6dcd0331c8cc609192aeff5e1924f8","sha256":"0aa2b1de2a5698b20a23e93d539a9a8e82ca0117496c5bdf05d198805f42bb3b","license":"LGPL-2.1-or-later"},
+  "quickjs": {"url":"https://codeload.github.com/quickjs-ng/quickjs/tar.gz/6d46d07d04041b40f4f49eaa7fdebe44c314c699","sha256":"a62cf1ff7d6d2f82b90a2d247a57e9eb56b81c03feb1f372a53923426e358cb0","license":"MIT"},
+  "libxml2": {"url":"https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz","sha256":"98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821","license":"MIT"}
+}

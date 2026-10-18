@@ -1,0 +1,20 @@
+{
+  "variant": "release",
+  "serial": "emulator-5554",
+  "passed": true,
+  "scope": "black-box HLS independent video/audio, browser session login, process restart, authenticated download, native remux, MediaStore, host ffprobe",
+  "hls": [
+    {
+      "file": "master.m3u8.mp4",
+      "bytes": 388876,
+      "duration": "8.021333"
+    }
+  ],
+  "authenticated": [
+    {
+      "file": "Protected fixture video (1) (4).mp4",
+      "bytes": 387527,
+      "duration": "8.000000"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "api": 37,
+  "pageSize": 16384,
+  "serial": "emulator-5588",
+  "variant": "debug",
+  "tests": 1,
+  "passed": true,
+  "scope": "public HTTPS and local-network permission boundary; no live accounts"
+}

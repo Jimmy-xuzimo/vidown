@@ -1,0 +1,10 @@
+{
+  "api": 37,
+  "pageSize": 16384,
+  "serial": "emulator-5588",
+  "variant": "debug",
+  "tests": 28,
+  "passed": true,
+  "scope": "controlled synthetic fixtures; no live accounts",
+  "startupIsolationTests": 1
+}

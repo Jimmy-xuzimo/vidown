@@ -1,0 +1,237 @@
+name: Native Android
+
+on:
+  pull_request:
+    paths: ["android/**", ".github/workflows/android.yml"]
+  push:
+    branches: [main, android-native]
+    tags: ["android-v*"]
+    paths: ["android/**", ".github/workflows/android.yml"]
+  workflow_dispatch:
+    inputs:
+      signed_package:
+        description: "Build a signed preview APK and a separate Play evaluation AAB after all checks"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+      - name: Android toolchain
+        run: sdkmanager "platforms;android-37.2" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.31.6"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/third-party
+            android/native-build
+          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/**', 'android/**/*.gradle.kts', 'android/gradle.properties') }}
+      - name: Build locked LGPL/native sources
+        run: |
+          python android/tools/prepare-sources.py
+          bash android/tools/build-native.sh
+      - name: Compile, unit tests and Android Lint
+        working-directory: android
+        run: bash gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:lintDebug --console=plain
+      - name: Native page size and archive checks
+        run: |
+          python android/tools/check-native.py android/app/build/outputs/apk/debug/app-debug.apk --report android/app/build/reports/native-alignment.json
+          "$ANDROID_HOME/build-tools/36.0.0/zipalign" -c -P 16 4 android/app/build/outputs/apk/debug/app-debug.apk
+          git diff --check
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-test-apks
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            android/app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+          retention-days: 3
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: android-source-reports
+          path: android/app/build/reports
+          retention-days: 7
+
+  signed-preview:
+    needs: [build, emulator]
+    if: github.event_name == 'workflow_dispatch' && inputs.signed_package
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      VIDOWN_KEYSTORE: ${{ runner.temp }}/vidown-upload.jks
+      VIDOWN_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+      VIDOWN_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      VIDOWN_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+      - name: Signing inputs
+        env:
+          KEY_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          python - <<'PY'
+          import base64, os, pathlib
+          for name in ('KEY_BASE64','VIDOWN_STORE_PASSWORD','VIDOWN_KEY_ALIAS','VIDOWN_KEY_PASSWORD'):
+              if not os.environ.get(name): raise SystemExit('Missing required signing secret: '+name)
+          p=pathlib.Path(os.environ['VIDOWN_KEYSTORE'])
+          p.write_bytes(base64.b64decode(os.environ['KEY_BASE64'],validate=True))
+          p.chmod(0o600)
+          PY
+      - name: Android toolchain
+        run: sdkmanager "platforms;android-37.2" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.31.6"
+      - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/third-party
+            android/native-build
+          key: android-native-${{ runner.os }}-${{ hashFiles('android/tools/**', 'android/**/*.gradle.kts', 'android/gradle.properties') }}
+      - name: Native source and signed packages
+        run: |
+          python android/tools/prepare-sources.py
+          bash android/tools/build-native.sh
+          cd android
+          bash gradlew :app:assembleRelease :app:bundleRelease :app:lintRelease --console=plain
+      - name: Verify and prepare minimal download
+        run: |
+          python android/tools/check-native.py android/app/build/outputs/apk/release/app-release.apk --report android/app/build/reports/release-native-alignment.json
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose android/app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/36.0.0/zipalign" -c -P 16 4 android/app/build/outputs/apk/release/app-release.apk
+          mkdir -p dist/android dist/android-materials
+          cp android/app/build/outputs/apk/release/app-release.apk dist/android/Vidown-Android-preview.apk
+          sha256sum dist/android/*.apk > dist/android-materials/SHA256SUMS.txt
+          python android/tools/package-materials.py --output dist/android-materials/Vidown-Android-source-materials.zip
+      - name: Release black-box fixture service
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python android/tools/fixtures.py --ffmpeg /usr/bin/ffmpeg > /tmp/vidown-release-fixtures.log 2>&1 &
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:18763/health; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/vidown-release-fixtures.log
+          exit 1
+      - name: KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Install signed release and verify actual saved media
+        uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808 # v2
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          ram-size: 4096M
+          disk-size: 6G
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: python android/tools/check-release-ui.py --serial emulator-5554 --ffprobe /usr/bin/ffprobe --install --fresh --output android/app/build/reports/release-black-box
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-signed-preview
+          path: dist/android/*.apk
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-play-evaluation
+          path: android/app/build/outputs/bundle/release/app-release.aab
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: android-release-materials
+          path: |
+            dist/android-materials
+            android/app/build/reports
+      - name: Remove runner signing key
+        if: always()
+        run: |
+          python - <<'PY'
+          import os, pathlib
+          pathlib.Path(os.environ['VIDOWN_KEYSTORE']).unlink(missing_ok=True)
+          PY
+
+  emulator:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        api: ["34", "35", "36", "37.0"]
+        size: [phone, tablet]
+        target: [google_apis]
+        include:
+          - api: "37.2"
+            size: tablet
+            target: google_apis_ps16k
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: android-test-apks
+          path: android/app/build/outputs/apk
+      - name: Synthetic fixture service
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python android/tools/fixtures.py --ffmpeg /usr/bin/ffmpeg > /tmp/vidown-fixtures.log 2>&1 &
+          for i in {1..30}; do curl -fsS http://127.0.0.1:18763/health && break; sleep 1; done
+      - name: KVM access
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@4c44018e59b437e86cdfc41da381398f93ed8808 # v2
+        env:
+          DEVICE_SIZE: ${{ matrix.size }}
+        with:
+          api-level: ${{ matrix.api }}
+          target: ${{ matrix.target }}
+          arch: x86_64
+          ram-size: 4096M
+          disk-size: 6G
+          disable-animations: false
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
+          script: |
+            if [ "$DEVICE_SIZE" = tablet ]; then adb shell wm size 1920x1200; adb shell wm density 240; fi
+            python android/tools/run-device-tests.py --serial emulator-5554
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: android-${{ matrix.api }}-${{ matrix.size }}-${{ matrix.target }}
+          path: work/android-device-tests
+          retention-days: 7

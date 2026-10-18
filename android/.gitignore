@@ -1,0 +1,14 @@
+/.gradle/
+/.kotlin/
+/local.properties
+/**/build/
+/native-build/
+/third-party/
+*.jks
+*.keystore
+/captures/
+
+/.cxx/
+/app/.cxx/
+__pycache__/
+*.pyc

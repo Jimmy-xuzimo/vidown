@@ -1,0 +1,719 @@
+{
+  "apk": "app-release.apk",
+  "libraries": 178,
+  "elfPageSize": 16384,
+  "checks": [
+    {
+      "path": "lib/arm64-v8a/libandroidx.graphics.path.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libavcodec.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libavformat.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libavutil.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libchaquopy_java.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libclearkey.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libcrashhelper.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libcrashtools.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libcrypto_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libcrypto_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libdatastore_shared_counter.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libfreebl3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libgkcodecs.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/liblgpllibs.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libmozavcodec.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libmozavutil.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libmozglue.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libnss3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libplugin-container.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libpython3.12.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libpython3.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libsoftokn3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libsqlite3_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libsqlite3_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libssl_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libssl_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libswresample.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libvidown_media.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/arm64-v8a/libxul.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libandroidx.graphics.path.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libavcodec.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libavformat.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libavutil.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libchaquopy_java.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libclearkey.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libcrashhelper.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libcrashtools.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libcrypto_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libcrypto_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libdatastore_shared_counter.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libfreebl3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libgkcodecs.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/liblgpllibs.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libmozavcodec.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libmozavutil.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libmozglue.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libnss3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libplugin-container.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libpython3.12.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libpython3.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libsoftokn3.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libsqlite3_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libsqlite3_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libssl_chaquopy.so",
+      "loadAlignments": [16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libssl_python.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libswresample.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libvidown_media.so",
+      "loadAlignments": [16384, 16384, 16384, 16384]
+    },
+    {
+      "path": "lib/x86_64/libxul.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_bz2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_ctypes.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_datetime.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_lzma.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_random.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_sha2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/_struct.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/binascii.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/java/chaquopy.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/math.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/mmap.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/arm64-v8a/zlib.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_bz2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_ctypes.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_datetime.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_lzma.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_random.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_sha2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/_struct.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/binascii.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/java/chaquopy.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/math.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/mmap.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/bootstrap-native/x86_64/zlib.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_asyncio.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_bisect.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_blake2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_cn.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_hk.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_iso2022.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_jp.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_kr.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_codecs_tw.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_contextvars.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_csv.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_decimal.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_elementtree.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_hashlib.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_heapq.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_json.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_lsprof.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_md5.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_multibytecodec.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_multiprocessing.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_opcode.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_pickle.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_posixsubprocess.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_queue.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_sha1.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_sha3.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_socket.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_sqlite3.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_ssl.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_statistics.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_xxinterpchannels.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_xxsubinterpreters.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_xxtestfuzz.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/_zoneinfo.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/array.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/audioop.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/cmath.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/fcntl.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/ossaudiodev.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/pyexpat.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/resource.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/select.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/syslog.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/termios.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/unicodedata.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/xxlimited.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/xxlimited_35.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-arm64-v8a.imy!/xxsubtype.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_asyncio.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_bisect.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_blake2.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_cn.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_hk.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_iso2022.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_jp.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_kr.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_codecs_tw.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_contextvars.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_csv.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_decimal.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_elementtree.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_hashlib.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_heapq.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_json.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_lsprof.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_md5.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_multibytecodec.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_multiprocessing.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_opcode.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_pickle.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_posixsubprocess.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_queue.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_sha1.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_sha3.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_socket.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_sqlite3.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_ssl.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_statistics.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_xxinterpchannels.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_xxsubinterpreters.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_xxtestfuzz.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/_zoneinfo.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/array.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/audioop.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/cmath.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/fcntl.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/ossaudiodev.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/pyexpat.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/resource.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/select.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/syslog.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/termios.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/unicodedata.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/xxlimited.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/xxlimited_35.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    },
+    {
+      "path": "assets/chaquopy/stdlib-x86_64.imy!/xxsubtype.cpython-312.so",
+      "loadAlignments": [16384, 16384, 16384]
+    }
+  ]
+}
