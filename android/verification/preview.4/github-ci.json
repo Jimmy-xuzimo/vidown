@@ -1,0 +1,99 @@
+{
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39156793676",
+  "sourceCommit": "c34e83cbb09e14c4bea77463b2fea09f0795521d",
+  "status": "completed",
+  "conclusion": "success",
+  "runner": "Ubuntu 24.04",
+  "build": "native libraries, debug APK/test APK, JVM tests, strict dependency verification and Lint",
+  "lint": {
+    "Fatal": 0,
+    "Error": 0,
+    "Warning": 28
+  },
+  "nativeLibraries": 178,
+  "configurations": [
+    {
+      "configuration": "android-34-phone-google_apis",
+      "report": "preview.4/github-34-phone-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-36-tablet-google_apis",
+      "report": "preview.4/github-36-tablet-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-35-tablet-google_apis",
+      "report": "preview.4/github-35-tablet-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-36-phone-google_apis",
+      "report": "preview.4/github-36-phone-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-35-phone-google_apis",
+      "report": "preview.4/github-35-phone-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-37.0-phone-google_apis",
+      "report": "preview.4/github-37.0-phone-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-37.2-tablet-google_apis_ps16k",
+      "report": "preview.4/github-37.2-tablet-google_apis_ps16k.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 16384,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-34-tablet-google_apis",
+      "report": "preview.4/github-34-tablet-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    },
+    {
+      "configuration": "android-37.0-tablet-google_apis",
+      "report": "preview.4/github-37.0-tablet-google_apis.json",
+      "runner": "Ubuntu 24.04",
+      "tests": 38,
+      "startupTests": 1,
+      "pageSize": 4096,
+      "provisioningRetries": 0
+    }
+  ],
+  "signing": "debug test package only; distributed release was signed and checked locally",
+  "scope": "synthetic media/session/UI/recovery checks; no real accounts or physical devices"
+}

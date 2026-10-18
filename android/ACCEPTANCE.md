@@ -32,6 +32,7 @@ Full transient logs and media stay outside the source distribution.
 | Build                    | Signed R8 release APK and AAB; debug/test APKs; 4 JVM tests passed                                                                                                                                                          |
 | Lint                     | Debug and release: zero errors, 28 warnings each; warnings remain in generated reports                                                                                                                                      |
 | Controlled devices       | API 34 phone and API 37.2 tablet with actual 16 KB pages: 38 checks plus a separate startup-isolation check per device                                                                                                      |
+| GitHub hosted matrix     | Nine configurations passed: API 34/35/36/37.0 phone and tablet, plus API 37.2 tablet with 16 KB pages. Each ran 38 controlled checks and a separate startup-isolation check; debug packages, no live accounts               |
 | Portrait/font            | Phone portrait, tablet portrait and phone at 200% font: 10 UI checks per configuration                                                                                                                                      |
 | Public links             | Six Bilibili URL forms parsed through production extraction; selected video and audio each returned 65,536 bytes of media with HTTP 206, not HTML                                                                           |
 | Signed release           | Installed independently of instrumentation on phone and tablet; separate-track HLS, browser login, force-stop/restart, authenticated extraction, native remux and MediaStore publication; pulled files checked with ffprobe |
@@ -62,6 +63,12 @@ translucent surfaces and edge highlights; it does not capture or continuously
 blur the screen. No idle decorative animation runs. Emulator responsiveness
 does not establish physical-device frame rates, battery use or thermals.
 
+[Release motion observation](verification/preview.4/motion-observation.json):
+25 warm navigation taps across the five screens on the API 34 emulator recorded
+1,045 frames, 13 marked janky by Android gfxinfo, with 95th/99th percentiles of
+27/32 ms. This includes emulator scheduling/GPU behavior and is not a universal
+60 FPS claim or a comparison with an older build.
+
 ## Implemented scope and remaining gates
 
 | Area              | Current behavior                                                                                                                                                           | Remaining boundary                                                                                                            |
@@ -79,6 +86,14 @@ does not establish physical-device frame rates, battery use or thermals.
 GitHub CI status is recorded separately in the verification inventory. The
 manual signed-package job requires signing secrets and is not implied by a
 successful unsigned CI build. Signing keys remain outside Git.
+
+[The passing GitHub run](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39156793676)
+builds from a clean Linux host with strict dependency verification. Reports are
+in [github-ci.json](verification/preview.4/github-ci.json). Its signed-package job
+was not requested; the distributed signed release was checked locally as above.
+The Linux-built debug APK was also installed on the local API 37.2/16 KB emulator,
+where all 38 checks plus startup isolation passed; see the separate
+[cross-host report](verification/preview.4/linux-apk37-cross-host.json).
 
 ## Reproduction
 

@@ -10,8 +10,7 @@ on:
         ".github/workflows/android.yml",
       ]
   push:
-    branches: [main, android-native]
-    tags: ["android-v*"]
+    branches: [main]
     paths:
       [
         "android/**",

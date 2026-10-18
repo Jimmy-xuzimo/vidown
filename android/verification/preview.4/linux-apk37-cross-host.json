@@ -1,0 +1,14 @@
+{
+  "sourceRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39150166365",
+  "artifact": "android-test-apks",
+  "apkSha256": "26e7359eabb30bdb71fb3bf801fe765d370034977840e7d25d2eba93b56b18d2",
+  "builtOn": "GitHub Ubuntu 24.04",
+  "executedOn": "local dedicated x86_64 Android emulator; SwiftShader",
+  "api": 37,
+  "pageSize": 16384,
+  "installed": true,
+  "startupTests": 1,
+  "tests": 38,
+  "passed": true,
+  "scope": "Cross-host installation and full controlled fixture suite; no real accounts or physical device"
+}

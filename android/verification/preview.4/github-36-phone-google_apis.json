@@ -1,0 +1,12 @@
+{
+  "api": 36,
+  "pageSize": 4096,
+  "serial": "emulator-5554",
+  "variant": "debug",
+  "tests": 38,
+  "passed": true,
+  "scope": "controlled synthetic fixtures; no live accounts",
+  "layout": "device default",
+  "fontScale": 1.0,
+  "provisioningRetries": 0
+}

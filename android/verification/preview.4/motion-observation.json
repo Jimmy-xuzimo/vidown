@@ -1,0 +1,16 @@
+{
+  "variant": "signed release",
+  "api": 34,
+  "device": "dedicated x86_64 emulator",
+  "scope": "25 warm navigation taps across five screens; Android gfxinfo observation",
+  "metrics": {
+    "frames": 1045,
+    "jankyFrames": 13,
+    "p50ms": 17,
+    "p90ms": 25,
+    "p95ms": 27,
+    "p99ms": 32
+  },
+  "physicalFrameRateAcceptance": false,
+  "note": "Includes emulator scheduling/GPU behavior. This is an observation, not a device FPS, battery or thermal guarantee."
+}

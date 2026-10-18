@@ -128,11 +128,18 @@ python android/tools/check-release-ui.py --serial emulator-5554 \
 
 Device tests exercise the packaged JNI engine and real downloaded media, not a fake completion result. Keep generated reports and emulator evidence separate from claims about real websites. Tests that require accounts must be performed manually in the application and never export credentials.
 
+CI selects the pinned SDK tools for `android-emulator-runner` and checks each
+AVD's recorded target before boot. The hosted runner's older `avdmanager` can
+silently write `android-0` for dotted API levels, leading to system graphics
+crash loops ([upstream report](https://github.com/actions/runner-images/issues/14484)).
+`tools/ci-sdk.py` only operates in disposable CI environments; it does not
+change a developer's local SDK or skip application assertions.
+
 ## Distribution boundaries
 
 The initial GitHub deliverable is one universal signed APK. AAB generation is for a later, separate Play evaluation. Keep Android tags independent (`android-v…`). A stable release requires physical-device acceptance. There is no promise that the GitHub feature set can be published unchanged on Google Play.
 
-Release signing reads `VIDOWN_KEYSTORE`, `VIDOWN_STORE_PASSWORD`, `VIDOWN_KEY_ALIAS` and `VIDOWN_KEY_PASSWORD` from the build environment. Without these, a release build is unsigned. Back up the signing key securely; it is needed to update an installed APK. Never commit the key or its passwords. GitHub Actions accepts the corresponding `ANDROID_*` secrets; a manually requested signed package is built only after unit, Lint and emulator jobs pass, then installed and checked on a separate release emulator. That workflow has been prepared but has not run on GitHub for this preview.
+Release signing reads `VIDOWN_KEYSTORE`, `VIDOWN_STORE_PASSWORD`, `VIDOWN_KEY_ALIAS` and `VIDOWN_KEY_PASSWORD` from the build environment. Without these, a release build is unsigned. Back up the signing key securely; it is needed to update an installed APK. Never commit the key or its passwords. GitHub Actions accepts the corresponding `ANDROID_*` secrets; a manually requested signed package is built only after unit, Lint and emulator jobs pass, then installed and checked on a separate release emulator. The APK for this preview was signed and checked locally; GitHub build/emulator results are linked separately in the [verification inventory](verification/index.json). Signing secrets have not been uploaded.
 
 `tools/check-native.py` inspects every ELF, including nested Python archives, and APK library alignment. Also run the official `zipalign -c -P 16 4` and `apksigner verify` tools before distribution. `tools/package-materials.py` produces the matching source/build-materials archive without local SDK paths, signing keys or build caches. Keep the AAB, hashes and reports separate from the single user-facing APK.
 

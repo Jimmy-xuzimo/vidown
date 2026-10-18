@@ -51,7 +51,7 @@
   "apkSignature": "official apksigner verify exit 0; v2, one signer",
   "apkMapping": "official zipalign -c -P 16 4 exit 0",
   "bundletoolValidation": "1.18.3 validate exit 0",
-  "ciExecuted": false,
+  "ciExecuted": true,
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
   "publicSampleOutcome": {
@@ -62,5 +62,9 @@
     "premiumFormats": "not tested; no authenticated Android account"
   },
   "historicalCorrection": "preview.3 one-muxed public result was an HTML-player false positive, fixed in preview.4",
-  "note": "No source/account credentials or signed media URLs included. Native Compose with portrait bottom-centered and landscape left-centered navigation. Physical arm64 devices and premium accounts remain unverified."
+  "note": "No source/account credentials or signed media URLs included. Native Compose with portrait bottom-centered and landscape left-centered navigation. Physical arm64 devices and premium accounts remain unverified.",
+  "ciPassed": true,
+  "ciReport": "preview.4/github-ci.json",
+  "motionReport": "preview.4/motion-observation.json",
+  "crossHostReport": "preview.4/linux-apk37-cross-host.json"
 }

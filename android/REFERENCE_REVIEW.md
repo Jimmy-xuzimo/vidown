@@ -24,6 +24,9 @@ Seal is GPLv3. No Seal source, artwork, colors or binaries were copied into
 Vidown. Reviewing its interaction and architecture does not change Vidown's
 license. Direct reuse of GPL code would require an explicit licensing decision
 and preservation of that code's copyright and distribution obligations.
+The referenced `JunkFood02/youtubedl-android` fork also declares GPLv3; it must
+be assessed independently rather than assumed to be a permissively licensed
+drop-in dependency. It is not bundled in this Vidown preview.
 Vidown continues to use its own Gecko session adapter, bundled upstream yt-dlp,
 Media3 downloads and source-built FFmpeg libraries. In particular, replacing the
 session adapter with another downloader would need to preserve the browser's
@@ -35,5 +38,6 @@ Source references:
 - [Download configuration](https://github.com/JunkFood02/Seal/blob/7677f61a20fda4210e84215fef9e9b51d25daa47/app/src/main/java/com/junkfood/seal/ui/page/downloadv2/configure/DownloadDialogV2.kt)
 - [Format components](https://github.com/JunkFood02/Seal/blob/7677f61a20fda4210e84215fef9e9b51d25daa47/app/src/main/java/com/junkfood/seal/ui/component/FormatItem.kt)
 - [License](https://github.com/JunkFood02/Seal/blob/7677f61a20fda4210e84215fef9e9b51d25daa47/LICENSE)
+- [Android extractor wrapper license](https://github.com/JunkFood02/youtubedl-android/blob/master/LICENSE)
 - [Compose performance phases](https://developer.android.com/develop/ui/compose/performance/phases)
 - [Compose animation guide](https://developer.android.com/develop/ui/compose/animation/quick-guide)
