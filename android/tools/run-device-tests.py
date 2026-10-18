@@ -85,6 +85,12 @@ def main():
     elif int(api)>=37:
         # Only the dedicated emulator grants this automatically for the host fixture.
         adb('shell','pm','grant','top.xuzimo.vidown','android.permission.ACCESS_LOCAL_NETWORK')
+    # Match a real first install: activate the launcher before instrumentation
+    # queries its activity. Then stop the process so startup isolation stays cold.
+    first=adb('shell','am','start','-W','-n','top.xuzimo.vidown/.MainActivity')
+    (destination/'first-launch.txt').write_text(first,encoding='utf-8')
+    if 'Status: ok' not in first:raise RuntimeError('Installed target did not launch: '+first)
+    adb('shell','am','force-stop','top.xuzimo.vidown')
     command=['shell','am','instrument','-w','-r']
     # A failed test must not inherit screenshots left by an older successful run.
     adb('shell','rm','-f','/sdcard/Android/data/top.xuzimo.vidown/files/screenshots/*.png')
