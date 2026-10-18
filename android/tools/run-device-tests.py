@@ -62,15 +62,6 @@ def main():
         raise RuntimeError('Select a dedicated Vidown emulator')
     if not 34<=int(api)<=37:raise RuntimeError(f'Unexpected emulator API {api}')
     wait_system_ready()
-    if os.environ.get('CI') and int(api)>=37:
-        # Fresh API 37 images can restart system_server after boot_completed.
-        # Finish first boot before package installation, then exercise a clean
-        # boot. This does not retry instrumentation or change app permissions.
-        adb('shell','sync')
-        adb('reboot')
-        adb('wait-for-disconnect')
-        adb('wait-for-device')
-        wait_system_ready()
     # This script never closes an existing server or changes a browser profile.
     with urllib.request.urlopen('http://127.0.0.1:18763/health',timeout=10) as response:
         if json.load(response).get('fixture')!='vidown-android-v1':raise RuntimeError('Unexpected fixture listener')
