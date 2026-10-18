@@ -247,6 +247,8 @@ export class WebView2Browser extends BrowserManager {
       }
     } else if (message.type === "capture")
       this.capture(id, message.url, message.mime, message.headers);
+    else if (message.type === "page-media" && typeof message.text === "string")
+      this.rememberDouyin(id, message.url, message.text);
     else if (
       message.type === "manifest" &&
       message.text?.length <= 8 * 1024 * 1024
@@ -367,6 +369,12 @@ export class WebView2Browser extends BrowserManager {
     await this.ensure();
     return this.request("execute", { tabId, code });
   }
+  protected override async evaluatePage(
+    tabId: string,
+    code: string,
+  ): Promise<any> {
+    return this.execute(tabId, code);
+  }
   async capturePreview(tabId: string): Promise<string> {
     await this.ensure();
     return this.request("capture", { tabId });
@@ -397,6 +405,7 @@ export class WebView2Browser extends BrowserManager {
       this.info.delete(id);
       this.actualUrls.delete(id);
       this.nativeIds.delete(id);
+      this.douyinAssets.delete(id);
       throw error;
     }
     this.select(id);
@@ -493,6 +502,7 @@ export class WebView2Browser extends BrowserManager {
       this.headers.clear();
       this.capturedHeaders.clear();
       this.manifestBodies.clear();
+      this.douyinAssets.clear();
       await this.clearSessionData();
       this.changed();
       return;
@@ -523,6 +533,7 @@ export class WebView2Browser extends BrowserManager {
       this.info.delete(id);
       this.actualUrls.delete(id);
       this.nativeIds.delete(id);
+      this.douyinAssets.delete(id);
       for (const [key, c] of this.candidates)
         if (c.tabId === id) this.candidates.delete(key);
       if (this.active === id) {
@@ -642,6 +653,7 @@ export class WebView2Browser extends BrowserManager {
     void this.shutdown();
   }
   override async shutdown() {
+    this.douyinAssets.clear();
     if (this.cookieTimer) clearInterval(this.cookieTimer);
     const child = this.child;
     if (!child) return;

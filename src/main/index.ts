@@ -38,6 +38,7 @@ import { SessionKeeper } from "./session";
 import { WebDownloads } from "./web-downloads";
 import { isTelegramLink, isTelegramWeb } from "../shared/telegram";
 import { completeAddress } from "../shared/address";
+import { isDouyinPage } from "../shared/douyin";
 import { canRemoveHistory } from "../shared/history";
 import type { Tools } from "../core/engine";
 import type {
@@ -235,6 +236,13 @@ async function probeInput(input: {
         : (browser.currentUrl(input.tabId) ?? "")),
   );
   await browser.synchronize();
+  if (!candidate && isDouyinPage(url)) {
+    const asset = await browser.probeDouyin(url, input.tabId);
+    await browser.synchronize();
+    assets.set(asset.id, asset);
+    if (assets.size > 100) assets.delete(assets.keys().next().value!);
+    return publicAsset(asset);
+  }
   const telegramPage =
     candidate && isTelegramWeb(candidate.pageUrl)
       ? browser.currentUrl(candidate.tabId)

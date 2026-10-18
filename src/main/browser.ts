@@ -5,7 +5,20 @@ import {
   type Session,
 } from "electron";
 import { randomUUID } from "node:crypto";
-import type { BrowserTab, SourceCandidate, Protocol } from "../shared/types";
+import type {
+  BrowserTab,
+  SourceCandidate,
+  Protocol,
+  PrivateAsset,
+} from "../shared/types";
+import {
+  douyinVideoId,
+  douyinVideoUrl,
+  isDouyinPage,
+  isDouyinDetailResponse,
+} from "../shared/douyin";
+import { fromDouyinData } from "../core/douyin";
+import { douyinPageData } from "./douyin-page";
 import { httpUrl, publicUrl } from "../core/safety";
 import {
   telegramWebUrl,
@@ -26,6 +39,10 @@ export class BrowserManager {
   protected headers = new Map<number, Record<string, string>>();
   protected capturedHeaders = new Map<string, Record<string, string>>();
   protected manifestBodies = new Map<string, string>();
+  protected douyinAssets = new Map<
+    string,
+    { videoId: string; asset: PrivateAsset; capturedAt: number }
+  >();
   protected bounds = { x: 270, y: 110, width: 700, height: 560 };
   protected visible = false;
   protected clearingData = false;
@@ -283,6 +300,98 @@ export class BrowserManager {
   body(url: string): string | undefined {
     return this.manifestBodies.get(url);
   }
+  protected rememberDouyin(tabId: string, url: string, text: string): void {
+    if (
+      this.clearingData ||
+      !this.info.has(tabId) ||
+      text.length > 4 * 1024 * 1024 ||
+      !isDouyinDetailResponse(url)
+    )
+      return;
+    const videoId = douyinVideoId(this.currentUrl(tabId) ?? "");
+    if (!videoId) return;
+    try {
+      const asset = fromDouyinData(JSON.parse(text), videoId, {
+        id: randomUUID(),
+        profile: "browser",
+      });
+      if (asset)
+        this.douyinAssets.set(tabId, {
+          videoId,
+          asset,
+          capturedAt: Date.now(),
+        });
+    } catch {
+      /* Invalid or protected responses cannot supply a download plan. */
+    }
+  }
+  protected async evaluatePage(tabId: string, code: string): Promise<any> {
+    const view = this.views.get(tabId);
+    if (!view) throw new Error("资源所属页面已关闭，请重新解析");
+    return view.webContents.executeJavaScript(code);
+  }
+  async probeDouyin(url: string, tabId?: string): Promise<PrivateAsset> {
+    if (!isDouyinPage(url)) throw new Error("无效的视频页面");
+    let videoId = douyinVideoId(url);
+    if (!videoId && new URL(url).hostname !== "v.douyin.com")
+      throw new Error("请复制具体视频的链接，或打开视频后解析当前页");
+    const matching = (id: string) =>
+      this.info.has(id) &&
+      (videoId
+        ? douyinVideoId(this.currentUrl(id) ?? "") === videoId
+        : this.currentUrl(id) === url);
+    let id =
+      tabId && matching(tabId) ? tabId : [...this.info.keys()].find(matching);
+    const visible = this.visible;
+    if (!id) {
+      id = await this.create(videoId ? douyinVideoUrl(videoId) : url);
+      if (!visible) this.hide();
+    }
+    const previous = this.douyinAssets.get(id);
+    if (previous && Date.now() - previous.capturedAt > 2 * 60 * 1000) {
+      this.douyinAssets.delete(id);
+      await this.action({ action: "reload", tabId: id });
+    }
+    const deadline = Date.now() + 25000;
+    while (Date.now() < deadline) {
+      if (this.clearingData || !this.info.has(id))
+        throw new Error("资源所属页面已关闭或清理，请重新解析");
+      const current = this.currentUrl(id) ?? "";
+      // Chromium may still expose an empty URL before its first navigation commits.
+      if (
+        videoId &&
+        current &&
+        current !== "about:blank" &&
+        douyinVideoId(current) !== videoId
+      )
+        throw new Error("页面中的视频已更换，请重新解析当前视频");
+      videoId ??= douyinVideoId(current);
+      if (videoId) {
+        const captured = this.douyinAssets.get(id);
+        if (captured?.videoId === videoId)
+          return structuredClone(captured.asset);
+        let data: unknown;
+        try {
+          data = await this.evaluatePage(
+            id,
+            `(${douyinPageData.toString()})()`,
+          );
+        } catch {
+          /* A document navigation may still be in progress. */
+        }
+        const asset = fromDouyinData(data, videoId, {
+          id: randomUUID(),
+          profile: "browser",
+        });
+        if (asset && douyinVideoId(this.currentUrl(id) ?? "") === videoId)
+          return asset;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    throw new Error(
+      "网页尚未返回该视频的可保存资源。请在内置浏览器打开目标视频，完成页面要求的验证或登录并播放后重试；也请确认视频未被删除或设为私密。",
+    );
+  }
   private applyZoom(id: string): void {
     const view = this.views.get(id),
       tab = this.info.get(id);
@@ -413,7 +522,10 @@ export class BrowserManager {
         if (method === "Network.responseReceived") {
           const r = params.response;
           this.capture(id, r.url, r.mimeType, {});
-          if (/mpegurl|dash\+xml/i.test(r.mimeType))
+          if (
+            /mpegurl|dash\+xml/i.test(r.mimeType) ||
+            isDouyinDetailResponse(r.url)
+          )
             requests.set(params.requestId, { url: r.url, type: r.mimeType });
         }
         if (method === "Network.loadingFinished") {
@@ -433,6 +545,10 @@ export class BrowserManager {
                   this.info.has(id) &&
                   text.length <= 8 * 1024 * 1024
                 ) {
+                  if (isDouyinDetailResponse(r.url)) {
+                    this.rememberDouyin(id, r.url, text);
+                    return;
+                  }
                   this.manifestBodies.set(r.url, text);
                   if (this.manifestBodies.size > 100)
                     this.manifestBodies.delete(
@@ -517,6 +633,7 @@ export class BrowserManager {
       this.headers.clear();
       this.capturedHeaders.clear();
       this.manifestBodies.clear();
+      this.douyinAssets.clear();
       this.active = undefined;
       await this.clearSessionData();
       this.changed();
@@ -555,6 +672,7 @@ export class BrowserManager {
         view.webContents.close();
         this.views.delete(id);
         this.info.delete(id);
+        this.douyinAssets.delete(id);
         for (const [key, c] of this.candidates)
           if (c.tabId === id) this.candidates.delete(key);
         if (this.active === id) {
@@ -570,5 +688,6 @@ export class BrowserManager {
     for (const v of this.views.values())
       if (!v.webContents.isDestroyed()) v.webContents.close();
     this.views.clear();
+    this.douyinAssets.clear();
   }
 }

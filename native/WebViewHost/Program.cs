@@ -163,19 +163,21 @@ sealed class BrowserHost : Form
                 var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var h in e.Request.Headers) headers[h.Key] = h.Value;
                 var mime = e.Response.Headers.Contains("Content-Type") ? e.Response.Headers.GetHeader("Content-Type") : "";
-                if (!mime.StartsWith("video/", StringComparison.OrdinalIgnoreCase) && !mime.StartsWith("audio/", StringComparison.OrdinalIgnoreCase) && !mime.Contains("mpegurl", StringComparison.OrdinalIgnoreCase) && !mime.Contains("dash+xml", StringComparison.OrdinalIgnoreCase) && !System.Text.RegularExpressions.Regex.IsMatch(e.Request.Uri, @"\.(m3u8|mpd|mp4|m4a|webm|mp3|flac)(?:[?#]|$)",System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return;
-                Program.Send(new { type = "capture", tabId = id, url = e.Request.Uri, mime, headers });
-                if (mime.Contains("mpegurl", StringComparison.OrdinalIgnoreCase) || mime.Contains("dash+xml", StringComparison.OrdinalIgnoreCase)) {
+                var requestUri = new Uri(e.Request.Uri);
+                var pageMedia = requestUri.Host is "www.douyin.com" or "douyin.com" && System.Text.RegularExpressions.Regex.IsMatch(requestUri.AbsolutePath, @"^/aweme/v\d+/web/(?:aweme/(?:detail|post)|tab/feed|feed)/");
+                if (!pageMedia && !mime.StartsWith("video/", StringComparison.OrdinalIgnoreCase) && !mime.StartsWith("audio/", StringComparison.OrdinalIgnoreCase) && !mime.Contains("mpegurl", StringComparison.OrdinalIgnoreCase) && !mime.Contains("dash+xml", StringComparison.OrdinalIgnoreCase) && !System.Text.RegularExpressions.Regex.IsMatch(e.Request.Uri, @"\.(m3u8|mpd|mp4|m4a|webm|mp3|flac)(?:[?#]|$)",System.Text.RegularExpressions.RegexOptions.IgnoreCase)) return;
+                if (!pageMedia) Program.Send(new { type = "capture", tabId = id, url = e.Request.Uri, mime, headers });
+                if (pageMedia || mime.Contains("mpegurl", StringComparison.OrdinalIgnoreCase) || mime.Contains("dash+xml", StringComparison.OrdinalIgnoreCase)) {
                     using var stream = await e.Response.GetContentAsync();
                     if (stream is null) return;
                     using var buffer = new MemoryStream();
                     var bytes = new byte[65536];
                     int count;
                     while ((count = await stream.ReadAsync(bytes)) > 0) {
-                        if (buffer.Length + count > 8*1024*1024) return;
+                        if (buffer.Length + count > (pageMedia ? 4 : 8)*1024*1024) return;
                         buffer.Write(bytes, 0, count);
                     }
-                    Program.Send(new { type = "manifest", tabId = id, url = e.Request.Uri, text = System.Text.Encoding.UTF8.GetString(buffer.ToArray()) });
+                    Program.Send(new { type = pageMedia ? "page-media" : "manifest", tabId = id, url = e.Request.Uri, text = System.Text.Encoding.UTF8.GetString(buffer.ToArray()) });
                 }
             } catch (Exception error) when (error is COMException or InvalidOperationException or IOException or ArgumentException) {
                 Program.Warn("media-capture-unavailable");

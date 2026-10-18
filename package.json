@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -43,7 +43,8 @@
     "verify:interface": "node --import tsx scripts/verify-interface.ts",
     "verify:data-cleanup": "node --import tsx scripts/verify-data-cleanup.ts",
     "native:build": "node scripts/build-native.mjs",
-    "verify:webview2": "node --import tsx scripts/verify-webview2.ts"
+    "verify:webview2": "node --import tsx scripts/verify-webview2.ts",
+    "verify:douyin": "node --import tsx scripts/verify-douyin.ts"
   },
   "dependencies": {
     "fast-xml-parser": "5.11.2",

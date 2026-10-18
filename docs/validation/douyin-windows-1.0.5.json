@@ -1,0 +1,93 @@
+{
+  "generatedAt": "2026-10-18T13:45:29.229Z",
+  "status": "passed",
+  "version": "1.0.5",
+  "backend": "webview2",
+  "packaged": true,
+  "scope": "Public videos in an isolated browser; 4K long sample bounded to 16 MiB, short sample fully downloaded; no real-account acceptance",
+  "results": [
+    {
+      "name": "modal-link-workbench-source-formats",
+      "status": "passed",
+      "formats": 19,
+      "highest": "2160p · hevc · 2518 kbps"
+    },
+    {
+      "name": "user-sample-bounded-real-transfer-and-remux",
+      "status": "passed",
+      "networkBytes": 16777216,
+      "http": 206,
+      "video": {
+        "width": 3840,
+        "height": 2160,
+        "codec": "hevc"
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRate": "44100"
+      },
+      "seconds": 5.071738,
+      "fullLongVideoDownloaded": false
+    },
+    {
+      "name": "short-video-complete-queue-download-remux-verification",
+      "status": "passed",
+      "bytes": 6281834,
+      "seconds": 19.735011
+    },
+    {
+      "name": "query-style-current-page-exact-id-and-cleanup-invalidation",
+      "status": "passed"
+    }
+  ],
+  "installer": {
+    "name": "Vidown-Setup-1.0.5.exe",
+    "bytes": 637175716,
+    "sha256": "4dfc4daa386e7ad19650d7cc00cdd9849d538bff6c8b96506f630c42b4eb676a",
+    "verification": "Executed the app extracted from the NSIS payload with an isolated profile; installation wizard and clean-machine install were not tested.",
+    "files": [
+      {
+        "path": "Vidown.exe",
+        "sha256": "b30d994c5a7feca0a55fb02fccf572da3832444296155de54c4194bea0d0af86",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/app.asar",
+        "sha256": "16d406641913f83d8f1831478df29606f36dac6907670cf535b45cf01ac8ff4b",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/webview2-host/Vidown.WebView2.exe",
+        "sha256": "e5e2c3812a3397e3dbc2c24fa11711e3197cd00e559c03a9e25411888e9ec7f6",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/tools/ffmpeg.exe",
+        "sha256": "3256173f3f8bffd7df12227c68adf68025edb1832273a9530688a7bb1ed8edec",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/tools/ffprobe.exe",
+        "sha256": "f0d36ecbbdd3bcfac3efa078c96c7271c2e68b3810595552ac3b7f17e9a65c52",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/tools/yt-dlp.exe",
+        "sha256": "66674953fe251b89f4d08c5f0e35e0728679bd67ab3d7d05c0562af101dd3e7a",
+        "matchesPackagedDirectory": true
+      },
+      {
+        "path": "resources/tools/N_m3u8DL-RE.exe",
+        "sha256": "35e7c16983f0315bba2a3f37dc392fdfa074be614c8effb642b78376b18ba272",
+        "matchesPackagedDirectory": true
+      }
+    ]
+  },
+  "otherLocalChecks": {
+    "unitTests": 44,
+    "webview2RegressionGroups": 7,
+    "chromiumWebDownloadRegressionGroups": 14,
+    "sourceChromiumPublicSampleChecks": 4,
+    "sourceWebview2PublicSampleChecks": 4
+  }
+}
