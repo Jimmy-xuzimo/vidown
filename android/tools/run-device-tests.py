@@ -41,10 +41,12 @@ def main():
             boot=adb('shell','getprop','sys.boot_completed',check=False).strip()
             package=adb('shell','service','check','package',check=False)
             activity=adb('shell','service','check','activity',check=False)
-            stable=stable+1 if boot=='1' and ': found' in package and ': found' in activity else 0
+            storage=adb('shell','stat','-L','-c','%F','/sdcard/Android/data',check=False).strip()
+            stable=stable+1 if boot=='1' and ': found' in package and ': found' in activity and storage=='directory' else 0
             if stable>=5:return
             time.sleep(1)
-        raise RuntimeError('Emulator package/activity services did not stabilize')
+        (destination/'provisioning-logcat.txt').write_text(adb('logcat','-d','-t','300',check=False),encoding='utf-8')
+        raise RuntimeError('Emulator package/activity services or emulated storage did not stabilize')
     deadline=time.monotonic()+180
     while adb('shell','getprop','sys.boot_completed',check=False).strip()!='1':
         if time.monotonic()>=deadline:raise RuntimeError('Emulator did not finish booting')
@@ -75,6 +77,7 @@ def main():
             install_retries+=1
             print('Emulator service restarted during provisioning; waiting before reinstall',flush=True)
             wait_system_ready()
+    wait_system_ready()
     if args.public_network:
         if int(api)<37:raise RuntimeError('The local-network permission test requires API 37')
         adb('shell','pm','revoke','top.xuzimo.vidown','android.permission.ACCESS_LOCAL_NETWORK')
