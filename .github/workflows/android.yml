@@ -254,7 +254,9 @@ jobs:
           path: android/app/build/outputs/apk
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
         with:
-          cmdline-tools-version: "15859902"
+          # v22 splits macOS archives by architecture; this action expects the
+          # universal archive name. v21 is the last compatible pinned Mac tool.
+          cmdline-tools-version: ${{ runner.os == 'macOS' && '15641748' || '15859902' }}
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
       - name: Synthetic fixture service
