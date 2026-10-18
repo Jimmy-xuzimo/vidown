@@ -8,7 +8,7 @@ on:
       tag:
         description: "Version tag (must match package.json)"
         required: true
-        default: v1.0.4
+        default: v1.0.5
       publish:
         description: "Create version tag and publish after all five builds pass"
         type: boolean

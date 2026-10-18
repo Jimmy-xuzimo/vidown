@@ -50,7 +50,7 @@
 | macOS 15+ Intel／Apple Silicon | 各自的 DMG                           |
 | Linux x64／ARM64               | 各自的 AppImage（Ubuntu 24.04 构建） |
 
-下载页仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4-materials)。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
+下载页仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials)。请按附件中的架构选择，不把源码 ZIP 当作应用安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 
