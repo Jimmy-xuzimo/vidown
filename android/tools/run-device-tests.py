@@ -87,9 +87,14 @@ def main():
         adb('shell','pm','grant','top.xuzimo.vidown','android.permission.ACCESS_LOCAL_NETWORK')
     # Match a real first install: activate the launcher before instrumentation
     # queries its activity. Then stop the process so startup isolation stays cold.
-    first=adb('shell','am','start','-W','-n','top.xuzimo.vidown/.MainActivity')
+    first=adb('shell','am','start','-W','-n','top.xuzimo.vidown/.MainActivity',check=False)
     (destination/'first-launch.txt').write_text(first,encoding='utf-8')
-    if 'Status: ok' not in first:raise RuntimeError('Installed target did not launch: '+first)
+    if 'Status: ok' not in first:
+        (destination/'launch-package-state.txt').write_text(
+            adb('shell','dumpsys','package','top.xuzimo.vidown',check=False),encoding='utf-8')
+        (destination/'launch-crash-logcat.txt').write_text(
+            adb('logcat','-b','crash','-d',check=False),encoding='utf-8')
+        raise RuntimeError('Installed target did not launch: '+first)
     adb('shell','am','force-stop','top.xuzimo.vidown')
     command=['shell','am','instrument','-w','-r']
     # A failed test must not inherit screenshots left by an older successful run.
