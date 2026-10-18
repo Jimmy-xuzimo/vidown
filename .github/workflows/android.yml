@@ -77,7 +77,6 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      VIDOWN_KEYSTORE: ${{ runner.temp }}/vidown-upload.jks
       VIDOWN_STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
       VIDOWN_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
       VIDOWN_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
@@ -99,9 +98,11 @@ jobs:
           import base64, os, pathlib
           for name in ('KEY_BASE64','VIDOWN_STORE_PASSWORD','VIDOWN_KEY_ALIAS','VIDOWN_KEY_PASSWORD'):
               if not os.environ.get(name): raise SystemExit('Missing required signing secret: '+name)
-          p=pathlib.Path(os.environ['VIDOWN_KEYSTORE'])
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'vidown-upload.jks'
           p.write_bytes(base64.b64decode(os.environ['KEY_BASE64'],validate=True))
           p.chmod(0o600)
+          with open(os.environ['GITHUB_ENV'],'a') as env:
+              env.write('VIDOWN_KEYSTORE='+str(p)+'\n')
           PY
       - name: Android toolchain
         run: sdkmanager "platforms;android-37.2" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.31.6"
@@ -174,7 +175,7 @@ jobs:
         run: |
           python - <<'PY'
           import os, pathlib
-          pathlib.Path(os.environ['VIDOWN_KEYSTORE']).unlink(missing_ok=True)
+          (pathlib.Path(os.environ['RUNNER_TEMP'])/'vidown-upload.jks').unlink(missing_ok=True)
           PY
 
   emulator:
