@@ -35,6 +35,10 @@ jobs:
         with:
           python-version: "3.12"
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: "15859902"
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Android toolchain
         run: sdkmanager "platforms;android-37.2" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.31.6"
       - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -90,6 +94,10 @@ jobs:
         with:
           python-version: "3.12"
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: "15859902"
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Signing inputs
         env:
           KEY_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
@@ -205,6 +213,11 @@ jobs:
         with:
           name: android-test-apks
           path: android/app/build/outputs/apk
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
+        with:
+          cmdline-tools-version: "15859902"
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
       - name: Synthetic fixture service
         run: |
           sudo apt-get update -qq
