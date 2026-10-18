@@ -37,13 +37,17 @@ def main():
         # sys.boot_completed becomes 1. Do not race package-manager startup.
         deadline=time.monotonic()+180
         stable=0
+        previous_pid=None
         while time.monotonic()<deadline:
             boot=adb('shell','getprop','sys.boot_completed',check=False).strip()
             package=adb('shell','service','check','package',check=False)
             activity=adb('shell','service','check','activity',check=False)
             storage=adb('shell','stat','-L','-c','%F','/sdcard/Android/data',check=False).strip()
-            stable=stable+1 if boot=='1' and ': found' in package and ': found' in activity and storage=='directory' else 0
-            if stable>=5:return
+            server_pid=adb('shell','pidof','system_server',check=False).strip()
+            ready=boot=='1' and ': found' in package and ': found' in activity and storage=='directory' and server_pid
+            stable=stable+1 if ready and previous_pid==server_pid else 0
+            previous_pid=server_pid
+            if stable>=(30 if os.environ.get('CI') and int(api)>=37 else 5):return
             time.sleep(1)
         (destination/'provisioning-logcat.txt').write_text(adb('logcat','-d','-t','300',check=False),encoding='utf-8')
         raise RuntimeError('Emulator package/activity services or emulated storage did not stabilize')
@@ -58,6 +62,15 @@ def main():
         raise RuntimeError('Select a dedicated Vidown emulator')
     if not 34<=int(api)<=37:raise RuntimeError(f'Unexpected emulator API {api}')
     wait_system_ready()
+    if os.environ.get('CI') and int(api)>=37:
+        # Fresh API 37 images can restart system_server after boot_completed.
+        # Finish first boot before package installation, then exercise a clean
+        # boot. This does not retry instrumentation or change app permissions.
+        adb('shell','sync')
+        adb('reboot')
+        adb('wait-for-disconnect')
+        adb('wait-for-device')
+        wait_system_ready()
     # This script never closes an existing server or changes a browser profile.
     with urllib.request.urlopen('http://127.0.0.1:18763/health',timeout=10) as response:
         if json.load(response).get('fixture')!='vidown-android-v1':raise RuntimeError('Unexpected fixture listener')
@@ -69,10 +82,13 @@ def main():
         for attempt in range(3):
             result=subprocess.run([args.adb,'-s',args.serial,'install','-r',str(ROOT/'android'/apk)],text=True,encoding='utf-8',errors='replace',capture_output=True)
             details=result.stdout+result.stderr
-            if result.returncode==0 and 'Success' in details:break
+            if result.returncode==0 and 'Success' in details:
+                expected='top.xuzimo.vidown.test' if 'androidTest/' in apk else 'top.xuzimo.vidown'
+                if adb('shell','pm','path',expected,check=False).strip().startswith('package:'):break
+                details+='\nPackage absent after reported installation success'
             (destination/'install-failure.txt').write_text(details,encoding='utf-8')
             (destination/'provisioning-logcat.txt').write_text(adb('logcat','-d','-t','200',check=False),encoding='utf-8')
-            transient=any(s in details.lower() for s in ('device offline','broken pipe',"can't find service",'device not found','failed to read response'))
+            transient=any(s in details.lower() for s in ('device offline','broken pipe',"can't find service",'device not found','failed to read response','package absent after reported installation success'))
             if not transient or attempt==2:raise RuntimeError('APK installation failed: '+details[-6000:])
             install_retries+=1
             print('Emulator service restarted during provisioning; waiting before reinstall',flush=True)

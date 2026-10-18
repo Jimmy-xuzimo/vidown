@@ -214,31 +214,18 @@ jobs:
 
   emulator:
     needs: build
-    runs-on: ${{ matrix.runner }}
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix:
-        api: ["34", "35", "36"]
+        api: ["34", "35", "36", "37.0"]
         size: [phone, tablet]
         target: [google_apis]
-        runner: [ubuntu-24.04]
         include:
-          # API 37 system_server restarts during first boot on the Linux host,
-          # before instrumentation (including before any APK is installed).
-          # Keep the same assertions on a different hardware-accelerated host.
-          - api: "37.0"
-            size: phone
-            target: google_apis
-            runner: macos-15-intel
-          - api: "37.0"
-            size: tablet
-            target: google_apis
-            runner: macos-15-intel
           - api: "37.2"
             size: tablet
             target: google_apis_ps16k
-            runner: macos-15-intel
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
@@ -254,23 +241,16 @@ jobs:
           path: android/app/build/outputs/apk
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
         with:
-          # v22 splits macOS archives by architecture; this action expects the
-          # universal archive name. v21 is the last compatible pinned Mac tool.
-          cmdline-tools-version: ${{ runner.os == 'macOS' && '15641748' || '15859902' }}
+          cmdline-tools-version: "15859902"
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
       - name: Synthetic fixture service
         run: |
-          if [ "$RUNNER_OS" = Linux ]; then
-            sudo apt-get update -qq
-            sudo apt-get install -y ffmpeg
-          elif ! command -v ffmpeg >/dev/null; then
-            brew install ffmpeg
-          fi
-          python android/tools/fixtures.py --ffmpeg "$(command -v ffmpeg)" > /tmp/vidown-fixtures.log 2>&1 &
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+          python android/tools/fixtures.py --ffmpeg /usr/bin/ffmpeg > /tmp/vidown-fixtures.log 2>&1 &
           for i in {1..30}; do curl -fsS http://127.0.0.1:18763/health && break; sleep 1; done
       - name: KVM access
-        if: runner.os == 'Linux'
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
@@ -290,7 +270,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -no-snapshot
           pre-emulator-launch-script: |
             mkdir -p work/android-device-tests
-            (adb -s emulator-5554 wait-for-device && adb -s emulator-5554 logcat -b all -v threadtime > work/android-device-tests/boot-logcat.txt 2>&1) &
+            (adb -s emulator-5554 wait-for-device && adb -s emulator-5554 logcat -b all -v threadtime) > work/android-device-tests/boot-logcat.txt 2>&1 < /dev/null &
           script: |
             if [ "$DEVICE_SIZE" = tablet ]; then adb shell wm size 1920x1200; adb shell wm density 240; fi
             python android/tools/run-device-tests.py --serial emulator-5554
