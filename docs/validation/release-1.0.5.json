@@ -1,0 +1,56 @@
+{
+  "generatedAt": "2026-10-18T14:28:29.472287+00:00",
+  "version": "1.0.5",
+  "status": "passed",
+  "sourceCommit": "15961922a2cf9e32b13c0217bcf67512b68be54f",
+  "workflow": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39134988029",
+  "releaseUrl": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5",
+  "materialsUrl": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials",
+  "platforms": [
+    "Windows-x64",
+    "macOS-arm64",
+    "macOS-x64",
+    "Linux-x64",
+    "Linux-arm64"
+  ],
+  "checks": {
+    "allNativeBuildJobsPassed": true,
+    "publicInstallers": 5,
+    "materialsAssets": 15,
+    "releaseIsLatest": true,
+    "installerDigestsMatchRunnerChecksums": true
+  },
+  "installers": [
+    {
+      "name": "Vidown-1.0.5-Linux-arm64.AppImage",
+      "bytes": 198048408,
+      "digest": "sha256:bf50a217f74b09d342e9f73d41fd9b0422fe33b21d835c99e39fd1702256776c",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.5/Vidown-1.0.5-Linux-arm64.AppImage"
+    },
+    {
+      "name": "Vidown-1.0.5-Linux-x86_64.AppImage",
+      "bytes": 199348360,
+      "digest": "sha256:4ba843b380f6fa94bc8ce6399f6700f308986aab19d5b8d24b3e18a48f3d6f01",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.5/Vidown-1.0.5-Linux-x86_64.AppImage"
+    },
+    {
+      "name": "Vidown-1.0.5-macOS-arm64.dmg",
+      "bytes": 178034304,
+      "digest": "sha256:cf0f0944b3276536189db46f9658d706f64a87444056c2c9ddf6f9e87574ef5d",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.5/Vidown-1.0.5-macOS-arm64.dmg"
+    },
+    {
+      "name": "Vidown-1.0.5-macOS-x64.dmg",
+      "bytes": 186890211,
+      "digest": "sha256:99e9e6b3671706dc830ecddd6aaf5a08957da3468b451ec3af668240a00562b9",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.5/Vidown-1.0.5-macOS-x64.dmg"
+    },
+    {
+      "name": "Vidown-Setup-1.0.5.exe",
+      "bytes": 213766108,
+      "digest": "sha256:13539f9d9a40e5d71df04fff892d5c3fc1e117e91712488abdb8aaafa586c95e",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.5/Vidown-Setup-1.0.5.exe"
+    }
+  ],
+  "scope": "Native-runner build, controlled media, package download and data cleanup tests; not a clean-system installation or all-site real-account acceptance."
+}

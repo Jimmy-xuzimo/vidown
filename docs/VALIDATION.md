@@ -12,6 +12,14 @@
 
 本轮未读取或清理用户的应用档案，也没有更新其正在运行的 1.0.4。须退出旧版并安装本地 1.0.5 修复包后才会生效。本节记录发行前的本地验收；跨平台发行结果以对应 Release 的运行器报告为准。分享短链、真实登录／私密内容、macOS／Linux 的抖音网站实测仍待验证。网站验证、删除、账号权限与地域限制不能由这些公开样本测试排除。
 
+### 1.0.5 多平台发行结果
+
+[发行工作流](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39134988029)在 Windows x64、macOS x64／arm64、Linux x64／arm64 原生运行器完成构建与验证。Windows 首次在读取 PyPI 源码信息时遇到连接重置；仅重跑失败任务后通过，随后统一发布，未跳过检查。
+
+五个平台均通过协议媒体、时间轴边界、备用源、打包应用下载及数据清理测试。Windows 额外通过 7 组 WebView2 和便携运行／安装包载荷检查；macOS／Linux 检查实际包内文件与可执行权限。真实账号和干净系统安装验收仍独立于这些受控测试。
+
+[v1.0.5](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5) 已设为最新正式版，主 Release 恰好 5 个应用包。测试报告、SHA-256 和第三方对应源码存放在[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials)，发布后核对公开附件摘要与运行器校验值一致，源码标签指向全部构建验证的同一提交。见[发行核对记录](validation/release-1.0.5.json)。
+
 ## 1.0.4 本地数据清理
 
 新增 `npm run verify:data-cleanup`。Windows 本机分别使用 WebView2、Chromium 和独立测试档案验证 5 组行为：空选择及暂停任务保护；取消确认与仅清理记录；设置页清理浏览器时保留文件、记录和偏好；重启后两个网站的 Cookie、LocalStorage、SessionStorage、IndexedDB、CacheStorage、HTTP 缓存与登录备份不恢复；同时及重复清理。数据库中的旧加密下载计划一并失效。
