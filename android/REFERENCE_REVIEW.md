@@ -2,6 +2,10 @@
 
 Reviewed on 2026-10-19. Reference: [Seal](https://github.com/JunkFood02/Seal),
 commit [`7677f61`](https://github.com/JunkFood02/Seal/tree/7677f61a20fda4210e84215fef9e9b51d25daa47).
+The official v1.13.1 x86_64 APK was also downloaded and opened on the dedicated
+API 34 test emulator to inspect its onboarding and link-first screen. No account
+was supplied and no claim about Seal's current platform coverage follows from
+that interface review. Reference source and APK stay outside Vidown's distribution.
 
 Seal is a native Kotlin/Jetpack Compose application with Material Design 3.
 Its UI uses composable destinations, tonal surfaces, format-selection screens,
