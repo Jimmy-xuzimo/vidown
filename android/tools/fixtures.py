@@ -98,6 +98,8 @@ class Handler(BaseHTTPRequestHandler):
             return
         if path=='/cross-redirect':
             self.send_response(302);self.send_header('Location','http://10.0.2.2:18764/headers');self.end_headers();return
+        if path=='/cdn-redirect':
+            self.send_response(302);self.send_header('Location','http://10.0.2.2:18764/referer/sample.mp4');self.end_headers();return
         if path=='/headers':
             self.reply(200,json.dumps(dict(self.headers)).encode(),'application/json',body)
             return
@@ -148,6 +150,14 @@ class Handler(BaseHTTPRequestHandler):
                 self.reply(403,b'Login required','text/plain',body)
                 return
             path=path[5:]
+        if path.startswith('/referer/'):
+            if self.headers.get('Referer')!='http://10.0.2.2:18763/':
+                self.reply(403,b'Page origin required','text/plain',body)
+                return
+            if 'fixture_login=yes' not in self.headers.get('Cookie',''):
+                self.reply(403,b'Login required','text/plain',body)
+                return
+            path=path[len('/referer'):]
         if path=='/expired':
             self.reply(403,b'Expired','text/plain',body)
             return

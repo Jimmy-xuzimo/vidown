@@ -46,6 +46,43 @@ class MediaIntegrationTest {
     @Test fun dashIndependentTracks() = runBlocking { verify("/dash/index.mpd", 2) }
 
     @Test
+    fun authenticatedCdnRedirectRetainsRefererAndDownloadsExactBytes(): Unit = runBlocking {
+        graph.network.request(graph.browser.ref, "$base/login").close()
+        val asset = graph.probe.probe("$base/sample.mp4")
+        val private = graph.probe.get(asset.id)
+        val track =
+            private.tracks.single().copy(
+                url = "$base/expired",
+                headers = mapOf("Referer" to "$base/watch?token=private"),
+                fallbacks = listOf("$base/cdn-redirect"),
+            )
+        val plan = DownloadPlan(asset = private, tracks = listOf(track))
+        try {
+            val result = graph.downloads.download(plan) { _, _, _ -> }
+            val input = graph.downloads.input(plan.id)
+            try {
+                val handle = input.open(result.inputs.single(), 0, null, null)
+                val actual = java.io.ByteArrayOutputStream()
+                while (true) {
+                    val block = input.read(handle, 65536)
+                    if (block.isEmpty()) break
+                    actual.write(block)
+                }
+                val expected =
+                    graph.network.request(graph.browser.ref, "$base/sample.mp4").use {
+                        it.body.readBytes()
+                    }
+                assertArrayEquals(expected, actual.toByteArray())
+            } finally {
+                input.closeAll()
+            }
+        } finally {
+            graph.downloads.release(plan.id)
+            File(graph.app.noBackupFilesDir, "tasks/${plan.id}").deleteRecursively()
+        }
+    }
+
+    @Test
     fun unavailablePrimaryUsesRegisteredMirrorBeforeCaching(): Unit = runBlocking {
         val a = graph.probe.probe("$base/sample.mp4")
         val original = graph.probe.get(a.id)

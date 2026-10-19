@@ -64,7 +64,10 @@ class SessionTransport(private val browser: BrowserRepository) {
                         .cacheMode(WebRequest.CACHE_MODE_NO_STORE)
                 safeHeaders.forEach { (key, value) ->
                     require(!value.contains('\r') && !value.contains('\n'))
-                    builder.header(key, value)
+                    // Gecko initializes channel referrer info after ordinary headers;
+                    // header("Referer", ...) alone is overwritten with an empty referrer.
+                    if (key.equals("referer", true)) builder.referrer(normalizeUrl(value))
+                    else builder.header(key, value)
                 }
                 payload?.let {
                     builder.body(ByteBuffer.allocateDirect(it.size).put(it).apply { flip() })
@@ -92,12 +95,29 @@ class SessionTransport(private val browser: BrowserRepository) {
                     response.body?.close()
                     check(hop < 10) { "重定向次数过多" }
                     val next = normalizeUrl(URI(current).resolve(location).toString())
-                    if (origin(next) != origin(current))
-                        safeHeaders = safeHeaders.filterKeys {
-                            it.equals("accept", true) ||
-                                it.equals("accept-language", true) ||
-                                it.equals("user-agent", true)
-                        }
+                    if (origin(next) != origin(current)) {
+                        safeHeaders =
+                            safeHeaders
+                                .filterKeys {
+                                    it.lowercase() in
+                                        setOf(
+                                            "accept",
+                                            "accept-language",
+                                            "user-agent",
+                                            "range",
+                                            "referer",
+                                        )
+                                }
+                                .mapValues { (key, value) ->
+                                    // CDN redirects need the page origin for hotlink checks,
+                                    // never its private path or signed query parameters.
+                                    if (key.equals("referer", true)) {
+                                        val page = URI(normalizeUrl(value))
+                                        URI(page.scheme, null, page.host, page.port, "/", null, null)
+                                            .toASCIIString()
+                                    } else value
+                                }
+                    }
                     if (URI(current).scheme == "https" && URI(next).scheme == "http")
                         error("拒绝将已加密请求降级到 HTTP")
                     if (

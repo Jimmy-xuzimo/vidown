@@ -3,6 +3,7 @@ package top.xuzimo.vidown
 import androidx.test.core.app.ApplicationProvider
 import com.chaquo.python.Python
 import kotlinx.coroutines.runBlocking
+import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Test
 import top.xuzimo.vidown.core.*
@@ -13,6 +14,38 @@ class ExtractionRegressionTest {
         get() = ApplicationProvider.getApplicationContext<VidownApplication>().graph
 
     private val base = "http://10.0.2.2:18763"
+
+    @Test
+    fun mediaRefererReachesTheServer(): Unit = runBlocking {
+        val headers = mapOf("rEfErEr" to "$base/", "Range" to "bytes=0-0")
+        graph.network.request(graph.browser.ref, "$base/headers", headers).use { response ->
+            val received = JSONObject(response.body.readBytes().toString(Charsets.UTF_8))
+            val values =
+                received.keys().asSequence().associate { it.lowercase() to received.getString(it) }
+            assertEquals("$base/", values["referer"])
+            assertEquals("bytes=0-0", values["range"])
+        }
+    }
+
+    @Test
+    fun cdnRedirectKeepsMediaRangeAndOnlyThePageOrigin(): Unit = runBlocking {
+        val headers =
+            mapOf(
+                "Referer" to "$base/watch?token=private",
+                "Range" to "bytes=0-0",
+                "Authorization" to "fixture-secret",
+                "X-Private-Key" to "fixture-private",
+            )
+        graph.network.request(graph.browser.ref, "$base/cross-redirect", headers).use { response ->
+            val received = JSONObject(response.body.readBytes().toString(Charsets.UTF_8))
+            val values =
+                received.keys().asSequence().associate { it.lowercase() to received.getString(it) }
+            assertEquals("$base/", values["referer"])
+            assertEquals("bytes=0-0", values["range"])
+            assertFalse(values.containsKey("authorization"))
+            assertFalse(values.containsKey("x-private-key"))
+        }
+    }
 
     @Test
     fun extractorKeepsDesktopDefaultsAndRequestHeaders(): Unit = runBlocking {
