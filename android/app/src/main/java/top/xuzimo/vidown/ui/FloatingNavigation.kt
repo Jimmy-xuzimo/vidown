@@ -37,7 +37,9 @@ fun FloatingNavigation(
     onSelect: (Int) -> Unit,
     vertical: Boolean = false,
 ) {
-    val safe = WindowInsets.safeDrawing.asPaddingValues()
+    // The parent already consumes IME insets. Raw safeDrawing padding includes
+    // the keyboard again and can collapse a landscape rail to zero height.
+    val safe = WindowInsets.systemBars.union(WindowInsets.displayCutout).asPaddingValues()
     val direction = LocalLayoutDirection.current
     if (vertical) {
         val left = safe.calculateLeftPadding(direction)

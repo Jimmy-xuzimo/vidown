@@ -31,7 +31,7 @@ Local extraction baseline: API 34 phone and API 37.2 / 16 KB landscape tablet ea
 also passed the two-test production-entry regression (forced short response
 chunks, bounded JSON, default User-Agent, Referer, preview/DRM handling). The
 sequence and initial failures are retained in [attempts.json](verification/preview.6/attempts.json);
-both full suites were rerun after the extraction refinements. Cloud testing then exposed a keyboard-inset defect on API 34; root IME padding and focus dismissal fix it. All five native-design cases passed on an IME-enabled API 34 landscape tablet. A new nine-configuration full matrix tests that final runtime.
+both full suites were rerun after the extraction refinements. Cloud testing then exposed a keyboard-inset defect on API 34; root IME padding and focus dismissal fix it. All five native-design cases passed on an IME-enabled API 34 landscape tablet. The next matrix exposed double-counted IME padding on API 37.0: raw safeDrawing included keyboard space after the root had already consumed it. Navigation edges now use system bars and display cutouts only. All five native-design tests passed on an API 37 landscape tablet with the keyboard enabled; the visible-keyboard screenshot is preserved. A replacement full matrix tests this final runtime.
 
 The final signed release APK passed black-box split-HLS, browser login,
 process restart, authenticated download, native remux, MediaStore and ffprobe

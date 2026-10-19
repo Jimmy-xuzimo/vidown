@@ -12,12 +12,12 @@
     {
       "file": "Vidown-Android-0.1.0-preview.6.apk",
       "bytes": 452740245,
-      "sha256": "7611eaffdd3334bdbbf4d412075b0e14688332f4fa7b5298b6e2aa939d49e382"
+      "sha256": "02f746ed81e369c382117018e23599f68db74c8c4de7bea7dfb77d85430d6115"
     },
     {
       "file": "Vidown-Android-0.1.0-preview.6.aab",
-      "bytes": 210852270,
-      "sha256": "95375be276aeaebfc56da3a8d81521498a153428928e97ddfdb34f878dc7facc"
+      "bytes": 210852431,
+      "sha256": "37664842c6379f2c43206d0d6bd4d7e8c1dadcdce35ffadc3cd58c5fdcf8eda8"
     }
   ],
   "lint": {
@@ -51,6 +51,7 @@
   "previousVersionEvidence": "preview.5/index.json",
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
-  "ciStatusAtPackaging": "Final IME/layout and package regressions passed locally; replacement full GitHub matrix pending.",
-  "keyboardRegression": "preview.6/keyboard-navigation34-tablet.json"
+  "ciStatusAtPackaging": "Final navigation now excludes already-consumed keyboard insets; API 37 landscape keyboard regression passed. Replacement full matrix pending.",
+  "keyboardRegression": "preview.6/keyboard-navigation34-tablet.json",
+  "keyboardRegression37": "preview.6/keyboard-navigation37-tablet.json"
 }

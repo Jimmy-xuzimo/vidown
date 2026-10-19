@@ -35,6 +35,23 @@
     "ARM64 physical device",
     "Device battery/thermal/background behavior"
   ],
+  "secondCiRun": {
+    "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200016732",
+    "sevenDeviceConfigurationsPassed": true,
+    "failures": [
+      {
+        "job": 117891659318,
+        "configuration": "API 35 tablet",
+        "cause": "Pixel Launcher ANR dialog blocked app-targeted touch; screenshot and am_anr log identify com.google.android.apps.nexuslauncher.",
+        "screenshot": "ci-final-35-tablet-launcher-anr.png"
+      },
+      {
+        "job": 117891659332,
+        "configuration": "API 37.0 tablet",
+        "cause": "Keyboard-inset regression: raw safeDrawing padding included IME a second time after the root had consumed it, collapsing the landscape navigation. Navigation edge padding now uses system bars and display cutouts only."
+      }
+    ]
+  },
   "firstCiRun": {
     "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39198299219",
     "sixDeviceConfigurationsPassed": true,
