@@ -159,7 +159,7 @@
       ]
     },
     "webview2": {
-      "generatedAt": "2026-10-19T03:51:36.656Z",
+      "generatedAt": "2026-10-19T04:29:24.471Z",
       "packaged": false,
       "results": [
         {
@@ -295,5 +295,10 @@
     "cause": "Late browser visibility callback rejected during app shutdown; packaged download itself passed.",
     "fix": "Authenticated presentation-only hide/bounds requests become no-ops during shutdown. Other commands stay rejected. Added late visibility IPC stress to existing cleanup regression.",
     "action": "Canceled remaining first-attempt build jobs; rebuild all five platforms from corrected source. This is an application fix, not an infrastructure retry."
+  },
+  "secondReleaseAttempt": {
+    "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39198983287",
+    "result": "Four packaged platforms passed; Windows native test used an ambiguous accessible name matching both the blank-tab title and the new-tab control.",
+    "fix": "Scope the locator to the actual aria-labeled new-tab control; native regression passed locally. Rebuild all five platforms with unchanged assertions."
   }
 }

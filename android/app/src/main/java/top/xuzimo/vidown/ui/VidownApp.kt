@@ -42,6 +42,12 @@ fun VidownApp(vm: MainViewModel, permission: () -> Unit) {
             LocalConfiguration.current.orientation ==
                 android.content.res.Configuration.ORIENTATION_LANDSCAPE
         val pager = rememberPagerState(initialPage = page) { 5 }
+        val focus = LocalFocusManager.current
+        val keyboard = LocalSoftwareKeyboardController.current
+        LaunchedEffect(pager.currentPage) {
+            focus.clearFocus()
+            keyboard?.hide()
+        }
         val spatial = spatialMotion<Float>()
         LaunchedEffect(page) {
             if (pager.settledPage != page) {
@@ -64,7 +70,7 @@ fun VidownApp(vm: MainViewModel, permission: () -> Unit) {
         val subtitles =
             listOf("链接、画质与每一份珍藏", "访问、登录与发现媒体", "正在保存的精彩", "保存在本机的下载记录", "让 Vidown 更合你的习惯")
         val activeCount = tasks.count { TaskTransitions.active(TaskState.valueOf(it.state)) }
-        Row(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+        Row(Modifier.fillMaxSize().imePadding().background(MaterialTheme.colorScheme.background)) {
             if (landscape)
                 FloatingNavigation(page, activeCount, { vm.page.value = it }, vertical = true)
             Scaffold(

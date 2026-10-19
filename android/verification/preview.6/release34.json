@@ -5,7 +5,7 @@
   "scope": "black-box HLS independent video/audio, browser session login, process restart, authenticated download, native remux, MediaStore, host ffprobe",
   "hls": [
     {
-      "file": "master.m3u8 (5).mp4",
+      "file": "master.m3u8 (6).mp4",
       "bytes": 388876,
       "duration": "8.021333",
       "width": 320,
@@ -16,7 +16,7 @@
   ],
   "authenticated": [
     {
-      "file": "Protected fixture video (1) (8).mp4",
+      "file": "Protected fixture video (1) (9).mp4",
       "bytes": 387527,
       "duration": "8.000000",
       "width": 320,

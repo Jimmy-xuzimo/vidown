@@ -26,12 +26,12 @@ Fresh preview.6 reports are stored in [preview.6](verification/preview.6/).
 Earlier preview.5 and preview.4 records below are historical baselines, not new
 executions. Public-site failures and account/device limitations remain explicit.
 
-Final exact-source local execution: API 34 phone and API 37.2 / 16 KB landscape tablet each passed
+Local extraction baseline: API 34 phone and API 37.2 / 16 KB landscape tablet each passed
 44 controlled tests and a separate cold-start check. Final adapter refinements
 also passed the two-test production-entry regression (forced short response
 chunks, bounded JSON, default User-Agent, Referer, preview/DRM handling). The
 sequence and initial failures are retained in [attempts.json](verification/preview.6/attempts.json);
-both full suites were rerun on the final source after those refinements. The same source is submitted to the nine-configuration GitHub matrix.
+both full suites were rerun after the extraction refinements. Cloud testing then exposed a keyboard-inset defect on API 34; root IME padding and focus dismissal fix it. All five native-design cases passed on an IME-enabled API 34 landscape tablet. A new nine-configuration full matrix tests that final runtime.
 
 The final signed release APK passed black-box split-HLS, browser login,
 process restart, authenticated download, native remux, MediaStore and ffprobe

@@ -12,12 +12,12 @@
     {
       "file": "Vidown-Android-0.1.0-preview.6.apk",
       "bytes": 452740245,
-      "sha256": "2f91c64a322ace4e52dea6ed3ac32d9e074b3e035b8b2a9c8ace19ebcbcd7b26"
+      "sha256": "7611eaffdd3334bdbbf4d412075b0e14688332f4fa7b5298b6e2aa939d49e382"
     },
     {
       "file": "Vidown-Android-0.1.0-preview.6.aab",
-      "bytes": 210851782,
-      "sha256": "bc9c9d64c28636d71efa9d3db53328eeec4d9a1176b705fef1e6f0cb41780132"
+      "bytes": 210852270,
+      "sha256": "95375be276aeaebfc56da3a8d81521498a153428928e97ddfdb34f878dc7facc"
     }
   ],
   "lint": {
@@ -51,5 +51,6 @@
   "previousVersionEvidence": "preview.5/index.json",
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
-  "ciStatusAtPackaging": "Local final regressions passed; GitHub matrix pending push; full-suite sequence recorded in attempts.json."
+  "ciStatusAtPackaging": "Final IME/layout and package regressions passed locally; replacement full GitHub matrix pending.",
+  "keyboardRegression": "preview.6/keyboard-navigation34-tablet.json"
 }

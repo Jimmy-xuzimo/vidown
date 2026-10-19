@@ -28,11 +28,34 @@
       "resolution": "Separate real-source regression and final survey passed. Website restrictions still reported."
     }
   ],
-  "localSequence": "Final exact source rerun: API 34 portrait phone and API 37.2 / 16KB landscape tablet each passed all 44 controlled tests and a separate cold-start isolation check. Final signed APK checks are separate.",
+  "localSequence": "44-case final extraction suites passed on API 34 portrait and API 37.2 / 16KB landscape. After the last IME layout refinement, all five native-design cases passed on API 34 landscape with the soft keyboard enabled. Signed APK checks are recorded separately. New GitHub full matrix verifies the final runtime.",
   "notVerified": [
     "Premium full movie",
     "DRM media",
     "ARM64 physical device",
     "Device battery/thermal/background behavior"
-  ]
+  ],
+  "firstCiRun": {
+    "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39198299219",
+    "sixDeviceConfigurationsPassed": true,
+    "failures": [
+      {
+        "job": 117887445566,
+        "configuration": "API 34 tablet",
+        "cause": "Actual keyboard layout defect: navigation disappeared after editing and swiping. Fixed root IME insets and dismiss/clear focus on page switch; five native-design cases passed on an IME-enabled API 34 landscape tablet."
+      },
+      {
+        "job": 117887445575,
+        "configuration": "API 35 tablet",
+        "cause": "Pixel Launcher ANR system dialog intercepted targeted app touch",
+        "screenshot": "ci-35-tablet-launcher-anr.png"
+      },
+      {
+        "job": 117887445602,
+        "configuration": "API 34 phone",
+        "cause": "Pixel Launcher ANR system dialog intercepted targeted app touch",
+        "screenshot": "ci-34-phone-launcher-anr.png"
+      }
+    ]
+  }
 }

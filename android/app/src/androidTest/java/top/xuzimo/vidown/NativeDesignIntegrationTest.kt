@@ -55,6 +55,7 @@ class NativeDesignIntegrationTest {
     @Test
     fun horizontalSwipesKeepNavigationVisibleAndPreserveInput() {
         ui.onNodeWithTag("media-input").performTextReplacement("https://example.org/kept")
+        ui.onNodeWithTag("floating-navigation").assertIsDisplayed()
         ui.onNodeWithTag("main-pager").performTouchInput { swipeLeft() }
         ui.waitUntil(10000) { vm.page.value == 1 }
         ui.onNodeWithTag("floating-navigation").assertIsDisplayed()

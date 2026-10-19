@@ -130,16 +130,16 @@ try {
       .count(),
     0,
   );
-  await page.getByRole("button", { name: "新标签页", exact: true }).click();
+  await page.locator('button.new-tab[aria-label="新标签页"]').click();
   await until(
     async () =>
       (await page.evaluate(() => window.vidown.snapshot())).tabs.length === 1,
   );
-  await page.getByRole("button", { name: "新标签页", exact: true }).waitFor();
+  await page.locator('button.new-tab[aria-label="新标签页"]').waitFor();
   await until(
     async () =>
       !(await page
-        .getByRole("button", { name: "新标签页", exact: true })
+        .locator('button.new-tab[aria-label="新标签页"]')
         .isDisabled()),
   );
   await page.getByRole("region", { name: "新标签页", exact: true }).waitFor();
