@@ -120,7 +120,7 @@ class Handler(BaseHTTPRequestHandler):
         if path=='/auth/page':
             if 'fixture_login=yes' not in self.headers.get('Cookie',''):return self.reply(403,b'Login required','text/plain',body)
             return self.reply(200,b'<html><title>Protected fixture video</title><body><video controls src="/auth/sample.mp4"></video></body></html>','text/html',body)
-        if path=='/blob-page':return self.reply(200,b'''<html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Controlled blob save</title><body style="margin:0"><button id="save" style="width:100%;height:160px;font-size:28px" disabled>Preparing file</button><script>fetch('/sample.mp4').then(r=>r.blob()).then(b=>{const button=document.getElementById('save');button.textContent='Save controlled video';button.disabled=false;button.onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='controlled.mp4';a.click();};});</script></body></html>''','text/html',body)
+        if path=='/blob-page':return self.reply(200,(Path(__file__).parent/'fixtures'/'blob-save.html').read_bytes(),'text/html',body)
         if path.startswith('/auth/'):
             if 'fixture_login=yes' not in self.headers.get('Cookie',''):return self.reply(403,b'Login required','text/plain',body)
             path=path[5:]

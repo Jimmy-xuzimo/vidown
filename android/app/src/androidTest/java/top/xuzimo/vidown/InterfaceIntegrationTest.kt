@@ -92,17 +92,22 @@ class InterfaceIntegrationTest {
         val tab = graph.browser.newTab("http://10.0.2.2:18763/blob-page")
         ui.runOnUiThread { vm.page.value = 1 }
         var task: String? = null
+        var output: android.net.Uri? = null
         try {
             ui.waitUntil(30000) {
-                graph.browser.tabs.value.find { it.id == tab }?.loading == false &&
+                graph.browser.tabs.value.find { it.id == tab }?.title == "Controlled blob ready" &&
                     graph.browser.candidates.value.any { it.tabId == tab }
             }
             ui.waitForIdle()
-            delay(1000)
             ui.onNodeWithTag("browser-web").performTouchInput {
                 // Desktop viewport scales CSS pixels on phones; tap inside the top of the real
                 // button.
                 click(Offset(width / 2f, 24.dp.toPx()))
+            }
+            // Acknowledgement separates a missed/disabled DOM click from a transfer timeout.
+            ui.waitUntil(10000) {
+                graph.browser.tabs.value.find { it.id == tab }?.title ==
+                    "Controlled blob save requested"
             }
             withTimeout(60000) {
                 while (true) {
@@ -112,12 +117,24 @@ class InterfaceIntegrationTest {
                         if (found.state == TaskState.FAILED.name) error(found.message ?: "网页保存失败")
                         if (found.state == TaskState.COMPLETED.name) {
                             val uri = android.net.Uri.parse(found.outputUri)
-                            val size =
+                            output = uri
+                            val saved =
                                 graph.app.contentResolver.openInputStream(uri)!!.use {
-                                    it.readBytes().size
+                                    it.readBytes()
                                 }
-                            assertTrue(size > 1000)
-                            graph.app.contentResolver.delete(uri, null, null)
+                            val expected =
+                                graph.network
+                                    .request(
+                                        graph.browser.ref,
+                                        "http://10.0.2.2:18763/sample.mp4",
+                                    )
+                                    .use { it.body.readBytes() }
+                            assertTrue(expected.size > 1000)
+                            assertArrayEquals(
+                                "Saved blob must preserve the complete source file",
+                                expected,
+                                saved,
+                            )
                             break
                         }
                     }
@@ -125,6 +142,7 @@ class InterfaceIntegrationTest {
                 }
             }
         } finally {
+            output?.let { graph.app.contentResolver.delete(it, null, null) }
             task?.let {
                 graph.queue.cancel(it)
                 graph.queue.remove(it)
