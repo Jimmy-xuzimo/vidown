@@ -83,51 +83,81 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self,*_): pass
     def serve(self,body):
         path=urlsplit(self.path).path
-        if path=='/health':return self.reply(200,b'{"fixture":"vidown-android-v1"}','application/json',body)
-        original=path
+        if path=='/health':
+            self.reply(200,b'{"fixture":"vidown-android-v1"}','application/json',body)
+            return
         with LOCK:
             COUNTERS[path]=COUNTERS.get(path,0)+1
             REQUESTS.setdefault(path,[]).append({'method':self.command,'range':self.headers.get('Range')})
-        if path=='/counts':return self.reply(200,json.dumps(COUNTERS).encode(),'application/json',body)
+        if path=='/counts':
+            self.reply(200,json.dumps(COUNTERS).encode(),'application/json',body)
+            return
         if path=='/requests':
             with LOCK: snapshot=json.dumps(REQUESTS).encode()
-            return self.reply(200,snapshot,'application/json',body)
+            self.reply(200,snapshot,'application/json',body)
+            return
         if path=='/cross-redirect':
             self.send_response(302);self.send_header('Location','http://10.0.2.2:18764/headers');self.end_headers();return
-        if path=='/headers':return self.reply(200,json.dumps(dict(self.headers)).encode(),'application/json',body)
+        if path=='/headers':
+            self.reply(200,json.dumps(dict(self.headers)).encode(),'application/json',body)
+            return
         if path=='/desktop-extractor-page':
             ua=self.headers.get('User-Agent','')
             if 'Android' in ua or not self.headers.get('Accept-Language'):
-                return self.reply(400,b'Extractor defaults were lost','text/plain',body)
-            return self.reply(200,b'<html><title>Desktop session fixture</title><video src="/sample.mp4"></video></html>','text/html',body)
-        if path=='/fake-media.mp4':return self.reply(200,b'<!DOCTYPE html><html>Sign in to continue</html>','text/html',body)
-        if path=='/evil.mpd':return self.reply(200,b'<!DOCTYPE MPD [<!ENTITY secret SYSTEM "file:///data/local/tmp/private">]><MPD xmlns="urn:mpeg:dash:schema:mpd:2011">&secret;</MPD>','application/dash+xml',body)
+                self.reply(400,b'Extractor defaults were lost','text/plain',body)
+                return
+            self.reply(200,b'<html><title>Desktop session fixture</title><video src="/sample.mp4"></video></html>','text/html',body)
+            return
+        if path=='/fake-media.mp4':
+            self.reply(200,b'<!DOCTYPE html><html>Sign in to continue</html>','text/html',body)
+            return
+        if path=='/evil.mpd':
+            self.reply(200,b'<!DOCTYPE MPD [<!ENTITY secret SYSTEM "file:///data/local/tmp/private">]><MPD xmlns="urn:mpeg:dash:schema:mpd:2011">&secret;</MPD>','application/dash+xml',body)
+            return
         case=None
         match_case=re.match(r'^/case/([a-f0-9-]+)/(.+)$',path)
         if match_case:
             case=match_case[1];path='/'+match_case[2]
             if path=='/mutate':
                 with LOCK: VERSIONS[case]=VERSIONS.get(case,0)+1
-                return self.reply(200,b'changed','text/plain',body)
+                self.reply(200,b'changed','text/plain',body)
+                return
         slow=path.startswith('/slow/')
         if slow:path=path[5:]
         if path=='/login':
             self.send_response(200);self.send_header('Set-Cookie','fixture_login=yes; Path=/; HttpOnly; SameSite=Lax');self.send_header('Content-Type','text/html');self.end_headers()
             if body:self.wfile.write(b'<html><title>Controlled login</title><body>Signed in<video controls src="/auth/sample.mp4"></video><script>fetch("/auth/hls/index.m3u8")</script></body></html>')
             return
-        if path=='/browser-layout':return self.reply(200,b'<html><meta name="viewport" content="width=device-width,initial-scale=1"><body>Controlled desktop layout<script>function report(){document.title="Layout "+innerWidth+" "+navigator.userAgent;} addEventListener("resize",report); new ResizeObserver(report).observe(document.documentElement); report();</script></body></html>','text/html',body)
-        if path=='/page':return self.reply(200,b'<html><title>Fixture video</title><body><video controls src="/sample.mp4"></video></body></html>','text/html',body)
+        if path=='/browser-layout':
+            self.reply(200,b'<html><meta name="viewport" content="width=device-width,initial-scale=1"><body>Controlled desktop layout<script>function report(){document.title="Layout "+innerWidth+" "+navigator.userAgent;} addEventListener("resize",report); new ResizeObserver(report).observe(document.documentElement); report();</script></body></html>','text/html',body)
+            return
+        if path=='/page':
+            self.reply(200,b'<html><title>Fixture video</title><body><video controls src="/sample.mp4"></video></body></html>','text/html',body)
+            return
         if path=='/auth/page':
-            if 'fixture_login=yes' not in self.headers.get('Cookie',''):return self.reply(403,b'Login required','text/plain',body)
-            return self.reply(200,b'<html><title>Protected fixture video</title><body><video controls src="/auth/sample.mp4"></video></body></html>','text/html',body)
-        if path=='/blob-page':return self.reply(200,(Path(__file__).parent/'fixtures'/'blob-save.html').read_bytes(),'text/html',body)
+            if 'fixture_login=yes' not in self.headers.get('Cookie',''):
+                self.reply(403,b'Login required','text/plain',body)
+                return
+            self.reply(200,b'<html><title>Protected fixture video</title><body><video controls src="/auth/sample.mp4"></video></body></html>','text/html',body)
+            return
+        if path=='/blob-page':
+            self.reply(200,(Path(__file__).parent/'fixtures'/'blob-save.html').read_bytes(),'text/html',body)
+            return
         if path.startswith('/auth/'):
-            if 'fixture_login=yes' not in self.headers.get('Cookie',''):return self.reply(403,b'Login required','text/plain',body)
+            if 'fixture_login=yes' not in self.headers.get('Cookie',''):
+                self.reply(403,b'Login required','text/plain',body)
+                return
             path=path[5:]
-        if path=='/expired':return self.reply(403,b'Expired','text/plain',body)
-        if path=='/limited':return self.reply(429,b'Rate limited','text/plain',body)
+        if path=='/expired':
+            self.reply(403,b'Expired','text/plain',body)
+            return
+        if path=='/limited':
+            self.reply(429,b'Rate limited','text/plain',body)
+            return
         target=(ROOT/path.lstrip('/')).resolve()
-        if not target.is_relative_to(ROOT.resolve()) or not target.is_file() or target.suffix in ('.info',):return self.reply(404,b'Not found','text/plain',body)
+        if not target.is_relative_to(ROOT.resolve()) or not target.is_file() or target.suffix in ('.info',):
+            self.reply(404,b'Not found','text/plain',body)
+            return
         data=target.read_bytes()
         mime={'.mp4':'video/mp4','.m3u8':'application/vnd.apple.mpegurl','.mpd':'application/dash+xml','.ts':'video/mp2t','.m4s':'video/iso.segment','.bin':'application/octet-stream'}.get(target.suffix,'application/octet-stream')
         etag='"'+hashlib.sha256(data).hexdigest()+str(VERSIONS.get(case,0))+'"'
@@ -145,7 +175,10 @@ class Handler(BaseHTTPRequestHandler):
                     for offset in range(start,end+1,8192):
                         self.wfile.write(data[offset:min(offset+8192,end+1)]);self.wfile.flush();time.sleep(.01 if path.endswith('index0.ts') else .08)
                 else:self.wfile.write(data[start:end+1])
-            except (BrokenPipeError,ConnectionResetError,ConnectionAbortedError):pass
+            except (BrokenPipeError,ConnectionResetError,ConnectionAbortedError):
+                # Pause/cancel tests intentionally close the connection mid-transfer.
+                # Stop this response; the client no longer accepts fixture bytes.
+                return
     def reply(self,status,data,mime,body):
         self.send_response(status);self.send_header('Content-Type',mime);self.send_header('Content-Length',str(len(data)));self.end_headers()
         if body:self.wfile.write(data)
