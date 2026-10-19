@@ -7,8 +7,9 @@ import re
 from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
 from yt_dlp import YoutubeDL
 from yt_dlp.extractor.bilibili import BiliBiliIE, BiliBiliBangumiIE
+from vidown_sites import pgc_target, pgc_probe, douyin_id, douyin_data, douyin_html, DOUYIN_HOSTS
 from yt_dlp.cookies import YoutubeDLCookieJar
-from yt_dlp.networking.common import RequestHandler, Response
+from yt_dlp.networking.common import Request, RequestHandler, Response
 from yt_dlp.networking.exceptions import HTTPError
 from yt_dlp.extractor.youtube.jsc._builtin.ejs import EJSBaseJCP
 from yt_dlp.extractor.youtube.jsc.provider import register_provider, register_preference
@@ -101,6 +102,19 @@ class GeckoRH(RequestHandler):
         return response
 
 
+def _read_bounded(response, limit):
+    # Gecko's stream may return less than requested while more bytes are pending.
+    # Read to EOF, keeping the cap even for chunked responses without Content-Length.
+    body = bytearray()
+    while True:
+        block = response.read(min(65536, limit + 1 - len(body)))
+        if not block:
+            return bytes(body)
+        body.extend(block)
+        if len(body) > limit:
+            raise ValueError('提取响应过大')
+
+
 def _cookiejar(bridge):
     jar = YoutubeDLCookieJar()
     for c in json.loads(str(bridge.cookies())):
@@ -178,7 +192,7 @@ class VidownBangumiIE(BilibiliMirrorsMixin, BiliBiliBangumiIE):
     pass
 
 
-def probe(url, bridge):
+def probe(url, bridge, page_data='[]'):
     opts = {'skip_download': True, 'noplaylist': True, 'quiet': True, 'no_warnings': True,
             'logger': SilentLogger(), 'socket_timeout': 30, 'cachedir': False,
             'remote_components': set(), 'js_runtimes': {}, 'extract_flat': False, 'playlistend':20}
@@ -196,8 +210,35 @@ def probe(url, bridge):
         if (urlsplit(url).hostname or '').lower() == 'b23.tv':
             with ydl.urlopen(url) as response:
                 url = normalize_source_url(response.url)
-        info = ydl.extract_info(str(url), download=False)
-        if any(not fmt.get('_vidown_mirrors') for fmt in info.get('formats', [])):
+        if pgc_target(url):
+            extractor = VidownBangumiIE(ydl)
+            def get_json(endpoint):
+                with ydl.urlopen(Request(endpoint, headers={'Referer':'https://www.bilibili.com/'})) as response:
+                    body = _read_bounded(response, 8 * 1024 * 1024)
+                return json.loads(body)
+            info = pgc_probe(url, get_json, extractor.extract_formats)
+        elif urlsplit(url).hostname in DOUYIN_HOSTS:
+            identity = douyin_id(url)
+            if not identity:
+                with ydl.urlopen(url) as response:
+                    url = response.url
+                identity = douyin_id(url)
+            if not identity:
+                raise ValueError('请打开具体视频后重新解析，不支持主页或直播链接')
+            info = douyin_data(json.loads(str(page_data)), identity)
+            if not info:
+                with ydl.urlopen(f'https://www.douyin.com/video/{identity}') as response:
+                    html = _read_bounded(response, 4 * 1024 * 1024)
+                info = douyin_html(html.decode('utf-8', errors='replace'), identity)
+            if not info:
+                raise ValueError('网页尚未返回本视频的可保存资源，请在内置浏览器完成登录或验证并播放，再重新解析')
+        else:
+            info = ydl.extract_info(str(url), download=False)
+        # Custom web adapters skip YoutubeDL's normal result processing. Carry
+        # its default request context into the returned media tracks as well.
+        for fmt in info.get('formats', []):
+            fmt['http_headers'] = {**ydl.params['http_headers'], **info.get('http_headers', {}), **fmt.get('http_headers', {})}
+        if not pgc_target(url) and any(not fmt.get('_vidown_mirrors') for fmt in info.get('formats', [])):
             _add_mirrors(info, ydl, str(url))
         if info.get('_type') in ('playlist', 'multi_video'):
             extractor = (info.get('extractor_key') or info.get('extractor') or '').lower()
@@ -222,9 +263,7 @@ def _add_mirrors(info, ydl, page_url):
         return
     try:
         with ydl.urlopen(page_url) as response:
-            data = response.read(4 * 1024 * 1024 + 1)
-        if len(data) > 4 * 1024 * 1024:
-            return
+            data = _read_bounded(response, 4 * 1024 * 1024)
         match = re.search(r'window\.__playinfo__\s*=\s*(\{.+?\})\s*;?\s*</script>', data.decode('utf-8'), re.S)
         if not match:
             return
@@ -255,6 +294,9 @@ def _add_mirrors(info, ydl, page_url):
 
 
 def _asset(info):
+    if info.get('_vidown_episodes'):
+        return {'title':info['title'], 'tracks':[], 'episodes':info['_vidown_episodes'],
+                'warnings':info.get('_vidown_warnings', [])}
     if info.get('is_live') or info.get('live_status') in ('is_live', 'is_upcoming'):
         raise ValueError('首版只保存点播媒体，不进行直播录制')
     tracks = []
@@ -290,4 +332,5 @@ def _asset(info):
             'headers':fmt.get('http_headers') or info.get('http_headers') or {}})
     if not tracks:
         raise ValueError('源未返回可保存的媒体轨道，可能需要登录、权限或提取器更新')
-    return {'title':info.get('title') or '媒体', 'duration':info.get('duration'), 'tracks':tracks}
+    return {'title':info.get('title') or '媒体', 'duration':info.get('duration'), 'tracks':tracks,
+            'pageUrl':info.get('webpage_url'), 'warnings':info.get('_vidown_warnings', [])}

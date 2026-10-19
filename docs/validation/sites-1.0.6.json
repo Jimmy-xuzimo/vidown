@@ -1,0 +1,115 @@
+{
+  "date": "2026-10-19T04:09:10.597Z",
+  "scope": "public sources; isolated profile; no premium account; bounded media reads",
+  "checks": [
+    {
+      "site": "Bilibili film",
+      "check": "season voice selection UI",
+      "passed": true
+    },
+    {
+      "site": "Bilibili film",
+      "check": "single episode formats",
+      "passed": true,
+      "options": ["仅下载音频", "源视频 · unknown"],
+      "warnings": [
+        "当前账号仅获得试看内容，保存的不会是全片。请确认本集的会员或购买权限后重新解析。"
+      ]
+    },
+    {
+      "site": "Bilibili film",
+      "check": "actual source partial bytes",
+      "passed": true,
+      "attempts": 1,
+      "status": 206,
+      "bytes": 16384,
+      "type": "video/mp4",
+      "preview": true
+    },
+    {
+      "site": "Bilibili film queue",
+      "check": "public extraction",
+      "passed": true,
+      "formats": 1,
+      "kinds": ["muxed"],
+      "warnings": [
+        "当前账号仅获得试看内容，保存的不会是全片。请确认本集的会员或购买权限后重新解析。"
+      ]
+    },
+    {
+      "site": "Bilibili film queue",
+      "check": "actual queue transfer (bounded, then cancel)",
+      "passed": true,
+      "bytes": 515813,
+      "state": "downloading"
+    },
+    {
+      "site": "Bilibili投稿",
+      "check": "public extraction",
+      "passed": true,
+      "formats": 15,
+      "kinds": ["video", "audio"],
+      "warnings": []
+    },
+    {
+      "site": "Bilibili投稿",
+      "check": "actual queue transfer (bounded, then cancel)",
+      "passed": true,
+      "bytes": 179239,
+      "state": "downloading"
+    },
+    {
+      "site": "Douyin",
+      "check": "public extraction",
+      "passed": true,
+      "formats": 22,
+      "kinds": ["muxed"],
+      "warnings": [
+        "仅显示当前网页实际返回的源规格；未知编码和音频参数将在保存后验证。"
+      ]
+    },
+    {
+      "site": "Douyin",
+      "check": "actual queue transfer (bounded, then cancel)",
+      "passed": true,
+      "bytes": 47740,
+      "state": "downloading"
+    },
+    {
+      "site": "X",
+      "check": "public extraction",
+      "passed": true,
+      "formats": 11,
+      "kinds": ["muxed", "video", "audio"],
+      "warnings": []
+    },
+    {
+      "site": "X",
+      "check": "actual queue transfer (bounded, then cancel)",
+      "passed": true,
+      "bytes": 9508414,
+      "state": "downloading"
+    },
+    {
+      "site": "YouTube",
+      "check": "public extraction",
+      "passed": true,
+      "formats": 24,
+      "kinds": ["video", "audio"],
+      "warnings": []
+    },
+    {
+      "site": "YouTube",
+      "check": "actual queue transfer (bounded, then cancel)",
+      "passed": true,
+      "bytes": 369996,
+      "state": "downloading"
+    },
+    {
+      "site": "Vimeo",
+      "check": "public extraction",
+      "passed": false,
+      "reason": "Error: page.evaluate: Error: Error invoking remote method 'vidown:probe': Error: ERROR: [vimeo] 76979871: The web client only works when logged-in. Use --cookies, --cookies-from-browser, --username and --password, --netrc-cmd, or --netrc (vimeo) to provide account credentials. See  [URL]  for how to manually pass cookies\n"
+    }
+  ]
+}

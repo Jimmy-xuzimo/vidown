@@ -32,6 +32,7 @@ export interface MediaAsset {
   tracks: Track[];
   warnings: string[];
   duration?: number;
+  episodes?: { title: string; url: string }[];
 }
 export interface SourceCandidate {
   id: string;

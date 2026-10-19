@@ -25,6 +25,7 @@ import { Store } from "../core/store";
 import { TransportBridge, limitedBody } from "../core/bridge";
 import { chooseTracks, publicAsset } from "../core/formats";
 import { isBilibiliPage, addBilibiliMirrors } from "../core/bilibili";
+import { pgcTarget, probePgc } from "../core/bilibili-pgc";
 import {
   httpUrl,
   classifyError,
@@ -229,13 +230,41 @@ async function probeInput(input: {
     : undefined;
   if (input.candidateId && !candidate)
     throw new Error("资源已失效，请重新播放以探测");
-  const url = httpUrl(
+  let url = httpUrl(
     candidate?.url ??
       (input.url
         ? completeAddress(input.url)
         : (browser.currentUrl(input.tabId) ?? "")),
   );
   await browser.synchronize();
+  if (!candidate && new URL(url).hostname === "b23.tv") {
+    const response = await browser.session.fetch(url, {
+      credentials: "include",
+      signal: AbortSignal.timeout(25000),
+    });
+    url = httpUrl(response.url);
+    await response.body?.cancel();
+  }
+  if (!candidate && pgcTarget(url)) {
+    const context = { id: randomUUID(), profile: "browser" };
+    const asset = await probePgc(url, context, async (endpoint) => {
+      const response = await browser.session.fetch(endpoint, {
+        credentials: "include",
+        headers: browser.headersFor(endpoint, "https://www.bilibili.com/"),
+        signal: AbortSignal.timeout(25000),
+      });
+      if (!response.ok)
+        throw new Error(
+          `影片请求返回 HTTP ${response.status}，请在浏览器确认登录和访问权限`,
+        );
+      return JSON.parse(
+        (await limitedBody(response, 8 * 1024 * 1024)).toString("utf8"),
+      );
+    });
+    assets.set(asset.id, asset);
+    if (assets.size > 100) assets.delete(assets.keys().next().value!);
+    return publicAsset(asset);
+  }
   if (!candidate && isDouyinPage(url)) {
     const asset = await browser.probeDouyin(url, input.tabId);
     await browser.synchronize();

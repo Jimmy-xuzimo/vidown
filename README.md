@@ -4,13 +4,15 @@
 
 一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-**桌面版 1.0.5 · Android 0.1.0-preview.5。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
+**桌面版 1.0.6 · Android 0.1.0-preview.6。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [桌面指南](docs/USER_GUIDE.md) · [Android 指南](docs/ANDROID.md) · [更新历史](docs/CHANGELOG.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
-**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.5 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
+**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.6 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
 
 ![Vidown 下载工作台](docs/images/workbench.png)
+
+本轮新增两端影片／剧集的单集与版本选择，以及 Android 抖音网页探测、常驻导航和滑动切页。公开样本、受控测试与真实会员账号分别记录；试看、地区或 DRM 限制不会被宣称已解决。见[更新历史](docs/CHANGELOG.md)。
 
 ## 桌面版能做什么
 
@@ -29,14 +31,15 @@
 
 通用协议和桌面功能使用可重复的本地真实媒体服务验证，详见[本轮回归](docs/VALIDATION.md)。历史版本还验证过以下真实样本；这些结果仅对应所列样本及当时版本，不能自动扩展为所有内容或新浏览器后端的完整账号验收。
 
-| 范围                 | 已有证据                                                                                                                                                                | 仍需验证                                               |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 通用 HLS／DASH／直链 | 分轨、加密样本、暂停与源变化校验、合并及成品检查                                                                                                                        | 更多清单变体、不同站点的风控与授权限制                 |
-| 抖音网页             | 1.0.5 在 Windows 的 WebView2／Chromium 中验证精选页 `modal_id` 和视频长链；用户长视频 4K HEVC＋AAC 片段、另一短视频完整成品通过检查，详见[本轮记录](docs/VALIDATION.md) | 分享短链、真实登录／私密内容及 macOS／Linux 实机       |
-| B 站                 | 4K Dolby Vision Profile 8＋Atmos、8K SDR、独立 4K HDR10、48 kHz／24-bit FLAC，以及备用 CDN，历史完整码流哈希检查通过                                                    | 新浏览器后端真实会员账号、其他规格组合、番剧和试看边界 |
-| X                    | 公开短视频完整下载及码流哈希检查，长视频短分片验证                                                                                                                      | 登录内容和单帖多视频                                   |
-| Telegram 网页        | Web A／K 受控 DOM、原生 blob／文件保存与权限处理                                                                                                                        | 真实账号、私有消息与页面变化                           |
-| YouTube 及其他站点   | 使用固定版本 yt-dlp 提取器和浏览器发现链路                                                                                                                              | 当前版本的真实账号和逐站点最高规格验收                 |
+| 范围                 | 已有证据                                                                                                                                                                | 仍需验证                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| 通用 HLS／DASH／直链 | 分轨、加密样本、暂停与源变化校验、合并及成品检查                                                                                                                        | 更多清单变体、不同站点的风控与授权限制                         |
+| 抖音网页             | 1.0.5 在 Windows 的 WebView2／Chromium 中验证精选页 `modal_id` 和视频长链；用户长视频 4K HEVC＋AAC 片段、另一短视频完整成品通过检查，详见[本轮记录](docs/VALIDATION.md) | 分享短链、真实登录／私密内容及 macOS／Linux 实机               |
+| B 站                 | 4K Dolby Vision Profile 8＋Atmos、8K SDR、独立 4K HDR10、48 kHz／24-bit FLAC，以及备用 CDN，历史完整码流哈希检查通过                                                    | 新浏览器后端真实会员账号、其他规格组合、会员完整全片与更多影片 |
+| B 站影片／剧集       | 1.0.6 新增影片、单集、配音版本选择；公开影片试看解析和实际媒体读取通过，详见[逐站点范围](docs/SITE_SUPPORT.md)                                                          | 真实会员完整全片、地区与付费样本                               |
+| X                    | 公开短视频完整下载及码流哈希检查，长视频短分片验证                                                                                                                      | 登录内容和单帖多视频                                           |
+| Telegram 网页        | Web A／K 受控 DOM、原生 blob／文件保存与权限处理                                                                                                                        | 真实账号、私有消息与页面变化                                   |
+| YouTube 及其他站点   | 使用固定版本 yt-dlp 提取器和浏览器发现链路                                                                                                                              | 当前版本的真实账号和逐站点最高规格验收                         |
 
 页面能播放不保证可以下载。账号权限、源提供的规格、地域、试看、DRM 和网站风控会影响结果。没有直播录制、合集或频道批量抓取，不提供 DRM 或账号权限绕过。
 
@@ -67,7 +70,7 @@
 | Linux x64／ARM64               | 各自的 AppImage（Ubuntu 24.04 构建）            |
 | Android 14+ ARM64／x86_64      | 独立 Android Release 中的单一通用 APK（预览版） |
 
-桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.5)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
+桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.6)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 

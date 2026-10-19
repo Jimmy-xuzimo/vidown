@@ -1,8 +1,8 @@
 {
-  "version": "0.1.0-preview.5",
+  "version": "0.1.0-preview.6",
   "date": "2026-10-19",
-  "runtimeCommit": "dac9650d273303ea0775f3eae6db0c7e570902ed",
   "appId": "top.xuzimo.vidown",
+  "runtimeReference": "android-v0.1.0-preview.6 tag and corresponding source materials",
   "minSdk": 34,
   "compileSdk": "37.2",
   "targetSdk": 37,
@@ -10,14 +10,14 @@
   "executedAbis": ["x86_64"],
   "artifacts": [
     {
-      "file": "Vidown-Android-0.1.0-preview.5.apk",
-      "bytes": 452706677,
-      "sha256": "a57a3dfacdb5b6174f4acb77bc1e9363a24810767a514cf7a19616c7196fda6f"
+      "file": "Vidown-Android-0.1.0-preview.6.apk",
+      "bytes": 452740245,
+      "sha256": "2f91c64a322ace4e52dea6ed3ac32d9e074b3e035b8b2a9c8ace19ebcbcd7b26"
     },
     {
-      "file": "Vidown-Android-0.1.0-preview.5.aab",
-      "bytes": 210785806,
-      "sha256": "38b4fb63af9d7acbea170c2a1dbf905fa8e1c699016ce8de5e4b20abccad973c"
+      "file": "Vidown-Android-0.1.0-preview.6.aab",
+      "bytes": 210851782,
+      "sha256": "bc9c9d64c28636d71efa9d3db53328eeec4d9a1176b705fef1e6f0cb41780132"
     }
   ],
   "lint": {
@@ -34,39 +34,22 @@
   },
   "jvmTests": 4,
   "controlledDeviceReports": [
-    "preview.5/phone34.json",
-    "preview.5/tablet37-16k.json"
+    "preview.6/phone34.json",
+    "preview.6/tablet37-16k.json"
   ],
-  "startupIsolationTests": "1 separate check passed per full device suite",
-  "regressionReport": "preview.5/referer-regression.json",
-  "publicReport": "preview.5/public-six-links.json",
-  "nativeReport": "preview.5/native-alignment.json",
-  "websiteReport": "preview.5/website-local.json",
-  "apkSignature": "apksigner verify exit 0; v2; same local distribution signer",
-  "apkMapping": "zipalign -c -P 16 4 exit 0",
-  "bundletoolValidation": "1.18.3 validate exit 0",
-  "previousVersionEvidence": "preview.4/index.json",
+  "startupIsolationTests": "1 separate cold check per full local suite",
+  "finalAdapterRegression": "preview.6/site-adapter-regression.json",
+  "releaseReports": ["preview.6/release34.json", "preview.6/release37.json"],
+  "publicReport": "preview.6/public-sites.json",
+  "nativeReport": "preview.6/native-alignment.json",
+  "attemptHistory": "preview.6/attempts.json",
+  "websiteReport": "preview.6/website-local.json",
+  "apkSignature": "apksigner verify: v2, same distribution signer as preview.5",
+  "signerSha256": "6fcb38e62184552ea074963cb454f3e94d105b710dfccc4616b754fdeb82b365",
+  "apkMapping": "zipalign -c -P 16 4 passed",
+  "bundletoolValidation": "1.18.3 validate passed",
+  "previousVersionEvidence": "preview.5/index.json",
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
-  "note": "Premium accounts and affected tablet require user verification. No credentials or signed source URLs in reports.",
-  "releaseReports": [
-    "preview.5/release34-public.json",
-    "preview.5/release37.json"
-  ],
-  "publicSampleOutcome": {
-    "sixLinkFormsParsedAndMediaRead": true,
-    "completeReleaseDownloadVerified": true,
-    "durationSeconds": 218.559667,
-    "width": 1920,
-    "height": 1080,
-    "videoCodec": "hevc",
-    "audioCodec": "aac",
-    "authenticatedAndroidAccount": false
-  },
-  "signerMatchesPreview4": true,
-  "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39191954514",
-  "ciStatusAtPackaging": "in progress; local signed-package and emulator checks passed",
-  "ciPassed": true,
-  "ciReport": "preview.5/github-ci.json",
-  "websiteDeployedReport": "preview.5/website-deployed.json"
+  "ciStatusAtPackaging": "Local final regressions passed; GitHub matrix pending push; full-suite sequence recorded in attempts.json."
 }

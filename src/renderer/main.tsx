@@ -352,81 +352,102 @@ function App() {
                       {w}
                     </div>
                   ))}
-                  <div className="format-fields">
-                    <label>
-                      视频轨道
-                      <select
-                        aria-label="视频轨道"
-                        value={video}
-                        onChange={(e) => {
-                          setVideo(e.target.value);
-                          if (
-                            asset.tracks.find((t) => t.id === e.target.value)
-                              ?.kind === "muxed"
-                          )
-                            setAudio("");
-                        }}
-                      >
-                        <option value="">仅下载音频</option>
-                        {asset.tracks
-                          .filter((t) => t.kind !== "audio")
-                          .map((t) => (
-                            <option key={t.id} value={t.id}>
-                              {trackLabel(t)}
+                  {asset.episodes && (
+                    <div className="format-fields" aria-label="选择单集或版本">
+                      {asset.episodes.map((episode) => (
+                        <button
+                          key={episode.url}
+                          className="secondary"
+                          disabled={busy}
+                          onClick={() => void probe({ url: episode.url })}
+                        >
+                          {episode.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {!asset.episodes && (
+                    <>
+                      <div className="format-fields">
+                        <label>
+                          视频轨道
+                          <select
+                            aria-label="视频轨道"
+                            value={video}
+                            onChange={(e) => {
+                              setVideo(e.target.value);
+                              if (
+                                asset.tracks.find(
+                                  (t) => t.id === e.target.value,
+                                )?.kind === "muxed"
+                              )
+                                setAudio("");
+                            }}
+                          >
+                            <option value="">仅下载音频</option>
+                            {asset.tracks
+                              .filter((t) => t.kind !== "audio")
+                              .map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {trackLabel(t)}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                        <label>
+                          音频轨道
+                          <select
+                            aria-label="音频轨道"
+                            value={audio}
+                            disabled={selectedVideo?.kind === "muxed"}
+                            onChange={(e) => setAudio(e.target.value)}
+                          >
+                            <option value="">
+                              {selectedVideo?.kind === "muxed"
+                                ? "视频已包含音频"
+                                : "请选择音频 / 无音频"}
                             </option>
-                          ))}
-                      </select>
-                    </label>
-                    <label>
-                      音频轨道
-                      <select
-                        aria-label="音频轨道"
-                        value={audio}
-                        disabled={selectedVideo?.kind === "muxed"}
-                        onChange={(e) => setAudio(e.target.value)}
-                      >
-                        <option value="">
-                          {selectedVideo?.kind === "muxed"
-                            ? "视频已包含音频"
-                            : "请选择音频 / 无音频"}
-                        </option>
-                        {asset.tracks
-                          .filter((t) => t.kind === "audio")
-                          .map((t) => (
-                            <option key={t.id} value={t.id}>
-                              {trackLabel(t)}
+                            {asset.tracks
+                              .filter((t) => t.kind === "audio")
+                              .map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {trackLabel(t)}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                      </div>
+                      <div className="format-footer">
+                        <label className="inline-label">
+                          输出策略
+                          <select
+                            aria-label="输出策略"
+                            value={output}
+                            onChange={(e) => setOutput(e.target.value as any)}
+                          >
+                            <option value="source">
+                              保留源规格 · MP4 / MKV
                             </option>
-                          ))}
-                      </select>
-                    </label>
-                  </div>
-                  <div className="format-footer">
-                    <label className="inline-label">
-                      输出策略
-                      <select
-                        aria-label="输出策略"
-                        value={output}
-                        onChange={(e) => setOutput(e.target.value as any)}
-                      >
-                        <option value="source">保留源规格 · MP4 / MKV</option>
-                        <option value="compatible">
-                          兼容导出 · H.264 / AAC
-                        </option>
-                      </select>
-                    </label>
-                    <button
-                      className="primary"
-                      onClick={() => void addTask()}
-                      disabled={!video && !audio}
-                    >
-                      <Icon name="download" size={17} />
-                      加入下载队列
-                    </button>
-                  </div>
-                  {output === "compatible" && (
-                    <p className="inline-warning">
-                      兼容导出可能降低画质或音质。HDR／杜比视界的色彩转换尚未开放，请选择保留源规格。
-                    </p>
+                            <option value="compatible">
+                              兼容导出 · H.264 / AAC
+                            </option>
+                          </select>
+                        </label>
+                        <button
+                          className="primary"
+                          onClick={() => void addTask()}
+                          disabled={!video && !audio}
+                        >
+                          <Icon name="download" size={17} />
+                          加入下载队列
+                        </button>
+                      </div>
+                      {output === "compatible" && (
+                        <p className="inline-warning">
+                          兼容导出可能降低画质或音质。HDR／杜比视界的色彩转换尚未开放，请选择保留源规格。
+                        </p>
+                      )}
+                    </>
                   )}
                 </section>
               )}

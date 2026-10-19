@@ -59,6 +59,14 @@ def main():
         raise RuntimeError('Release UI did not reach its expected state')
     def text(value):return wait(lambda nodes:next((n for n in reversed(nodes) if n.get('text')==value and n.get('enabled')=='true'),None))
     def edit(url):
+        # The pager preserves the workbench scroll position. Return to the link
+        # card before selecting an EditText: format dropdowns use that class too.
+        for _ in range(8):
+            nodes=tree()
+            if any(n.get('text')=='添加媒体链接' for n in nodes):break
+            bounds=list(map(int,re.findall(r'\d+',nodes[0].get('bounds'))))
+            adb('shell','input','swipe',str(bounds[2]//2),str(bounds[3]//3),str(bounds[2]//2),str(bounds[3]*3//4),'300')
+        else:raise RuntimeError('Link card is not reachable by scrolling')
         node=wait(lambda nodes:next((n for n in nodes if n.get('class')=='android.widget.EditText' and n.get('enabled')=='true'),None))
         tap(node)
         # IMEs/Compose may consume Ctrl+A differently. Clear both sides of the

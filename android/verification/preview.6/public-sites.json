@@ -1,0 +1,163 @@
+[
+  {
+    "site": "Bilibili film versions",
+    "formats": 0,
+    "versions": 2,
+    "warnings": [
+      "请选择一个单集或配音版本，再选择保存规格。不会批量下载整季。"
+    ],
+    "passed": true
+  },
+  {
+    "site": "Bilibili film episode",
+    "formats": 1,
+    "versions": 0,
+    "warnings": [
+      "当前账号仅获得试看内容，保存的不会是全片。请确认本集的会员或购买权限后重新解析。"
+    ],
+    "media": [
+      {
+        "kind": "MUXED",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 2
+      }
+    ],
+    "sources": [
+      {
+        "kind": "MUXED",
+        "fallbacks": 2,
+        "hasUserAgent": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "site": "Bilibili投稿",
+    "formats": 15,
+    "versions": 0,
+    "warnings": [],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 2
+      },
+      {
+        "kind": "AUDIO",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 2
+      }
+    ],
+    "sources": [
+      {
+        "kind": "VIDEO",
+        "fallbacks": 2,
+        "hasUserAgent": true
+      },
+      {
+        "kind": "AUDIO",
+        "fallbacks": 2,
+        "hasUserAgent": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "site": "Douyin",
+    "formats": 22,
+    "versions": 0,
+    "warnings": [
+      "仅显示当前网页实际返回的源规格；未知编码和音频参数将在保存后验证。"
+    ],
+    "media": [
+      {
+        "kind": "MUXED",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 2
+      }
+    ],
+    "sources": [
+      {
+        "kind": "MUXED",
+        "fallbacks": 2,
+        "hasUserAgent": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "site": "X",
+    "formats": 11,
+    "versions": 0,
+    "warnings": [],
+    "media": [
+      {
+        "kind": "MUXED",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 0
+      },
+      {
+        "kind": "AUDIO",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 0
+      }
+    ],
+    "sources": [
+      {
+        "kind": "MUXED",
+        "fallbacks": 0,
+        "hasUserAgent": true
+      },
+      {
+        "kind": "AUDIO",
+        "fallbacks": 0,
+        "hasUserAgent": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "site": "YouTube",
+    "formats": 24,
+    "versions": 0,
+    "warnings": [],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "status": 206,
+        "bytes": 3707,
+        "fallbacks": 0
+      },
+      {
+        "kind": "AUDIO",
+        "status": 206,
+        "bytes": 16384,
+        "fallbacks": 0
+      }
+    ],
+    "sources": [
+      {
+        "kind": "VIDEO",
+        "fallbacks": 0,
+        "hasUserAgent": true
+      },
+      {
+        "kind": "AUDIO",
+        "fallbacks": 0,
+        "hasUserAgent": true
+      }
+    ],
+    "passed": true
+  },
+  {
+    "site": "Vimeo",
+    "passed": false,
+    "error": "com.chaquo.python.PyException: DownloadError: ERROR: [vimeo] 76979871: The web client only works when logged-in. Use --cookies, --cookies-from-browser, --username and --password, --netrc-cmd, or --netrc (vimeo) to provide account credentials. See  [链接已隐藏]  for how to manually pass cookies"
+  }
+]

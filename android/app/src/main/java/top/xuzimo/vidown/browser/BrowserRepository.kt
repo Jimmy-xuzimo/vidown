@@ -29,6 +29,7 @@ class BrowserRepository(
     private val webIds = mutableMapOf<Int, String>()
     private val pendingCaptures = ArrayDeque<JSONObject>()
     private val captures = ConcurrentHashMap<String, CapturedResource>()
+    private val siteData = mutableMapOf<String, List<String>>()
     private val _tabs = MutableStateFlow<List<BrowserTab>>(emptyList())
     val tabs = _tabs.asStateFlow()
     val activeTab = MutableStateFlow<String?>(null)
@@ -244,11 +245,19 @@ class BrowserRepository(
         if (message.toString().length > 1_100_000) return
         if (
             message.optString("kind") in
-                setOf("capture", "cookies", "cookieSnapshot", "cookiesRestored") &&
+                setOf("capture", "siteData", "cookies", "cookieSnapshot", "cookiesRestored") &&
                 (clearing || message.optString("epoch") != generation.toString())
         )
             return
         when (message.optString("kind")) {
+            "siteData" -> {
+                val tabId = webIds[message.optInt("webTabId", -1)] ?: return
+                val tab = _tabs.value.find { it.id == tabId } ?: return
+                if (!isDouyinPage(tab.url) || !isDouyinPage(message.optString("url"))) return
+                val data = message.optString("data")
+                if (data.length !in 2..1_048_576) return
+                siteData[tabId] = (siteData[tabId].orEmpty() + data).takeLast(6)
+            }
             "identify" ->
                 sessions.entries
                     .find { it.value === session }
@@ -458,6 +467,7 @@ class BrowserRepository(
             s.progressDelegate =
                 object : GeckoSession.ProgressDelegate {
                     override fun onPageStart(session: GeckoSession, url: String) {
+                        siteData.remove(id)
                         update(id) { it.copy(loading = true) }
                     }
 
@@ -496,6 +506,7 @@ class BrowserRepository(
     }
 
     fun close(id: String) {
+        siteData.remove(id)
         sessions.remove(id)?.close()
         webIds.entries.removeAll { it.value == id }
         _tabs.value = _tabs.value.filterNot { it.id == id }
@@ -523,6 +534,25 @@ class BrowserRepository(
     fun leaveFullScreen() {
         sessions[activeTab.value]?.exitFullScreen()
     }
+
+    /** Wait for public hydration/API responses from the exact requested webpage. */
+    suspend fun douyinPageData(url: String): String =
+        withContext(Dispatchers.Main.immediate) {
+            val identity = douyinVideoId(url) ?: return@withContext "[]"
+            val at = ref
+            val tab =
+                _tabs.value.firstOrNull { douyinVideoId(it.url) == identity }?.id
+                    ?: newTab("https://www.douyin.com/video/$identity")
+            repeat(60) {
+                ensureCurrent(at)
+                if (_tabs.value.none { t -> t.id == tab }) return@withContext "[]"
+                val values = siteData[tab].orEmpty()
+                if (values.any { it.contains("\"$identity\"") })
+                    return@withContext "[${values.joinToString(",")}]"
+                delay(300)
+            }
+            "[]"
+        }
 
     suspend fun cookies(): String =
         withContext(Dispatchers.Main.immediate) {
@@ -559,6 +589,7 @@ class BrowserRepository(
             cookieRequests.clear()
             sessions.keys.toList().forEach(::close)
             captures.clear()
+            siteData.clear()
             pendingCaptures.clear()
             _candidates.value = emptyList()
             webIds.clear()

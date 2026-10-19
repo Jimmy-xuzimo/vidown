@@ -45,7 +45,7 @@ try {
   const page = await app.firstWindow();
   await page.getByRole("heading", { name: "把精彩，完整保存。" }).waitFor();
   version = (await page.evaluate(() => window.vidown.snapshot())).version;
-  assert.equal(version, "1.0.5", "Acceptance must run the fixed app version");
+  assert.equal(version, "1.0.6", "Acceptance must run the fixed app version");
   await page.evaluate(
     (directory) =>
       window.vidown.settings({ downloadDir: directory, clipboard: false }),

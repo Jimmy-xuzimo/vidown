@@ -62,9 +62,31 @@ internal fun decodeExtractedResult(
         val asset =
             MediaAsset(
                 title = json.getString("title"),
-                pageUrl = url,
+                pageUrl = json.optString("pageUrl").takeIf { it.startsWith("https://") } ?: url,
                 tracks = tracks.map { it.track },
                 duration = if (json.isNull("duration")) null else json.optDouble("duration"),
+                warnings =
+                    json
+                        .optJSONArray("warnings")
+                        ?.let { values ->
+                            (0 until minOf(values.length(), 20)).map {
+                                values.getString(it).take(1000)
+                            }
+                        }
+                        .orEmpty(),
+                episodes =
+                    json
+                        .optJSONArray("episodes")
+                        ?.let { values ->
+                            (0 until minOf(values.length(), 1000)).map { index ->
+                                val entry = values.getJSONObject(index)
+                                EpisodeOption(
+                                    entry.getString("title").take(500),
+                                    normalizeUrl(entry.getString("url")),
+                                )
+                            }
+                        }
+                        .orEmpty(),
             )
         PrivateAsset(asset, tracks, ref)
     }

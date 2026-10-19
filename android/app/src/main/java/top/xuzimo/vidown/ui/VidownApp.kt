@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -20,10 +22,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.drop
 import top.xuzimo.vidown.MainViewModel
 import top.xuzimo.vidown.core.*
 
@@ -33,12 +37,21 @@ fun VidownApp(vm: MainViewModel, permission: () -> Unit) {
     val settings by vm.settings.collectAsStateWithLifecycle()
     VidownTheme(settings) {
         val page by vm.page.collectAsStateWithLifecycle()
-        val fullscreen by vm.graph.browser.fullScreen.collectAsStateWithLifecycle()
         val tasks by vm.tasks.collectAsStateWithLifecycle()
-        val hideChrome = page == 1 && fullscreen
         val landscape =
             LocalConfiguration.current.orientation ==
                 android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        val pager = rememberPagerState(initialPage = page) { 5 }
+        val spatial = spatialMotion<Float>()
+        LaunchedEffect(page) {
+            if (pager.settledPage != page) {
+                if (settings.animations) pager.animateScrollToPage(page, animationSpec = spatial)
+                else pager.scrollToPage(page)
+            }
+        }
+        LaunchedEffect(pager) {
+            snapshotFlow { pager.settledPage }.drop(1).collect { vm.page.value = it }
+        }
         val message by vm.message.collectAsStateWithLifecycle()
         val snack = remember { SnackbarHostState() }
         LaunchedEffect(message) {
@@ -52,72 +65,78 @@ fun VidownApp(vm: MainViewModel, permission: () -> Unit) {
             listOf("链接、画质与每一份珍藏", "访问、登录与发现媒体", "正在保存的精彩", "保存在本机的下载记录", "让 Vidown 更合你的习惯")
         val activeCount = tasks.count { TaskTransitions.active(TaskState.valueOf(it.state)) }
         Row(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
-            if (landscape && !hideChrome)
+            if (landscape)
                 FloatingNavigation(page, activeCount, { vm.page.value = it }, vertical = true)
             Scaffold(
                 modifier = Modifier.weight(1f),
                 containerColor = MaterialTheme.colorScheme.background,
-                contentWindowInsets = if (hideChrome) WindowInsets(0) else WindowInsets.safeDrawing,
+                contentWindowInsets = WindowInsets.safeDrawing,
                 snackbarHost = { SnackbarHost(snack) },
-                topBar = {
-                    if (page != 1)
-                        TopAppBar(
-                            title = {
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        titles[page],
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.SemiBold,
-                                    )
-                                    Text(
-                                        subtitles[page],
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
-                                }
-                            },
-                            navigationIcon = {
-                                Box(Modifier.padding(start = 16.dp, end = 12.dp)) {
-                                    BrandMark(40.dp)
-                                }
-                            },
-                            actions = {
-                                Text(
-                                    "Vidown",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(end = 20.dp),
-                                )
-                            },
-                            colors =
-                                TopAppBarDefaults.topAppBarColors(
-                                    containerColor = MaterialTheme.colorScheme.background
-                                ),
-                        )
-                },
                 bottomBar = {
-                    if (!landscape && !hideChrome)
-                        FloatingNavigation(page, activeCount, { vm.page.value = it })
+                    if (!landscape) FloatingNavigation(page, activeCount, { vm.page.value = it })
                 },
             ) { padding ->
-                val effects = effectsMotion<Float>()
-                val spatial = spatialMotion<androidx.compose.ui.unit.IntOffset>()
-                AnimatedContent(
-                    targetState = page,
-                    modifier = Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding),
-                    transitionSpec = {
-                        ((fadeIn(effects) + slideInVertically(spatial) { it / 24 }) togetherWith
-                                fadeOut(effects))
-                            .using(null)
-                    },
-                    label = "导航页面",
+                HorizontalPager(
+                    state = pager,
+                    key = { it },
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .padding(padding)
+                            .consumeWindowInsets(padding)
+                            .testTag("main-pager"),
                 ) { current ->
-                    when (current) {
-                        0 -> Workbench(vm, permission)
-                        1 -> BrowserScreen(vm)
-                        2 -> TasksScreen(vm, false)
-                        3 -> TasksScreen(vm, true)
-                        else -> SettingsScreen(vm)
+                    // Each page owns its app bar; swiping never changes the viewport mid-gesture.
+                    Column(
+                        Modifier.fillMaxSize()
+                            .then(
+                                if (current != pager.currentPage) Modifier.clearAndSetSemantics {}
+                                else Modifier
+                            )
+                    ) {
+                        if (current != 1)
+                            TopAppBar(
+                                title = {
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            titles[current],
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontWeight = FontWeight.SemiBold,
+                                        )
+                                        Text(
+                                            subtitles[current],
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        )
+                                    }
+                                },
+                                navigationIcon = {
+                                    Box(Modifier.padding(start = 16.dp, end = 12.dp)) {
+                                        BrandMark(40.dp)
+                                    }
+                                },
+                                actions = {
+                                    Text(
+                                        "Vidown",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.padding(end = 20.dp),
+                                    )
+                                },
+                                windowInsets = WindowInsets(0),
+                                colors =
+                                    TopAppBarDefaults.topAppBarColors(
+                                        containerColor = MaterialTheme.colorScheme.background
+                                    ),
+                            )
+                        Box(Modifier.weight(1f).fillMaxWidth()) {
+                            when (current) {
+                                0 -> Workbench(vm, permission)
+                                1 -> BrowserScreen(vm)
+                                2 -> TasksScreen(vm, false)
+                                3 -> TasksScreen(vm, true)
+                                else -> SettingsScreen(vm)
+                            }
+                        }
                     }
                 }
             }
@@ -280,10 +299,33 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
             if (assets.isNotEmpty())
                 item { SectionHeading("可保存的媒体", "画质与音质以网页实际提供的规格为准", Icons.Rounded.VideoLibrary) }
             items(assets, key = { it.id }) { asset ->
-                AssetCard(asset) { ids, compatible, audio ->
-                    permission()
-                    vm.enqueue(asset, ids, compatible, audio)
-                }
+                if (asset.episodes.isNotEmpty()) {
+                    Card(Modifier.fillMaxWidth()) {
+                        Column(
+                            Modifier.padding(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Text(asset.title, style = MaterialTheme.typography.titleMedium)
+                            Text("选择单集或配音版本", style = MaterialTheme.typography.bodyMedium)
+                            asset.warnings.forEach {
+                                Text(it, style = MaterialTheme.typography.bodySmall)
+                            }
+                            asset.episodes.forEach { episode ->
+                                OutlinedButton(
+                                    onClick = { vm.probe(sourceUrl = episode.url) },
+                                    enabled = !busy,
+                                    modifier = Modifier.fillMaxWidth(),
+                                ) {
+                                    Text(episode.title)
+                                }
+                            }
+                        }
+                    }
+                } else
+                    AssetCard(asset) { ids, compatible, audio ->
+                        permission()
+                        vm.enqueue(asset, ids, compatible, audio)
+                    }
             }
             if (assets.isEmpty())
                 item {

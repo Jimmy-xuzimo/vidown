@@ -2,6 +2,23 @@
 
 按已公开的应用 Release 记录，桌面与 Android 使用独立版本。日期采用北京时间。资料 Release 不是额外应用版本；未单独公开发行的中间预览不列为发行版本。
 
+## Android 0.1.0-preview.6 · 2026-10-19
+
+- 新增抖音视频长链、精选页与正常跳转的分享链接探测，读取当前网页返回的数据，严格匹配目标视频；保留原始地址、规格和备用 CDN。
+- 新增 B 站影片／剧集版本与单集选择，通过同一浏览器会话解析音视频轨道。试看会明确标注，账号权限、地区限制和 DRM 不会被当成普通解析错误。
+- 导航保持常驻，竖屏居中在底部、横屏居中在左侧；使用 Compose 原生横向分页，支持滑动切换、页面状态保存和关闭界面动效。
+- 扩充受控回归及公开站点抽样，公开抽样受网络、登录和源是否开放影响；不代表全部站点或会员内容已验证。
+
+[APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6) · [源码与材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.6)
+
+## 桌面 1.0.6 · 2026-10-19
+
+- 新增 B 站影片页、番剧／剧集单集和移动链接解析；多个配音版本或单集先由用户选择，不批量抓取整季。
+- 使用内置浏览器登录会话请求正常网页播放接口，展示可用的分离视频／音频，保留原始备用 CDN；明确提示试看、权限不足和 DRM。
+- 修正未知分辨率的合轨视频被标成“音频”的规格文案；新增单集、杜比轨道、帧率、试看、权限及 DRM 回归和公开站点抽样。
+
+[安装包](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6) · [源码与材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6-materials)
+
 ## Android 0.1.0-preview.5 · 2026-10-19
 
 - 修复 Gecko 覆盖普通 Referer 请求头的问题，下载请求通过原生来源页面接口保留防盗链所需上下文。
@@ -27,7 +44,7 @@
 - 保留真实参数与备用 CDN；关闭标签、清理数据、缓存过期后不再复用旧规格。
 - 五个平台的原生构建和受控下载通过后统一发布。抖音真实网页测试限于记录中的 Windows 公开样本。
 
-[发行说明与安装包](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5) · [详细说明](RELEASE_NOTES.md)
+[发行说明与安装包](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5) · [详细说明](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5)
 
 ## 桌面 1.0.4 · 2026-10-17
 

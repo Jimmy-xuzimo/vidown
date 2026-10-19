@@ -1,6 +1,6 @@
 # 多平台发行构建
 
-本页前半部分为桌面版 1.0.5；Android 使用独立 Gradle 工程，见下方“Android 原生构建”。两端的安装包、版本标签、签名和验证报告分别管理。
+本页前半部分为桌面版 1.0.6；Android 使用独立 Gradle 工程，见下方“Android 原生构建”。两端的安装包、版本标签、签名和验证报告分别管理。
 
 `Build and publish installers` 工作流在 `v*` 标签推送时执行，也可手动指定版本进行试构建；源分支／标签使用 GitHub 的标准工作流选择器（CLI 为 `gh workflow run --ref`），所有作业只检出此次事件的不可变 `github.sha`，不接受独立的任意提交输入。手动运行默认不发布；打开 publish 时，所有构建、报告及校验通过后才创建缺失标签；已有标签必须指向本轮测试提交，绝不移动旧标签。标签必须等于 `v` 加 `package.json` 的版本。五个原生运行器分别构建，不在 Windows 上伪造 macOS／Linux 包。
 
@@ -33,7 +33,7 @@ macOS 当前设置最低 15.0；Linux 在 Ubuntu 24.04 构建，不承诺兼容�
 
 ## Android 原生构建
 
-工程位于 `android/`，当前版本 0.1.0-preview.5，应用 ID `top.xuzimo.vidown`。最低 API 34，compile SDK 37.2，target API 37；固定 JDK 17、Gradle 9.6.0、AGP 9.4.0、Kotlin 2.4.21、NDK 28.2.13676358 和 CMake 3.31.6。以工程锁定文件和 [Android README](../android/README.md)为准，不通过 npm 或桌面打包工作流生成 APK。
+工程位于 `android/`，当前版本 0.1.0-preview.6，应用 ID `top.xuzimo.vidown`。最低 API 34，compile SDK 37.2，target API 37；固定 JDK 17、Gradle 9.6.0、AGP 9.4.0、Kotlin 2.4.21、NDK 28.2.13676358 和 CMake 3.31.6。以工程锁定文件和 [Android README](../android/README.md)为准，不通过 npm 或桌面打包工作流生成 APK。
 
 在 `android/` 目录执行（Windows 原生库使用 MSYS2 Bash）：
 

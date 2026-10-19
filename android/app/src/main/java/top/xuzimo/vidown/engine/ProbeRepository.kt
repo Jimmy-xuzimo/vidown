@@ -42,7 +42,10 @@ class ProbeRepository(
                     browser.ensureCurrent(ref)
                 }
             }
-            val url = capture?.url ?: normalizeUrl(requireNotNull(rawUrl))
+            var url = capture?.url ?: normalizeUrl(requireNotNull(rawUrl))
+            if (capture == null && isDouyinPage(url) && douyinVideoId(url) == null) {
+                transport.request(ref, url).use { url = it.url }
+            }
             val headers = capture?.headers.orEmpty()
             val protocol =
                 capture?.candidate?.protocol
@@ -66,6 +69,7 @@ class ProbeRepository(
                     val owner = newId()
                     val bridge = PythonTransport(transport, browser, ref, owner)
                     try {
+                        val pageData = if (isDouyinPage(url)) browser.douyinPageData(url) else "[]"
                         if (!Python.isStarted())
                             synchronized(Python::class.java) {
                                 if (!Python.isStarted()) Python.start(AndroidPlatform(context))
@@ -73,7 +77,7 @@ class ProbeRepository(
                         val result =
                             Python.getInstance()
                                 .getModule("vidown_engine")
-                                .callAttr("probe", url, bridge)
+                                .callAttr("probe", url, bridge, pageData)
                                 .toString()
                         decodeExtractedResult(result, url, ref)
                     } finally {
@@ -104,6 +108,7 @@ class ProbeRepository(
             setOf("bilibili.com", "www.bilibili.com", "m.bilibili.com", "b23.tv") &&
             (u.host == "b23.tv" ||
                 u.path.orEmpty().startsWith("/video/") ||
-                u.path.orEmpty().startsWith("/bangumi/play/"))
+                u.path.orEmpty().startsWith("/bangumi/play/") ||
+                u.path.orEmpty().startsWith("/bangumi/media/")) || isDouyinPage(url)
     }
 }

@@ -75,14 +75,16 @@ try {
           await page.locator("#language").click();
         const history = page.locator("#history");
         await history.scrollIntoViewIfNeeded();
-        assert.equal(await history.locator(".release-entry").count(), 6);
+        assert.equal(await history.locator(".release-entry").count(), 8);
         assert.deepEqual(
           await history.locator(".release-version").allTextContents(),
           [
+            "1.0.6",
             "1.0.5",
             "1.0.4",
             "1.0.3",
             "1.0.2",
+            "0.1.0-preview.6",
             "0.1.0-preview.5",
             "0.1.0-preview.4",
           ],
@@ -143,14 +145,14 @@ try {
     .getAttribute("href");
   assert.equal(
     apk,
-    "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.5/Vidown-Android-0.1.0-preview.5.apk",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.6/Vidown-Android-0.1.0-preview.6.apk",
   );
   const noJS = await browser.newPage({
     javaScriptEnabled: false,
     viewport: { width: 390, height: 900 },
   });
   await noJS.goto(url);
-  assert.equal(await noJS.locator("#history .release-entry").count(), 6);
+  assert.equal(await noJS.locator("#history .release-entry").count(), 8);
   await noJS.locator("#history details summary").first().click();
   assert.equal(
     await noJS.locator("#history details[open] .release-body").isVisible(),

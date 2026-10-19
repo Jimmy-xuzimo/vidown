@@ -53,6 +53,24 @@ class NativeDesignIntegrationTest {
         get() = ViewModelProvider(ui.activity)[MainViewModel::class.java]
 
     @Test
+    fun horizontalSwipesKeepNavigationVisibleAndPreserveInput() {
+        ui.onNodeWithTag("media-input").performTextReplacement("https://example.org/kept")
+        ui.onNodeWithTag("main-pager").performTouchInput { swipeLeft() }
+        ui.waitUntil(10000) { vm.page.value == 1 }
+        ui.onNodeWithTag("floating-navigation").assertIsDisplayed()
+        ui.onNodeWithTag("nav-1").assertIsSelected()
+        ui.onNodeWithTag("main-pager").performTouchInput { swipeLeft() }
+        ui.waitUntil(10000) { vm.page.value == 2 }
+        ui.onNodeWithTag("floating-navigation").assertIsDisplayed()
+        ui.onNodeWithTag("main-pager").performTouchInput { swipeRight() }
+        ui.waitUntil(10000) { vm.page.value == 1 }
+        ui.onNodeWithTag("main-pager").performTouchInput { swipeRight() }
+        ui.waitUntil(10000) { vm.page.value == 0 }
+        ui.onNodeWithTag("media-input").assertTextContains("https://example.org/kept")
+        ui.onNodeWithTag("floating-navigation").assertIsDisplayed()
+    }
+
+    @Test
     fun desktopDefaultUsesRealDesktopUserAgentAndViewportAndCanSwitchBack() = runBlocking {
         val browser = vm.graph.browser
         val tab = browser.newTab("http://10.0.2.2:18763/browser-layout?case=${newId()}")

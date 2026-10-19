@@ -29,7 +29,16 @@ function connect() {
   send({kind:"ready"});
 }
 connect();
-browser.runtime.onMessage.addListener((msg, sender) => msg.kind === "identify" ? Promise.resolve(sender.tab.id) : undefined);
+browser.runtime.onMessage.addListener((msg, sender) => {
+  if (msg.kind === "identify") return Promise.resolve(sender.tab.id);
+  if (msg.kind === "siteData" && sender.tab && typeof msg.data === "string" && msg.data.length <= MAX_MANIFEST) {
+    try {
+      const u = new URL(sender.url);
+      if (["www.douyin.com", "douyin.com", "www.iesdouyin.com", "iesdouyin.com"].includes(u.hostname))
+        send({kind:"siteData", epoch, webTabId:sender.tab.id, url:sender.url, data:msg.data});
+    } catch (_) { /* A frame may have navigated away. */ }
+  }
+});
 browser.proxy.onRequest.addListener(() => {
   if (proxy === "system") return undefined;
   if (proxy === "direct") return {type:"direct"};
@@ -51,17 +60,30 @@ browser.webRequest.onHeadersReceived.addListener(d => {
   const mime = (d.responseHeaders || []).find(h => h.name.toLowerCase() === "content-type")?.value || "";
   const isHls = /mpegurl/i.test(mime) || /\.m3u8(?:[?#]|$)/i.test(d.url);
   const isDash = /dash\+xml/i.test(mime) || /\.mpd(?:[?#]|$)/i.test(d.url);
-  if (!isHls && !isDash && !/^(video|audio)\//i.test(mime)) return;
+  let isDetail = false;
+  try {
+    const u = new URL(d.url);
+    isDetail = ["www.douyin.com", "douyin.com"].includes(u.hostname) &&
+      /^\/aweme\/v\d+\/web\/(?:aweme\/(?:detail|post)|tab\/feed|feed)\//.test(u.pathname) && /json/i.test(mime);
+  } catch (_) { /* Non-HTTP requests are ignored. */ }
+  if (!isHls && !isDash && !isDetail && !/^(video|audio)\//i.test(mime)) return;
   const record = {kind:"capture", epoch:ctx.epoch, webTabId:ctx.tabId, url:d.url, pageUrl:ctx.pageUrl, headers:ctx.headers, contentType:mime, protocol:isHls?"HLS":isDash?"DASH":"HTTP"};
-  send(record);
-  if (isHls || isDash) {
+  if (!isDetail) send(record);
+  if (isHls || isDash || isDetail) {
     try {
       const filter = browser.webRequest.filterResponseData(d.requestId);
       let size = 0; const chunks = [];
       filter.ondata = e => { filter.write(e.data); size += e.data.byteLength; if (size <= MAX_MANIFEST) chunks.push(new Uint8Array(e.data)); else chunks.length=0; };
       filter.onstop = () => {
         filter.close();
-        if (size <= MAX_MANIFEST) { const joined=new Uint8Array(size); let offset=0; for(const c of chunks){joined.set(c,offset);offset+=c.length;} send({...record,manifest:new TextDecoder().decode(joined)}); }
+        if (size <= MAX_MANIFEST) {
+          const joined=new Uint8Array(size); let offset=0; for(const c of chunks){joined.set(c,offset);offset+=c.length;}
+          const text = new TextDecoder().decode(joined);
+          if (isDetail) {
+            try { JSON.parse(text); send({kind:"siteData",epoch:ctx.epoch,webTabId:ctx.tabId,url:d.url,data:text}); }
+            catch (_) { /* Invalid JSON cannot become a media resource. */ }
+          } else send({...record,manifest:text});
+        }
       };
       filter.onerror = () => { try {filter.disconnect();} catch (_) {} };
     } catch (_) { /* Discovery still works; the task can fetch the manifest in-session. */ }

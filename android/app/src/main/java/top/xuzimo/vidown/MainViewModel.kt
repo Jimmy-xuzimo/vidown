@@ -39,7 +39,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun probe(candidate: String? = null) = run {
+    fun probe(candidate: String? = null, sourceUrl: String? = null) = run {
         if (busy.value) return@run
         busy.value = true
         probeError.value = null
@@ -52,7 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             if (candidate != null) publish(graph.probe.probeAll(candidateId = candidate))
             else {
-                val urls = mediaLinks(input.value)
+                val urls = mediaLinks(sourceUrl ?: input.value)
                 for (url in urls) publish(graph.probe.probeAll(url))
             }
             page.value = 0

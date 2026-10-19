@@ -64,6 +64,8 @@ data class Track(
     val channels: Int? = null,
 )
 
+@Serializable data class EpisodeOption(val title: String, val url: String)
+
 @Serializable
 data class MediaAsset(
     val id: String = newId(),
@@ -72,6 +74,7 @@ data class MediaAsset(
     val tracks: List<Track>,
     val warnings: List<String> = emptyList(),
     val duration: Double? = null,
+    val episodes: List<EpisodeOption> = emptyList(),
 )
 
 @Serializable

@@ -183,7 +183,8 @@ class FormatSelectionIntegrationTest {
         screenshot("auto-revealed-formats")
         ui.onNodeWithTag("nav-2").performClick()
         ui.onNodeWithTag("nav-0").performClick()
-        ui.onNodeWithTag("media-input").assertIsDisplayed()
+        // Pager restores the list's scroll position; the input must remain reachable.
+        ui.onNodeWithTag("media-input").performScrollTo().assertIsDisplayed()
     }
 
     private fun screenshot(name: String) {

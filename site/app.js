@@ -76,7 +76,7 @@ const english = {
   t73: "Project-owned code is MIT licensed; third-party components retain their own licenses.",
   t74: "Take your keepers with you.",
   t75: "Native Kotlin and Material 3, adapted for phones, tablets and both orientations. Android 14+. One APK for ARM64 and x86_64.",
-  t76: "0.1.0-preview.5 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
+  t76: "0.1.0-preview.6 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
   t77: "Download Android APK",
   t78: "Source & validation scope",
   t79: "Changelog",
@@ -106,6 +106,12 @@ const english = {
   t103: "Use Gecko's native referrer API so media requests retain the page context required by hotlink checks.",
   t104: "Keep byte ranges and the page origin across CDN redirects, without forwarding private credentials or page query parameters.",
   t105: "Add authenticated CDN, fallback and complete-file comparison regressions and publish a new signed APK. Premium accounts and physical devices still require acceptance.",
+  t106: "Films and episodes: choose a version, then save",
+  t107: "Add film pages, individual episodes and voice-version selection using the browser session, retain original fallback CDNs, and clearly label previews, account restrictions and DRM.",
+  t108: "More webpage sources, smoother navigation",
+  t109: "Add exact-video Douyin webpage discovery and individual episode and voice-version selection for films and series.",
+  t110: "Keep navigation visible at the bottom in portrait and on the left in landscape; swipe between native pages while retaining their state.",
+  t111: "Extend media and UI regressions and public-site sampling. Report preview, login, network and premium limits as observed; physical devices and premium accounts still need acceptance.",
 };
 const root = document.documentElement;
 const languageButton = document.getElementById("language");

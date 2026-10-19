@@ -1,8 +1,49 @@
 # Android preview acceptance
 
-Version: **0.1.0-preview.5**. Reviewed on **19 October 2026**. This is a
+Version: **0.1.0-preview.6**. Reviewed on **19 October 2026**. This is a
 signed Android preview, not a stable release or Google Play approval. Desktop
 remains on its independent release track. Raw local logs retain their host dates.
+
+## Preview.6 site adapters and navigation
+
+The film/series adapter uses normal web season and playback responses in the
+current Gecko session. A season with multiple episodes or voice versions returns
+choices, not a playlist download. Preview-only playback is labeled; DRM and
+account/region restrictions are rejected with a specific explanation. Formats
+and original backup URLs are preserved by the bundled Bilibili format parser.
+
+Douyin discovery reads bounded public hydration/detail responses through the
+packaged observer. It requires the exact string video ID and rejects nearby
+recommendations, precision-lost numeric IDs and protected video data. It does
+not sign private APIs or bypass browser challenges. Long and selected-modal
+links are recognized; short links must normally redirect to a specific video.
+
+Compose HorizontalPager keeps the navigation outside the scrolling pages.
+Portrait navigation stays centered below; landscape stays centered on the left.
+Offscreen page semantics are hidden, and editing/scroll state is retained.
+
+Fresh preview.6 reports are stored in [preview.6](verification/preview.6/).
+Earlier preview.5 and preview.4 records below are historical baselines, not new
+executions. Public-site failures and account/device limitations remain explicit.
+
+Local execution: API 34 phone and API 37.2 / 16 KB landscape tablet each passed
+44 controlled tests and a separate cold-start check. Final adapter refinements
+also passed the two-test production-entry regression (forced short response
+chunks, bounded JSON, default User-Agent, Referer, preview/DRM handling). The
+sequence and initial failures are retained in [attempts.json](verification/preview.6/attempts.json);
+the fresh final source is submitted to the nine-configuration GitHub matrix.
+
+The final signed release APK passed black-box split-HLS, browser login,
+process restart, authenticated download, native remux, MediaStore and ffprobe
+checks on both emulators. JVM 4 tests passed; debug/release Lint has zero errors
+and 28 warnings. All 178 native objects passed 16 KB checks; APK signature,
+zipalign and AAB validation passed. The signing certificate matches preview.5.
+
+The public survey passed film version selection and preview media reads, normal
+Bilibili video/audio, Douyin (22 formats), X and YouTube. Source bytes were read
+through production source resolution; no full premium film or real account was
+used. Vimeo required login and remains a failed sample in the report. Android
+14–17 CI, ARM64 physical devices and premium-account acceptance are distinct.
 
 ## Preview.5 transport regression
 
@@ -13,7 +54,7 @@ retain Range and a page-origin-only referrer, without forwarding Authorization
 or private headers. The regression suite includes complete byte comparison of
 an authenticated, referrer-protected CDN download with fallback and redirect.
 
-Current-version evidence is recorded separately in
+Preview.5 evidence is recorded separately in
 [preview.5](verification/preview.5/). The following preview.4 baseline reports
 remain historical evidence of unchanged features; they are not represented as
 fresh preview.5 executions. Premium-account/physical-device gates remain open.

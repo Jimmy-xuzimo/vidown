@@ -1,0 +1,43 @@
+{
+  "generatedAt": "2026-10-19T04:04:36.071Z",
+  "status": "passed",
+  "version": "1.0.6",
+  "backend": "webview2",
+  "packaged": false,
+  "scope": "Public videos in an isolated browser; 4K long sample bounded to 16 MiB, short sample fully downloaded; no real-account acceptance",
+  "results": [
+    {
+      "name": "modal-link-workbench-source-formats",
+      "status": "passed",
+      "formats": 22,
+      "highest": "2160p · hevc · 2518 kbps"
+    },
+    {
+      "name": "user-sample-bounded-real-transfer-and-remux",
+      "status": "passed",
+      "networkBytes": 16777216,
+      "http": 206,
+      "video": {
+        "width": 3840,
+        "height": 2160,
+        "codec": "hevc"
+      },
+      "audio": {
+        "codec": "aac",
+        "sampleRate": "44100"
+      },
+      "seconds": 5.071738,
+      "fullLongVideoDownloaded": false
+    },
+    {
+      "name": "short-video-complete-queue-download-remux-verification",
+      "status": "passed",
+      "bytes": 6281834,
+      "seconds": 19.735011
+    },
+    {
+      "name": "query-style-current-page-exact-id-and-cleanup-invalidation",
+      "status": "passed"
+    }
+  ]
+}

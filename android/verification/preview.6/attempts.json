@@ -1,0 +1,38 @@
+{
+  "scope": "Failures are preserved; successful final runs do not erase earlier attempts.",
+  "attempts": [
+    {
+      "check": "API 34 blob click",
+      "result": "System UI ANR dialog blocked app-targeted input",
+      "evidence": "system-ui-anr.png",
+      "resolution": "Rebooted dedicated emulator, full 44-test suite passed without weakening input checks."
+    },
+    {
+      "check": "PGC public request",
+      "result": "Missing Request import, then truncated JSON due short streaming reads",
+      "resolution": "Imported Request; bounded read loops to EOF; production adapter test forces 17-byte chunks and checks response size cap."
+    },
+    {
+      "check": "PGC source download",
+      "result": "HTTP 403 despite successful extraction",
+      "resolution": "Custom adapter skipped yt-dlp default media headers. Preserved default User-Agent and source Referer; final public film HTTP 206."
+    },
+    {
+      "check": "Release UI link entry",
+      "result": "Test selected a format dropdown after pager retained scroll position",
+      "resolution": "Black-box test scrolls to actual link card before editing; release download assertions unchanged."
+    },
+    {
+      "check": "Desktop Douyin initial public survey",
+      "result": "Page did not return media; login/challenge guidance displayed",
+      "resolution": "Separate real-source regression and final survey passed. Website restrictions still reported."
+    }
+  ],
+  "localSequence": "44-test full suites passed before final bounded-read/default-header refinements; final focused two-test regression and signed release checks passed after those refinements. Fresh full source is also submitted to the GitHub matrix.",
+  "notVerified": [
+    "Premium full movie",
+    "DRM media",
+    "ARM64 physical device",
+    "Device battery/thermal/background behavior"
+  ]
+}

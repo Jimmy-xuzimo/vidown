@@ -1,0 +1,230 @@
+{
+  "scope": "Local controlled regressions; not premium account or clean-system validation",
+  "unitTests": 49,
+  "reports": {
+    "media": {
+      "generatedAt": "2026-10-19T03:49:46.336Z",
+      "platform": "win32",
+      "results": [
+        {
+          "name": "standalone-extractor-authenticated-generic-http",
+          "status": "passed"
+        },
+        {
+          "name": "authenticated-hls-separated-audio",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\master.m3u8 [8aeb0c06].mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "width": 640,
+              "height": 360
+            },
+            {
+              "type": "audio",
+              "codec": "aac",
+              "sampleRate": "48000"
+            }
+          ],
+          "duration": "6.037333"
+        },
+        {
+          "name": "aes128-key-rotation",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\index.m3u8 [b3fe8ea4].mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "width": 640,
+              "height": 360
+            }
+          ],
+          "duration": "6.000000"
+        },
+        {
+          "name": "hls-fmp4-initialization",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\index.m3u8 [3a84cfc9].mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "width": 640,
+              "height": 360
+            }
+          ],
+          "duration": "6.000000"
+        },
+        {
+          "name": "hls-byte-range",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\index.m3u8 [dee7f97d].mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "width": 640,
+              "height": 360
+            }
+          ],
+          "duration": "6.000000"
+        },
+        {
+          "name": "dash-template-timeline-separated-audio",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\manifest.mpd [da91de0f].mp4",
+          "streams": [
+            {
+              "type": "video",
+              "codec": "h264",
+              "width": 640,
+              "height": 360
+            },
+            {
+              "type": "audio",
+              "codec": "aac",
+              "sampleRate": "48000"
+            }
+          ],
+          "duration": "6.000000"
+        },
+        {
+          "name": "generated-hdr10-10bit-and-flac-96khz-24bit-source-preservation",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\HDR10 + Hi-Res 原规格验证 [1d6b88ab].mkv",
+          "frameMetadata": [
+            {
+              "side_data_type": "Mastering display metadata",
+              "red_x": "34000/50000",
+              "red_y": "16000/50000",
+              "green_x": "13250/50000",
+              "green_y": "34500/50000",
+              "blue_x": "7500/50000",
+              "blue_y": "3000/50000",
+              "white_point_x": "15635/50000",
+              "white_point_y": "16450/50000",
+              "min_luminance": "1/10000",
+              "max_luminance": "10000000/10000"
+            },
+            {
+              "side_data_type": "Content light level metadata",
+              "max_content": 1000,
+              "max_average": 400
+            }
+          ]
+        },
+        {
+          "name": "direct-pause-resume-with-etag-range",
+          "status": "passed",
+          "reusedBytes": 53248,
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\暂停恢复验证 [c13d45ff].mp4"
+        },
+        {
+          "name": "changed-validator-restarts-instead-of-appending",
+          "status": "passed",
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\暂停恢复验证 [d9281b48].mp4"
+        },
+        {
+          "name": "hls-pause-resume-across-new-bridge-without-refetching-completed-segments",
+          "status": "passed",
+          "reusedSegments": 5,
+          "output": "C:\\Users\\xuzim\\Documents\\Codex\\2026-10-16\\new-chat\\outputs\\vidown\\work\\media-verification\\results\\index.m3u8 [d651a232].mp4"
+        },
+        {
+          "name": "changed-manifest-refuses-old-segment-checkpoint",
+          "status": "passed"
+        },
+        {
+          "name": "bilibili-premium-8k-hdr-dolby-hires",
+          "status": "pending",
+          "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+        },
+        {
+          "name": "x-authenticated",
+          "status": "pending",
+          "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+        },
+        {
+          "name": "telegram-private-media",
+          "status": "pending",
+          "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+        },
+        {
+          "name": "real-dolby-rpu-preservation",
+          "status": "pending",
+          "reason": "Requires user-owned account or real source sample; not inferred from unit tests."
+        }
+      ]
+    },
+    "webview2": {
+      "generatedAt": "2026-10-19T03:51:36.656Z",
+      "packaged": false,
+      "results": [
+        {
+          "name": "generic-ui-fixed-compact-and-clipboard-autofill-preserves-query-and-fragment-without-starting-download",
+          "status": "passed"
+        },
+        {
+          "name": "soft-local-welcome-page-and-native-blank-surface-hidden",
+          "status": "passed"
+        },
+        {
+          "name": "native-screen-origin-and-size-align-at-900px-and-ui-125-percent-with-visible-toolbar-and-page-75-percent",
+          "status": "passed"
+        },
+        {
+          "name": "actual-system-webview2-embedded-child-window-network-detection-and-no-page-application-api",
+          "status": "passed"
+        },
+        {
+          "name": "native-login-cookie-survives-restart-and-workbench-authenticated-hls-download-merge-and-verification",
+          "status": "passed"
+        },
+        {
+          "name": "native-localstorage-indexeddb-persistence-and-real-blob-download-through-native-task-with-identical-file-hash",
+          "status": "passed"
+        },
+        {
+          "name": "clear-login-removes-native-profile-cookie-and-transfer-session-authorization",
+          "status": "passed"
+        }
+      ]
+    },
+    "interface": {
+      "generatedAt": "2026-10-19T03:52:49.657Z",
+      "packaged": false,
+      "results": [
+        {
+          "name": "clean-branding-real-package-version-and-no-idle-media-worker",
+          "status": "passed"
+        },
+        {
+          "name": "mode-palette-density-and-effects-persist-after-restart",
+          "status": "passed"
+        },
+        {
+          "name": "bare-address-completion-fixed-38px-tabs-single-line-leading-title-ellipsis-and-adjacent-plus",
+          "status": "passed"
+        },
+        {
+          "name": "single-delete-confirmation-default-retains-file-and-cancel-keeps-record",
+          "status": "passed"
+        },
+        {
+          "name": "explicit-file-deletion-moves-real-controlled-file-to-windows-recycle-bin",
+          "status": "passed"
+        },
+        {
+          "name": "clear-history-preserves-paused-work-and-refuses-to-trash-directories",
+          "status": "passed"
+        },
+        {
+          "name": "pointer-glow-setting-and-rendering-completely-removed",
+          "status": "passed"
+        }
+      ]
+    }
+  }
+}

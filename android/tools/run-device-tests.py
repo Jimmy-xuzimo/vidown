@@ -113,7 +113,7 @@ def main():
         (destination/'startup.txt').write_text(cold,encoding='utf-8')
         if not re.search(r'OK \(1 test\)',cold):raise RuntimeError('Cold-start engine isolation test failed: '+cold[-4000:])
         # The isolation assertion has to execute before Gecko/Python are used.
-        command+=['-e','notClass','top.xuzimo.vidown.StartupIntegrationTest,top.xuzimo.vidown.PublicNetworkIntegrationTest,top.xuzimo.vidown.BilibiliNetworkIntegrationTest']
+        command+=['-e','notClass','top.xuzimo.vidown.StartupIntegrationTest,top.xuzimo.vidown.PublicNetworkIntegrationTest,top.xuzimo.vidown.BilibiliNetworkIntegrationTest,top.xuzimo.vidown.SitesNetworkIntegrationTest']
     if args.public_network:command+=['-e','publicNetwork','true']
     if args.test_class:command+=['-e','class',args.test_class]
     command+=['top.xuzimo.vidown.test/androidx.test.runner.AndroidJUnitRunner']

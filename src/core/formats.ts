@@ -49,7 +49,7 @@ export function fromYtdlp(info: any, context: RequestContextRef): PrivateAsset {
         ? f.dynamic_range
         : undefined;
     const bits: string[] = [
-      f.height ? `${f.height}p` : "音频",
+      f.height ? `${f.height}p` : video ? "源视频" : "音频",
       f.fps ? `${f.fps}fps` : "",
       range ?? "",
       (f.vcodec === "none" ? f.acodec : f.vcodec) || "编码未知",

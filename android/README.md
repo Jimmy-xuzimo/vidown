@@ -2,7 +2,9 @@
 
 Native Android implementation of Vidown. This independent project lives beside the desktop application. It does not embed Electron, Node.js, React or the desktop Windows browser host.
 
-**0.1.0-preview.5 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
+**0.1.0-preview.6 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
+
+Preview.6 adds exact-video Douyin webpage discovery, Bilibili film/episode and voice-version selection, and a persistent adaptive navigation bar with native Compose swipe paging. All extraction uses the saved Gecko session. Preview-only playback is labeled explicitly; DRM and account/region restrictions remain enforceable. Public-network results are reported per site and do not establish premium-account support.
 
 ## Native interface
 
@@ -37,7 +39,7 @@ explicitly identified. A muxed source cannot be combined with another audio trac
 The app uses its launcher artwork for in-app branding. Settings includes links to
 the GitHub repository and project website.
 
-### Media request fix in preview.5
+### Media request fix introduced in preview.5
 
 Gecko's native channel setup replaces an ordinary `Referer` header with its
 separate referrer setting. Preview.5 uses `WebRequest.Builder.referrer()` so
