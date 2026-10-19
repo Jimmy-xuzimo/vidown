@@ -1,6 +1,6 @@
 # Vidown 使用指南
 
-适用于 Windows x64 1.0.5。已验证内容和限制见 [测试记录](VALIDATION.md)。
+本页为桌面指南，以 Windows x64 1.0.5 为操作基准。**Android 0.1.0-preview.4 请阅读 [Android 安装与使用](ANDROID.md)**，不要在手机上执行下文的桌面安装和目录步骤。两端独立发行，已验证内容分别见[桌面测试记录](VALIDATION.md)和[Android 验收记录](../android/ACCEPTANCE.md)。
 
 ## 开始使用
 

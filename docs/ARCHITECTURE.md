@@ -1,4 +1,6 @@
-# 重建架构（M0 实现）
+# 重建架构
+
+桌面与 Android 是独立应用。以下图示描述桌面链路，Android 原生链路见本文末尾；共享业务概念和验收样本，不复用桌面 Electron／React／.NET 执行环境。
 
 旧 Python 工程只保留在 Git 历史中。新源码不导入旧调度器、HLS 下载器或页面扫描器。
 
@@ -53,3 +55,30 @@ M0 的 SQLite 和队列协调仍在 Electron 主进程，协议和媒体处理�
 Telegram 按消息链接进入同一持久分区内已登录的 Web A 或 Web K，保留原客户端及 origin（包括 weba.telegram.org、webk.telegram.org）。Web K 的当前页面及网络候选关联到同一个媒体查看器，并检查视频地址、页面和媒体身份；站内 service-worker 播放地址不会交给通用 HTTP 引擎重放。应用仅定位消息 DOM 和网页实际提供的下载菜单，不读取客户端内部会话密钥，不注入应用 IPC。解析和开始保存时检查同一标签、消息及页面指纹，找不到目标或下载操作则停止；不绕过禁止保存。该 DOM 适配随上游网页变化可能失效，真实账号完整下载尚未验收；Web A／K 受控 DOM 集成通过。入口仍为统一浏览器和链接表单。
 
 网页下载（含 blob）在 Windows 由 WebView2 DownloadOperation 接收，通过本地管道适配任务事件；其他平台由 Chromium DownloadItem 接收。只有应用拥有的标签能进入保存流程。视频／音频先落在任务临时目录，经 ffprobe 参数和首尾解码检查，再按原文件复制到所选目录，不转码。网页内部准备文件阶段没有可靠字节进度；任务显示等待，取消后拒绝迟到的文件保存，网页内部缓存／预取仍由网页管理。实际 DownloadItem 传输可取消，仅浏览器确认可继续时提供暂停／恢复。网页发起的文件不受协议引擎的并发配置控制。重启后要求重新解析。
+
+## Android 原生链路
+
+Android 工程不执行桌面 Node、Electron 或 .NET 宿主。Kotlin 保留 SourceCandidate、RequestContextRef、MediaAsset、DownloadPlan 和 TaskEvent 的业务含义，增加系统 URI、会话代次和停止原因。
+
+```mermaid
+flowchart LR
+  Compose[Compose / Material 3] --> VM[ViewModel / StateFlow]
+  VM --> Data[Room / DataStore]
+  VM --> Gecko[GeckoView / 内置 WebExtension]
+  Gecko --> Session[同一 GeckoRuntime 的会话传输]
+  VM --> Probe[Chaquopy / 固定 yt-dlp / 受限 QuickJS]
+  Probe --> Session
+  VM --> UIDT[UIDT 用户主动下载任务]
+  UIDT --> M3[Media3 / 注册资源与缓存]
+  M3 --> Session
+  M3 --> WM[WorkManager 后处理]
+  WM --> JNI[私有媒体进程 / NDK FFmpeg]
+  JNI --> Check[成品验证]
+  Check --> Store[MediaStore / SAF URI]
+```
+
+界面和诊断只拿凭据引用，不携带原始 Cookie、媒体签名地址或授权头。网页扩展事件按大小、来源及会话代次校验；清理使旧捕获和计划失效。统一传输处理代理、重定向和跨域凭据隔离，原生媒体进程只读取已登记缓存，不直接回源联网。
+
+Gecko、Python 和原生媒体库按需初始化。浏览器私有资料保存站点状态，Keystore 保护会话恢复快照和私有计划；Room 保存记录，DataStore 保存设置。下载与后处理遵循 Android 系统任务、前台类型及停止回调，不自动复活用户强制停止的应用。暂停控制实际网络与写入，跨进程重启只保留记录，重新解析后新建任务。
+
+详细实现与限制见 [Android 工程说明](../android/README.md)、[验收记录](../android/ACCEPTANCE.md)和[中文指南](ANDROID.md)。

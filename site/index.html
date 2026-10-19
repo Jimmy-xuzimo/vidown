@@ -15,7 +15,7 @@
     <meta property="og:title" content="Vidown — 把精彩，完整保存。" />
     <meta
       property="og:description"
-      content="本地优先的开源桌面视频下载器。发现、选择、保存，让每一份精彩有迹可循。"
+      content="本地优先的开源媒体下载器，提供桌面版与原生 Android 预览版。发现、选择、保存，让每一份精彩有迹可循。"
     />
     <meta property="og:url" content="https://jimmy-xuzimo.github.io/vidown/" />
     <meta
@@ -48,6 +48,7 @@
           <a href="#experience"><span data-i18n="t1">使用体验</span></a
           ><a href="#scope"><span data-i18n="t2">能力边界</span></a
           ><a href="#download"><span data-i18n="t3">下载</span></a
+          ><a href="#history"><span data-i18n="t79">更新历史</span></a
           ><a href="https://github.com/Jimmy-xuzimo/vidown">GitHub ↗</a>
         </nav>
         <div class="controls">
@@ -70,6 +71,7 @@
         <a href="#experience"><span data-i18n="t4">使用体验</span></a
         ><a href="#scope"><span data-i18n="t5">能力边界</span></a
         ><a href="#download"><span data-i18n="t6">下载</span></a
+        ><a href="#history"><span data-i18n="t79">更新历史</span></a
         ><a href="https://github.com/Jimmy-xuzimo/vidown">GitHub ↗</a>
       </nav>
     </header>
@@ -409,10 +411,152 @@
           </div>
         </div>
       </section>
+      <section
+        id="history"
+        class="wrap section release-history"
+        aria-labelledby="history-title"
+      >
+        <div class="section-top">
+          <div>
+            <div class="eyebrow">05 / RELEASE JOURNAL</div>
+            <h2 id="history-title" data-i18n="t80">每一次更新，都有迹可循。</h2>
+          </div>
+          <p data-i18n="t81">
+            桌面与 Android
+            独立演进。这里记录已发布版本，完整说明与验证范围见对应
+            Release。日期采用北京时间。
+          </p>
+        </div>
+        <div class="history-grid">
+          <div class="history-track">
+            <h3 class="track-title">
+              <span class="track-dot" aria-hidden="true"></span
+              ><span data-i18n="t82">桌面版</span
+              ><small>Windows / macOS / Linux</small>
+            </h3>
+            <article class="release-entry">
+              <div class="release-meta">
+                <span class="release-version">1.0.5</span
+                ><span class="release-badge" data-i18n="t83">当前版本</span
+                ><time datetime="2026-10-18T14:27:57Z">2026.10.18</time>
+              </div>
+              <h4 data-i18n="t84">补齐短视频网页解析</h4>
+              <p data-i18n="t85">
+                修复抖音精选页和视频长链解析，匹配目标视频、展示真实规格并保留备用
+                CDN。关闭标签或清理数据会使相关缓存失效。
+              </p>
+              <a
+                class="release-link"
+                href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5"
+                ><span data-i18n="t86">发行说明与下载</span> ↗</a
+              >
+            </article>
+            <details class="release-entry">
+              <summary>
+                <span class="release-version">1.0.4</span
+                ><span data-i18n="t87">本地数据清理与安全修复</span
+                ><time datetime="2026-10-17T11:45:56Z">2026.10.17</time>
+              </summary>
+              <div class="release-body">
+                <p data-i18n="t88">
+                  可分别清除浏览器数据和下载记录；清理登录、缓存与网站存储后，旧资源授权失效。修复剪贴板关闭后的延迟读取，收敛依赖漏洞链。公开下载精简为五个桌面应用包。
+                </p>
+                <a
+                  class="release-link"
+                  href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4"
+                  ><span data-i18n="t89">查看完整更新</span> ↗</a
+                >
+              </div>
+            </details>
+            <details class="release-entry">
+              <summary>
+                <span class="release-version">1.0.3</span
+                ><span data-i18n="t90">五种架构的原生发行构建</span
+                ><time datetime="2026-10-17T10:06:50Z">2026.10.17</time>
+              </summary>
+              <div class="release-body">
+                <p data-i18n="t91">
+                  新增 Windows、macOS Intel／Apple Silicon、Linux x64／ARM64
+                  原生 Actions
+                  打包与受控下载验证。全部运行器通过后统一发布；对应源码、报告与校验值独立保存。
+                </p>
+                <a
+                  class="release-link"
+                  href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3"
+                  ><span data-i18n="t89">查看完整更新</span> ↗</a
+                >
+              </div>
+            </details>
+            <details class="release-entry">
+              <summary>
+                <span class="release-version">1.0.2</span
+                ><span data-i18n="t92">全新桌面工程与浏览器体验</span
+                ><time datetime="2026-10-17T09:01:01Z">2026.10.17</time>
+              </summary>
+              <div class="release-body">
+                <p data-i18n="t93">
+                  重写为 TypeScript 桌面应用，Windows 网页采用
+                  WebView2；修复工具栏、标签与缩放，加入主题、历史管理和统一会话。移除外部
+                  Cookie 导入。本版本只发布源码。
+                </p>
+                <a
+                  class="release-link"
+                  href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.2"
+                  ><span data-i18n="t89">查看完整更新</span> ↗</a
+                >
+              </div>
+            </details>
+          </div>
+          <div class="history-track android-track">
+            <h3 class="track-title">
+              <span class="track-dot" aria-hidden="true"></span>Android<small
+                data-i18n="t94"
+                >原生应用 · 独立预览版</small
+              >
+            </h3>
+            <article class="release-entry">
+              <div class="release-meta">
+                <span class="release-version">0.1.0-preview.4</span
+                ><span class="release-badge" data-i18n="t95">预览版</span
+                ><time datetime="2026-10-18T19:12:54Z">2026.10.19</time>
+              </div>
+              <h4 data-i18n="t96">原生界面，完整下载链路</h4>
+              <ul class="release-changes">
+                <li data-i18n="t97">
+                  Kotlin、Compose 与 Material
+                  3；链接输入优先，横竖屏悬浮导航，四套深浅配色和可关闭的原生动效。
+                </li>
+                <li data-i18n="t98">
+                  修复 B 站提取请求头与链接归一化，独立选择视频和音频，保留备用
+                  CDN，拒绝将 HTML 当成视频。
+                </li>
+                <li data-i18n="t99">
+                  Gecko
+                  浏览器默认桌面模式，共享登录会话；下载、无损合并、检查和系统存储保存形成闭环。
+                </li>
+              </ul>
+              <p class="release-caveat" data-i18n="t100">
+                Android 14+。已验证受控协议与公开样本；真实会员权限、ARM64
+                真机、续航及后台性能仍待验收，尚未上架 Google Play。
+              </p>
+              <a
+                class="release-link"
+                href="https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4"
+                ><span data-i18n="t86">发行说明与下载</span> ↗</a
+              >
+            </article>
+          </div>
+        </div>
+        <a
+          class="history-all"
+          href="https://github.com/Jimmy-xuzimo/vidown/releases"
+          ><span data-i18n="t101">在 GitHub 查看全部发行记录</span> ↗</a
+        >
+      </section>
       <section id="scope" class="wrap section scope">
         <div class="section-top">
           <div>
-            <div class="eyebrow">05 / CLEAR BY DESIGN</div>
+            <div class="eyebrow">06 / CLEAR BY DESIGN</div>
             <h2 data-i18n="t56">好用，也说清边界。</h2>
           </div>
           <p data-i18n="t57">知道它能做什么，也知道它的限制。</p>

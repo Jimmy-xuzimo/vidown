@@ -66,5 +66,6 @@
   "ciPassed": true,
   "ciReport": "preview.4/github-ci.json",
   "motionReport": "preview.4/motion-observation.json",
-  "crossHostReport": "preview.4/linux-apk37-cross-host.json"
+  "crossHostReport": "preview.4/linux-apk37-cross-host.json",
+  "subsequentRegressionReport": "regressions/2026-10-19-blob-save.json"
 }

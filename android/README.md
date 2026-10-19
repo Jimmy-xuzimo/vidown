@@ -135,6 +135,17 @@ crash loops ([upstream report](https://github.com/actions/runner-images/issues/1
 `tools/ci-sdk.py` only operates in disposable CI environments; it does not
 change a developer's local SDK or skip application assertions.
 
+The blob-save fixture intentionally prepares its file asynchronously. Its test
+waits for the DOM-ready title, performs a real touch, waits for the save
+acknowledgement and compares complete output bytes with the source. Network
+response headers alone do not establish blob readiness. Subsequent failures and
+fix verification are recorded separately from the immutable preview evidence in
+[acceptance](ACCEPTANCE.md#subsequent-ci-regression-blob-readiness).
+
+Chinese installation and usage instructions are available in the
+[Android guide](../docs/ANDROID.md). Published desktop and Android changes are
+listed separately in the [changelog](../docs/CHANGELOG.md).
+
 ## Distribution boundaries
 
 The initial GitHub deliverable is one universal signed APK. AAB generation is for a later, separate Play evaluation. Keep Android tags independent (`android-v…`). A stable release requires physical-device acceptance. There is no promise that the GitHub feature set can be published unchanged on Google Play.

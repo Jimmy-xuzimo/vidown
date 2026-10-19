@@ -23,6 +23,26 @@ and no whole-page size animation. Motion can be disabled. See the
 
 ## Current evidence
 
+### Subsequent CI regression: blob readiness
+
+The earlier passing matrix below remains a historical result. A subsequent main
+run, [39157748209](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39157748209),
+failed the blob-save test on the API 37.2 16 KB tablet; the other eight device jobs
+passed. This was an application-test timeout, not the previous SDK provisioning
+failure. The test clicked after response headers and a fixed one-second delay,
+before asynchronous file preparation enabled the webpage button.
+
+A three-second fixture preparation delay reproduces the same failure with the
+old test. The corrected test waits for explicit DOM readiness, acknowledges the
+real touch-triggered save and compares the complete saved bytes to the fixture
+source. It does not increase the transfer timeout or retry failed tests. Local
+16 KB tablet acceptance passed all 38 checks and the separate startup check,
+followed by three blob-save repetitions. See the [regression record](verification/regressions/2026-10-19-blob-save.json)
+for the new hosted run and its final results. Application runtime source and the
+published signed preview APK are unchanged; no reinstall or tag movement is needed.
+
+### Published preview evidence
+
 Summaries and selected screenshots are in [verification/preview.4](verification/preview.4/).
 [The inventory](verification/index.json) ties the exact APK to its size and SHA-256.
 Full transient logs and media stay outside the source distribution.

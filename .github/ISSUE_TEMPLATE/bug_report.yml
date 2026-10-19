@@ -12,7 +12,7 @@ body:
     attributes:
       label: Vidown 版本
       description: 填写设置或侧栏中显示的完整版本；源码运行请附提交 SHA。
-      placeholder: "例如：1.0.4，Windows 安装版"
+      placeholder: "例如：桌面 1.0.5，或 Android 0.1.0-preview.4"
     validations:
       required: true
   - type: dropdown
@@ -25,6 +25,8 @@ body:
         - macOS Intel（x64）
         - Linux x64
         - Linux ARM64
+        - Android ARM64（手机／平板）
+        - Android x86_64（模拟器）
         - 其他／不确定（请在环境中说明）
     validations:
       required: true
@@ -32,7 +34,7 @@ body:
     id: environment
     attributes:
       label: 环境信息
-      description: 系统具体版本；Linux 请注明发行版。浏览器相关问题可附设置页的浏览器运行时版本；使用代理时只说明类型，不附密码或完整配置。
+      description: 系统具体版本；Linux 请注明发行版，Android 请注明设备型号、横竖屏和是否模拟器。浏览器相关问题可附运行时版本；代理只说明类型，不附密码或完整配置。
       placeholder: "例如：Windows 11 24H2，系统 WebView2，使用系统代理"
     validations:
       required: true

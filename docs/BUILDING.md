@@ -1,5 +1,7 @@
 # 多平台发行构建
 
+本页前半部分为桌面版 1.0.5；Android 使用独立 Gradle 工程，见下方“Android 原生构建”。两端的安装包、版本标签、签名和验证报告分别管理。
+
 `Build and publish installers` 工作流在 `v*` 标签推送时执行，也可手动指定版本进行试构建；源分支／标签使用 GitHub 的标准工作流选择器（CLI 为 `gh workflow run --ref`），所有作业只检出此次事件的不可变 `github.sha`，不接受独立的任意提交输入。手动运行默认不发布；打开 publish 时，所有构建、报告及校验通过后才创建缺失标签；已有标签必须指向本轮测试提交，绝不移动旧标签。标签必须等于 `v` 加 `package.json` 的版本。五个原生运行器分别构建，不在 Windows 上伪造 macOS／Linux 包。
 
 | 平台    | 运行器／架构                  | 产物                          |
@@ -28,3 +30,24 @@ macOS 当前设置最低 15.0；Linux 在 Ubuntu 24.04 构建，不承诺兼容�
 ## 受控 HDR 样本
 
 `tests/fixtures/hdr10.mp4` 是自有 lavfi 测试图生成的 1.25 秒、320×180 HEVC Main10/HDR10 样本，采用项目 MIT 许可。固定该输入让各运行器无需安装测试专用 HEVC 编码器；成品仍由实际 FFmpeg／ffprobe 合并、解码并检查色彩及 HDR 参数。它不是会员视频或真实平台验收。
+
+## Android 原生构建
+
+工程位于 `android/`，当前版本 0.1.0-preview.4，应用 ID `top.xuzimo.vidown`。最低 API 34，compile SDK 37.2，target API 37；固定 JDK 17、Gradle 9.6.0、AGP 9.4.0、Kotlin 2.4.21、NDK 28.2.13676358 和 CMake 3.31.6。以工程锁定文件和 [Android README](../android/README.md)为准，不通过 npm 或桌面打包工作流生成 APK。
+
+在 `android/` 目录执行（Windows 原生库使用 MSYS2 Bash）：
+
+```sh
+python tools/prepare-sources.py
+export ANDROID_SDK_ROOT=/path/to/android-sdk
+bash tools/build-native.sh
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:lintDebug
+```
+
+`tools/sources.lock.json` 锁定第三方源码与摘要；Gradle 验证元数据约束 Maven 依赖。APK 包含 Gecko、Python、yt-dlp、QuickJS-NG 及源码构建的 LGPL FFmpeg，不在首启下载执行组件。所有原生 ELF（含 Python 压缩包内的库）执行 16KB 对齐检查，并使用官方 zipalign 验证 APK。
+
+`Native Android` 工作流包含源码编译、JVM／Lint、九种模拟器配置和独立冷启动检查。手机／平板覆盖 API 34／35／36／37.0，另有 API 37.2 平板的实际 16KB 页环境。合成测试媒体服务不需要账号，失败日志和截图保留为 Actions artifact。网页 blob 测试等待实际文件就绪与保存确认，不能把响应头事件当作准备完成。
+
+正式签名从环境读取 `VIDOWN_KEYSTORE`、`VIDOWN_STORE_PASSWORD`、`VIDOWN_KEY_ALIAS` 和 `VIDOWN_KEY_PASSWORD`，无配置的 release 构建不带发行签名。密钥、密码、本地 SDK 路径、网站登录资料不得进入 Git。手动 Actions 签名打包另需对应 `ANDROID_*` Secrets，且依赖所有构建与模拟器检查通过；当前公开 APK 在本机签名和验收，不能据此声称云端已配置签名。
+
+Android 采用独立 `android-v…` 标签：主预览 Release 仅一个通用签名 APK；`android-materials-v…` 保留匹配的源码／构建材料及 SHA-256。AAB 独立生成用于 Play 评估，不放在普通用户下载附件中。桌面标签和五个安装包不受影响；测试或文档修复若不改变应用代码，无需替换已经发布的 APK 或移动其标签。

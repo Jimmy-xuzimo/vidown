@@ -79,6 +79,29 @@ const english = {
   t76: "0.1.0-preview.4 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
   t77: "Download Android APK",
   t78: "Source & validation scope",
+  t79: "Changelog",
+  t80: "A clear record of every release.",
+  t81: "Desktop and Android evolve independently. These are published releases; follow each Release for details and verification scope. Dates use China Standard Time.",
+  t82: "Desktop",
+  t83: "Current",
+  t84: "Better short-video webpage extraction",
+  t85: "Fix Douyin featured-page and video links, match the requested video, show source formats and retain backup CDNs. Closing tabs or clearing data invalidates the associated cache.",
+  t86: "Release notes & download",
+  t87: "Local data cleanup and security fixes",
+  t88: "Clear browser data and download history separately. Removing sessions, cache and site storage invalidates old resource authorizations. Fix delayed clipboard reads after disabling monitoring and remove a vulnerable dependency chain. Public downloads are reduced to five desktop packages.",
+  t89: "Read the full update",
+  t90: "Native release builds for five architectures",
+  t91: "Add native Actions packaging and controlled download checks for Windows, macOS Intel / Apple Silicon and Linux x64 / ARM64. Publish only after all runners pass; keep matching source, reports and hashes separately.",
+  t92: "Rebuilt desktop application and browser",
+  t93: "Rebuild as a TypeScript desktop app with WebView2 on Windows. Improve the toolbar, tabs and zoom, add themes, history management and session sharing, and remove external Cookie import. This release published source only.",
+  t94: "Native app · independent preview",
+  t95: "Preview",
+  t96: "Native interface. Complete download workflow.",
+  t97: "Kotlin, Compose and Material 3; link-first input, adaptive floating navigation, four light/dark palettes and optional native motion.",
+  t98: "Fix Bilibili extractor headers and URL normalization, select video and audio separately, retain backup CDNs and reject HTML as media.",
+  t99: "Gecko defaults to desktop mode and shares sign-in sessions. Download, lossless remux, validation and publication to system storage form one workflow.",
+  t100: "Android 14+. Controlled protocols and public samples verified; premium permissions, ARM64 hardware, battery and background performance remain unverified. Not published on Google Play.",
+  t101: "Browse all releases on GitHub",
 };
 const root = document.documentElement;
 const languageButton = document.getElementById("language");
@@ -152,8 +175,8 @@ function setLanguage(value) {
       : "Vidown — Keep what moves you.";
   document.querySelector('meta[name="description"]').content =
     value === "zh"
-      ? "Vidown 是开源桌面视频下载器。通过链接或内置浏览器发现视频，独立选择音视频轨道，在本地下载、合并与校验。支持 Windows、macOS 与 Linux。"
-      : "An open-source desktop video downloader for Windows, macOS and Linux. Discover media, choose independent tracks, and download, merge and validate locally.";
+      ? "Vidown 是开源媒体下载器。通过链接或内置浏览器发现视频，独立选择音视频轨道，在本地下载、合并与校验。提供 Windows、macOS、Linux，以及原生 Android 预览版。"
+      : "An open-source media downloader for Windows, macOS and Linux, with a native Android preview. Discover media, choose tracks, and download, merge and validate locally.";
   document
     .querySelectorAll("nav")
     .forEach((el) =>

@@ -34,6 +34,16 @@ npm run dev
 
 ## 修改与验证
 
+### Android 开发
+
+Android 位于独立 `android/` 工程，使用原生 Kotlin／Compose／Material 3 与 GeckoView；不使用桌面 npm 构建。准备固定 JDK／SDK／NDK 和源码原生库，按 [Android 工程说明](android/README.md)执行 Gradle 编译、JVM 测试及 Lint。仅修改 Android 时不要求无关的桌面重打包。
+
+涉及浏览器、协议、任务或存储的修改，使用 `android/tools/fixtures.py` 和 `run-device-tests.py` 在专用模拟器验证真实下载文件。UI 修改检查手机／平板、横竖屏、深浅主题、大字体与动效开关。不得在用户真实设备自动清理资料；真实账号结果与受控样本分开记录。精确验收及未完成项见 [Android 验收记录](android/ACCEPTANCE.md)。
+
+发行 APK 使用独立 Android 版本和标签，并验证签名、16KB 页面与匹配源码材料。不要提交密钥、Cookie、SDK、本地构建产物或第三方媒体；不要将桌面已有的会员／高规格测试套用于 Android。
+
+### 通用及桌面修改
+
 保持改动集中，说明解决的问题和最终行为；相关文档与锁文件应一起更新。不要提交账号资料、下载内容、`work`、`release`、生成的依赖或运行时。
 
 - 普通源码改动运行 `npm run check` 和格式检查。
