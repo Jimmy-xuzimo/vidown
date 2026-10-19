@@ -6,6 +6,8 @@
 
 `node scripts/verify-site.mjs` 覆盖 18 种手机、平板、桌面横竖窗口尺寸，中英文与深浅主题共 72 组；检查首屏口号、操作链接和截图可见、页面及展开内容无横向溢出、所有记录默认收起且可展开、时间轴位置、键盘操作、移动菜单和无脚本阅读。截图人工复核与本机 Edge 浏览器自动化不等于所有真实设备实测。[本地报告](validation/website-redesign-2026-10-19-local.json)记录具体尺寸与检查结果。
 
+[Pages 部署](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39205509090)成功后，对正式网址再次执行上述 72 组检查并全部通过；八条发行说明链接与 Android APK 链接均返回 HTTP 200，见[线上报告](validation/website-redesign-2026-10-19-deployed.json)。网页部署源码为 `830dfdf`，应用发行标签及安装包保持原样。
+
 ## 1.0.6 影片／单集与跨站点回归（2026-10-19）
 
 桌面 [1.0.6 五平台发行运行](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304)全部通过，包含 Windows x64、macOS Intel／Apple Silicon 和 Linux x64／ARM64 的实际打包载荷、受控下载、浏览器登录与清理检查。发行标签固定在 `7a67976`。此前 Linux 退出回归发现迟到的浏览器布局回调错误，已修复并增加退出压力检查；Windows 新标签测试的同名控件定位也已修正。安装包、对应源码和报告的线上 SHA-256 已核对，见[发行核验](validation/publication-1.0.6-preview6.json)。
