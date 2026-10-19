@@ -4,11 +4,11 @@
 
 一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-**桌面版 1.0.5 · Android 0.1.0-preview.4。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
+**桌面版 1.0.5 · Android 0.1.0-preview.5。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [桌面指南](docs/USER_GUIDE.md) · [Android 指南](docs/ANDROID.md) · [更新历史](docs/CHANGELOG.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
-**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.4 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
+**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.5 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
 
 ![Vidown 下载工作台](docs/images/workbench.png)
 
@@ -67,7 +67,7 @@
 | Linux x64／ARM64               | 各自的 AppImage（Ubuntu 24.04 构建）            |
 | Android 14+ ARM64／x86_64      | 独立 Android Release 中的单一通用 APK（预览版） |
 
-桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.4)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
+桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.5)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 

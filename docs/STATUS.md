@@ -1,6 +1,6 @@
 # 当前状态
 
-当前桌面版为 **1.0.5**，Android 为 **0.1.0-preview.4**。两端独立版本和发行标签，不互相覆盖测试声明。已公开版本的变化见[更新历史](CHANGELOG.md)。
+当前桌面版为 **1.0.5**，Android 为 **0.1.0-preview.5**。两端独立版本和发行标签，不互相覆盖测试声明。已公开版本的变化见[更新历史](CHANGELOG.md)。
 
 桌面 Actions 在 Windows x64、macOS Intel／Apple Silicon、Linux x64／ARM64 原生运行器构建并验证，主 Release 保留五个应用包。1.0.5 修复抖音网页解析；真实公开样本测试限于记录中的 Windows 环境。源码、校验和报告放独立资料页。
 

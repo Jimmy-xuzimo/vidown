@@ -2,7 +2,7 @@
 
 Native Android implementation of Vidown. This independent project lives beside the desktop application. It does not embed Electron, Node.js, React or the desktop Windows browser host.
 
-**0.1.0-preview.4 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
+**0.1.0-preview.5 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
 
 ## Native interface
 
@@ -36,6 +36,17 @@ complete quality list. If that extraction fails, the captured-file fallback is
 explicitly identified. A muxed source cannot be combined with another audio track.
 The app uses its launcher artwork for in-app branding. Settings includes links to
 the GitHub repository and project website.
+
+### Media request fix in preview.5
+
+Gecko's native channel setup replaces an ordinary `Referer` header with its
+separate referrer setting. Preview.5 uses `WebRequest.Builder.referrer()` so
+anti-hotlink checks receive the actual page origin. Cross-origin CDN redirects
+preserve Range and only the page origin, while removing Authorization and
+private headers. Controlled tests cover a logged-in, referrer-protected CDN,
+an unavailable primary, a redirect and byte-for-byte complete cache output.
+This fixes an observed transport defect; premium-account acceptance still
+requires testing on the affected device.
 
 ### Extraction fixes in preview.4
 

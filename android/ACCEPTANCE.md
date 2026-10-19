@@ -1,10 +1,37 @@
 # Android preview acceptance
 
-Version: **0.1.0-preview.4**. Reviewed on **19 October 2026**. This is a
+Version: **0.1.0-preview.5**. Reviewed on **19 October 2026**. This is a
 signed Android preview, not a stable release or Google Play approval. Desktop
 remains on its independent release track. Raw local logs retain their host dates.
 
-## What changed
+## Preview.5 transport regression
+
+A local echo server reproduced the missing Referer in the old transport:
+`header("Referer", ...)` was overwritten by Gecko's native referrer setup.
+The transport now uses `WebRequest.Builder.referrer()`. Cross-origin redirects
+retain Range and a page-origin-only referrer, without forwarding Authorization
+or private headers. The regression suite includes complete byte comparison of
+an authenticated, referrer-protected CDN download with fallback and redirect.
+
+Current-version evidence is recorded separately in
+[preview.5](verification/preview.5/). The following preview.4 baseline reports
+remain historical evidence of unchanged features; they are not represented as
+fresh preview.5 executions. Premium-account/physical-device gates remain open.
+
+Preview.5 local execution:
+
+- API 34 phone and API 37.2 tablet (16 KB pages), each **41** controlled tests
+  plus separate cold-start isolation passed.
+- Actual signed release APK on both emulators: split HLS, browser login,
+  process restart, protected download, remux and MediaStore publication passed.
+- Six public Bilibili link forms parsed and returned real media bytes. A complete
+  public 218.56-second, 1080p HEVC + AAC file from the signed APK passed ffprobe
+  checks. No premium account was used.
+- JVM 4 tests passed. Debug/release Lint: zero errors, 28 warnings. All 178
+  native objects passed 16 KB checks; APK signature, zipalign and AAB validation
+  passed. The signer matches preview.4 for an in-place upgrade.
+
+## Previous preview.4 baseline
 
 The previous public Bilibili check was a false positive: missing extractor
 default headers caused mobile redirection and generic extraction of an HTML

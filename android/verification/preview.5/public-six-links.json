@@ -1,0 +1,842 @@
+[
+  {
+    "input": "https:\/\/www.bilibili.com\/video\/BV1NGZtBwELa\/",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "upos-sz-mirrorcos.bilivideo.com",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000206674797069736f6d00000200"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x20x12x103xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f6d00000200"
+      }
+    ]
+  },
+  {
+    "input": "https:\/\/m.bilibili.com\/video\/BV1NGZtBwELa\/",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "cn-hncs-cm-03-08.bilivideo.com",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "video\/mp4",
+        "mediaHeader": "000000206674797069736f6d00000200"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x20x12x103xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f6d00000200"
+      }
+    ]
+  },
+  {
+    "input": "https:\/\/b23.tv\/BV1NGZtBwELa",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "cn-hncs-cm-03-08.bilivideo.com",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "video\/mp4",
+        "mediaHeader": "000000206674797069736f6d00000200"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x1x130x31xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f6d00000200"
+      }
+    ]
+  },
+  {
+    "input": "https:\/\/www.bilibili.com\/video\/av116075081571954\/?p=1",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "cn-hncs-cm-03-08.bilivideo.com",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "video\/mp4",
+        "mediaHeader": "000000206674797069736f6d00000200"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x1x130x31xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f6d00000200"
+      }
+    ]
+  },
+  {
+    "input": "https:\/\/player.bilibili.com\/player.html?bvid=BV1NGZtBwELa",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.00M.10.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "cn-hncs-cm-03-08.bilivideo.com",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "video\/mp4",
+        "mediaHeader": "000000206674797069736f6d00000200"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x1x130x31xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f6d00000200"
+      }
+    ]
+  },
+  {
+    "input": "https:\/\/www.bilibili.com\/video\/BV1GJ411x7h7\/",
+    "parsed": true,
+    "tracks": [
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.5",
+        "label": "30216 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30232 - audio only"
+      },
+      {
+        "kind": "AUDIO",
+        "protocol": "HTTP",
+        "codec": "mp4a.40.2",
+        "label": "30280 - audio only"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "avc1.64001E",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "hev1.1.6.L120.90",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 640,
+        "height": 360,
+        "codec": "av01.0.08M.08.0.110.01.01.01.0",
+        "label": "360P 流畅"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "avc1.64001F",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "hev1.1.6.L120.90",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 852,
+        "height": 480,
+        "codec": "av01.0.08M.08.0.110.01.01.01.0",
+        "label": "480P 标清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "avc1.640028",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "hev1.1.6.L120.90",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1280,
+        "height": 720,
+        "codec": "av01.0.08M.08.0.110.01.01.01.0",
+        "label": "720P 准高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "avc1.640032",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "hev1.1.6.L150.90",
+        "label": "1080P 高清"
+      },
+      {
+        "kind": "VIDEO",
+        "protocol": "HTTP",
+        "width": 1920,
+        "height": 1080,
+        "codec": "av01.0.08M.08.0.110.01.01.01.0",
+        "label": "1080P 高清"
+      }
+    ],
+    "media": [
+      {
+        "kind": "VIDEO",
+        "fallbackCount": 2,
+        "mediaHost": "xy112x17x39x35xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f3500000001"
+      },
+      {
+        "kind": "AUDIO",
+        "fallbackCount": 2,
+        "mediaHost": "xy223x111x175x180xy.mcdn.bilivideo.cn",
+        "mediaStatus": 206,
+        "mediaBytes": 65536,
+        "mediaType": "application\/octet-stream",
+        "mediaHeader": "000000246674797069736f3500000001"
+      }
+    ]
+  }
+]

@@ -1,0 +1,71 @@
+{
+  "version": "0.1.0-preview.4",
+  "date": "2026-10-19",
+  "distribution": "signed GitHub preview; stable and Play gates remain open",
+  "appId": "top.xuzimo.vidown",
+  "minSdk": 34,
+  "compileSdk": "37.2",
+  "targetSdk": 37,
+  "packagedAbis": ["arm64-v8a", "x86_64"],
+  "executedAbis": ["x86_64"],
+  "artifacts": [
+    {
+      "file": "Vidown-Android-0.1.0-preview.4.apk",
+      "bytes": 452706677,
+      "sha256": "1f2426de7de3bfbaae184b012db0bbb12dfd2a0c4e3465c137bf195e4ef57963"
+    },
+    {
+      "file": "Vidown-Android-0.1.0-preview.4.aab",
+      "bytes": 210785405,
+      "sha256": "ae2af2047c884aacf4c27942c2214ee3a48e36236a9d877d95a39927cb22b591"
+    }
+  ],
+  "jvmTests": 4,
+  "lint": {
+    "debug": {
+      "Fatal": 0,
+      "Error": 0,
+      "Warning": 28
+    },
+    "release": {
+      "Fatal": 0,
+      "Error": 0,
+      "Warning": 28
+    }
+  },
+  "controlledDeviceReports": [
+    "preview.4/phone34-landscape.json",
+    "preview.4/tablet37-landscape-16k.json",
+    "preview.4/phone34-portrait.json",
+    "preview.4/tablet37-portrait.json",
+    "preview.4/phone34-large-font.json"
+  ],
+  "startupIsolationTests": "1 separate check passed per full device suite",
+  "releaseReports": [
+    "preview.4/release34-black-box.json",
+    "preview.4/release37-black-box.json"
+  ],
+  "publicReport": "preview.4/public-six-links.json",
+  "websiteReport": "preview.4/website.json",
+  "nativeReport": "preview.4/native-alignment.json",
+  "apkSignature": "official apksigner verify exit 0; v2, one signer",
+  "apkMapping": "official zipalign -c -P 16 4 exit 0",
+  "bundletoolValidation": "1.18.3 validate exit 0",
+  "ciExecuted": true,
+  "realAccountAcceptance": false,
+  "physicalDeviceAcceptance": false,
+  "publicSampleOutcome": {
+    "parsed": true,
+    "videoFormats": 12,
+    "independentAudioFormats": 3,
+    "completeDownloadVerified": true,
+    "premiumFormats": "not tested; no authenticated Android account"
+  },
+  "historicalCorrection": "preview.3 one-muxed public result was an HTML-player false positive, fixed in preview.4",
+  "note": "No source/account credentials or signed media URLs included. Native Compose with portrait bottom-centered and landscape left-centered navigation. Physical arm64 devices and premium accounts remain unverified.",
+  "ciPassed": true,
+  "ciReport": "preview.4/github-ci.json",
+  "motionReport": "preview.4/motion-observation.json",
+  "crossHostReport": "preview.4/linux-apk37-cross-host.json",
+  "subsequentRegressionReport": "regressions/2026-10-19-blob-save.json"
+}

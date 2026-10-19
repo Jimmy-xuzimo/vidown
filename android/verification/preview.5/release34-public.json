@@ -1,0 +1,40 @@
+{
+  "variant": "release",
+  "serial": "emulator-5554",
+  "passed": true,
+  "scope": "black-box HLS independent video/audio, browser session login, process restart, authenticated download, native remux, MediaStore, host ffprobe",
+  "hls": [
+    {
+      "file": "master.m3u8 (2).mp4",
+      "bytes": 388876,
+      "duration": "8.021333",
+      "width": 320,
+      "height": 180,
+      "videoCodec": "h264",
+      "audioCodec": "aac"
+    }
+  ],
+  "authenticated": [
+    {
+      "file": "Protected fixture video (1) (6).mp4",
+      "bytes": 387527,
+      "duration": "8.000000",
+      "width": 320,
+      "height": 180,
+      "videoCodec": "h264",
+      "audioCodec": "aac"
+    }
+  ],
+  "publicBilibili": [
+    {
+      "file": "\u30104K\u9650\u514d\u3011\u4f60\u7684\u65b0\u8bbe\u5907\u80fd\u9876\u4f4f\u5417\uff1f\u5f71\u89c6\u98d3\u98ce\u5e74\u5ea6\u6837\u7247.mp4",
+      "bytes": 42252459,
+      "duration": "218.559667",
+      "width": 1920,
+      "height": 1080,
+      "videoCodec": "hevc",
+      "audioCodec": "aac"
+    }
+  ],
+  "publicScope": "One public sample without login; complete download and ffprobe comparison to selected format; premium formats and physical devices not tested"
+}

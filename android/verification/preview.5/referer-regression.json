@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-19",
+  "runtimeCommit": "dac9650d273303ea0775f3eae6db0c7e570902ed",
+  "before": {
+    "test": "ExtractionRegressionTest.mediaRefererReachesTheServer",
+    "expected": "a nonempty page Referer",
+    "received": null,
+    "result": "failed as expected on the old transport"
+  },
+  "fix": "Use WebRequest.Builder.referrer instead of a plain Referer header; preserve Range and origin-only page referrer through cross-origin CDN redirects",
+  "after": {
+    "requestEcho": true,
+    "crossOriginRange": true,
+    "privateHeadersRemoved": true,
+    "pageQueryRemoved": true,
+    "authenticatedFallbackRedirectCompleteBytesMatch": true
+  },
+  "scope": "Controlled fixture auth plus public network sample. No premium-account or physical-device validation."
+}

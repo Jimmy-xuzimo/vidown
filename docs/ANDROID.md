@@ -1,14 +1,14 @@
 # Android 安装与使用
 
-当前为 **0.1.0-preview.4 签名预览版**，独立于桌面版 1.0.5。应用使用 Kotlin、Jetpack Compose 和 Material 3 编写，网页使用 GeckoView；不运行 Electron、React 或桌面原生宿主。尚未命名稳定版，也未上架 Google Play。
+当前为 **0.1.0-preview.5 签名预览版**，独立于桌面版 1.0.5。应用使用 Kotlin、Jetpack Compose 和 Material 3 编写，网页使用 GeckoView；不运行 Electron、React 或桌面原生宿主。尚未命名稳定版，也未上架 Google Play。
 
 ## 安装与升级
 
-从 [Android Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4) 下载唯一的 `Vidown-Android-0.1.0-preview.4.apk`。要求 Android 14+（API 34），同一 APK 包含 ARM64 与 x86_64，面向手机、平板及可调整大小的窗口。首版不承诺 Chromebook 或 Windows 安卓环境。
+从 [Android Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5) 下载唯一的 `Vidown-Android-0.1.0-preview.5.apk`。要求 Android 14+（API 34），同一 APK 包含 ARM64 与 x86_64，面向手机、平板及可调整大小的窗口。首版不承诺 Chromebook 或 Windows 安卓环境。
 
 在系统提示时仅授权用于安装此 APK 的应用。浏览器、Python、提取器、JavaScript 引擎与媒体库均随包提供，无需另外安装运行时；这也使 APK 较大，约 432 MiB。相同签名可覆盖升级，卸载会丢失应用私有资料。Android 与桌面版不自动同步账号、设置或下载记录。
 
-应用源码由同版本标签提供。[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.4) 保存完整源码／第三方构建材料和 SHA-256；AAB 用于后续 Play 评估，不作为普通用户安装包。
+应用源码由同版本标签提供。[独立资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.5) 保存完整源码／第三方构建材料和 SHA-256；AAB 用于后续 Play 评估，不作为普通用户安装包。
 
 ## 从链接到成品
 

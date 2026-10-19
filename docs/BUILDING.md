@@ -33,7 +33,7 @@ macOS 当前设置最低 15.0；Linux 在 Ubuntu 24.04 构建，不承诺兼容�
 
 ## Android 原生构建
 
-工程位于 `android/`，当前版本 0.1.0-preview.4，应用 ID `top.xuzimo.vidown`。最低 API 34，compile SDK 37.2，target API 37；固定 JDK 17、Gradle 9.6.0、AGP 9.4.0、Kotlin 2.4.21、NDK 28.2.13676358 和 CMake 3.31.6。以工程锁定文件和 [Android README](../android/README.md)为准，不通过 npm 或桌面打包工作流生成 APK。
+工程位于 `android/`，当前版本 0.1.0-preview.5，应用 ID `top.xuzimo.vidown`。最低 API 34，compile SDK 37.2，target API 37；固定 JDK 17、Gradle 9.6.0、AGP 9.4.0、Kotlin 2.4.21、NDK 28.2.13676358 和 CMake 3.31.6。以工程锁定文件和 [Android README](../android/README.md)为准，不通过 npm 或桌面打包工作流生成 APK。
 
 在 `android/` 目录执行（Windows 原生库使用 MSYS2 Bash）：
 

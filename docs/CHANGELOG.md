@@ -2,6 +2,15 @@
 
 按已公开的应用 Release 记录，桌面与 Android 使用独立版本。日期采用北京时间。资料 Release 不是额外应用版本；未单独公开发行的中间预览不列为发行版本。
 
+## Android 0.1.0-preview.5 · 2026-10-19
+
+- 修复 Gecko 覆盖普通 Referer 请求头的问题，下载请求通过原生来源页面接口保留防盗链所需上下文。
+- 跨 CDN 跳转保留 Range 和来源站点，移除来源页面的路径、查询参数及私有授权头。
+- 新增请求头实收、跨域隔离、登录鉴权与备用 CDN 完整文件对比回归，重新生成签名通用 APK。
+- 真实大会员账号与 ARM64 真机仍待用户设备验收，不将受控测试等同于全部网站可下载。
+
+[发行说明与 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5) · [源码与校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.5)
+
 ## Android 0.1.0-preview.4 · 2026-10-19
 
 - 发布独立原生 Kotlin／Compose／Material 3 应用，一个签名 APK 覆盖 ARM64、x86_64，最低 Android 14。

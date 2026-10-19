@@ -76,7 +76,7 @@ const english = {
   t73: "Project-owned code is MIT licensed; third-party components retain their own licenses.",
   t74: "Take your keepers with you.",
   t75: "Native Kotlin and Material 3, adapted for phones, tablets and both orientations. Android 14+. One APK for ARM64 and x86_64.",
-  t76: "0.1.0-preview.4 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
+  t76: "0.1.0-preview.5 · Preview. Public samples and emulator tests do not establish premium-account support or physical-device performance.",
   t77: "Download Android APK",
   t78: "Source & validation scope",
   t79: "Changelog",
@@ -102,6 +102,10 @@ const english = {
   t99: "Gecko defaults to desktop mode and shares sign-in sessions. Download, lossless remux, validation and publication to system storage form one workflow.",
   t100: "Android 14+. Controlled protocols and public samples verified; premium permissions, ARM64 hardware, battery and background performance remain unverified. Not published on Google Play.",
   t101: "Browse all releases on GitHub",
+  t102: "Fix media request referrers",
+  t103: "Use Gecko's native referrer API so media requests retain the page context required by hotlink checks.",
+  t104: "Keep byte ranges and the page origin across CDN redirects, without forwarding private credentials or page query parameters.",
+  t105: "Add authenticated CDN, fallback and complete-file comparison regressions and publish a new signed APK. Premium accounts and physical devices still require acceptance.",
 };
 const root = document.documentElement;
 const languageButton = document.getElementById("language");

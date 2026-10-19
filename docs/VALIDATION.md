@@ -2,7 +2,7 @@
 
 ## Android 预览版与 CI 回归（2026-10-19）
 
-Android **0.1.0-preview.4** 使用独立测试与版本链路，不沿用下方桌面真实账号结论。完整记录见 [Android 验收表](../android/ACCEPTANCE.md)与[原始证据索引](../android/verification/index.json)。已完成受控协议、共享会话、独立轨道、原生处理和系统存储发布，以及公开 B 站样本的模拟器成品下载；真实会员最高规格、ARM64 真机和后台性能仍待验收。
+Android **0.1.0-preview.5** 使用独立测试与版本链路，不沿用下方桌面真实账号结论。完整记录见 [Android 验收表](../android/ACCEPTANCE.md)与[原始证据索引](../android/verification/index.json)。已完成受控协议、共享会话、独立轨道、原生处理和系统存储发布，以及公开 B 站样本的模拟器成品下载；真实会员最高规格、ARM64 真机和后台性能仍待验收。
 
 主分支[运行 39157748209](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39157748209)在 API 37.2／16KB 平板中出现一次 `webpageBlobSavePublishesRealMedia` 的 60 秒超时，其余八个模拟器作业通过。本次失败发生在应用测试阶段，与先前已修复的 SDK／AVD 启动问题不同。
 
