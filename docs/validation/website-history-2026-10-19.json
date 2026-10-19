@@ -1,0 +1,141 @@
+{
+  "passed": true,
+  "url": "https://jimmy-xuzimo.github.io/vidown/",
+  "cases": [
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "zh-CN"
+    },
+    {
+      "width": 320,
+      "theme": "light",
+      "language": "en"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "language": "zh-CN"
+    },
+    {
+      "width": 320,
+      "theme": "dark",
+      "language": "en"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "zh-CN"
+    },
+    {
+      "width": 390,
+      "theme": "light",
+      "language": "en"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "zh-CN"
+    },
+    {
+      "width": 390,
+      "theme": "dark",
+      "language": "en"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "language": "zh-CN"
+    },
+    {
+      "width": 768,
+      "theme": "light",
+      "language": "en"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "language": "zh-CN"
+    },
+    {
+      "width": 768,
+      "theme": "dark",
+      "language": "en"
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "language": "zh-CN"
+    },
+    {
+      "width": 1024,
+      "theme": "light",
+      "language": "en"
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "language": "zh-CN"
+    },
+    {
+      "width": 1024,
+      "theme": "dark",
+      "language": "en"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "zh-CN"
+    },
+    {
+      "width": 1440,
+      "theme": "light",
+      "language": "en"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "zh-CN"
+    },
+    {
+      "width": 1440,
+      "theme": "dark",
+      "language": "en"
+    }
+  ],
+  "noJavaScript": true,
+  "releaseLinks": [
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.2",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4"
+  ],
+  "apk": "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.4/Vidown-Android-0.1.0-preview.4.apk",
+  "remoteStatus": [
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.2",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.4/Vidown-Android-0.1.0-preview.4.apk",
+      "status": 200
+    }
+  ]
+}

@@ -30,16 +30,34 @@ run, [39157748209](https://github.com/Jimmy-xuzimo/vidown/actions/runs/391577482
 failed the blob-save test on the API 37.2 16 KB tablet; the other eight device jobs
 passed. This was an application-test timeout, not the previous SDK provisioning
 failure. The test clicked after response headers and a fixed one-second delay,
-before asynchronous file preparation enabled the webpage button.
+which does not establish that asynchronous preparation enabled the button. The
+original CI did not record the DOM state at the instant of the click.
 
 A three-second fixture preparation delay reproduces the same failure with the
-old test. The corrected test waits for explicit DOM readiness, acknowledges the
-real touch-triggered save and compares the complete saved bytes to the fixture
-source. It does not increase the transfer timeout or retry failed tests. Local
-16 KB tablet acceptance passed all 38 checks and the separate startup check,
-followed by three blob-save repetitions. See the [regression record](verification/regressions/2026-10-19-blob-save.json)
-for the new hosted run and its final results. Application runtime source and the
-published signed preview APK are unchanged; no reinstall or tag movement is needed.
+old test. A readiness-only correction passed locally but the subsequent hosted
+run [39187745887](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39187745887)
+still missed the real click on API 37 tablets; the new acknowledgement localized
+the failure before file saving. That run also had an independent API 35 tablet
+SDK ZIP download failure before any application test ran.
+
+The final correction waits for explicit DOM readiness and the actual Gecko
+compositor frame, injects a touch using the native view's screen coordinates,
+acknowledges the real save and compares complete output bytes with the source.
+It captures a pre-touch frame and a failure screenshot for future diagnosis.
+It does not increase the transfer timeout or retry failed tests. Local results
+and the final hosted run are recorded in the [regression record](verification/regressions/2026-10-19-blob-save.json).
+Application runtime source and the published signed preview APK are unchanged;
+no reinstall or tag movement is needed.
+
+The [final hosted run](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39188787785)
+passed all nine configurations: 38 controlled tests and a separate startup check
+each. Lint has zero errors and 28 retained warnings; all 178 native ELF objects
+pass alignment checks. The API 34 tablet initially encountered an unrelated
+[Pixel Launcher ANR overlay](verification/regressions/launcher-anr-before-tap.png).
+Android correctly rejected injection into the system-owned window. Only that
+job was rerun after checking the screenshot and InputDispatcher logs, then passed;
+the other eight were not rerun. The complete record retains this infrastructure
+failure alongside the successful second attempt.
 
 ### Published preview evidence
 

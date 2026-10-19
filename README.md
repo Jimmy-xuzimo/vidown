@@ -46,6 +46,8 @@
 
 支持 Android 14+ 的手机、平板与横竖屏窗口，同一签名 APK 包含 ARM64 和 x86_64。浏览器、Python、提取器及媒体库随包提供，无需配置运行时。它是独立原生应用，不是桌面版套壳；完整迁移和真实设备验收仍在进行中。
 
+![Android 预览版：模拟器中的手机竖屏、平板横屏与独立音视频选择](android/verification/preview.4/interface-preview.png)
+
 - 工作台顶部粘贴／分享链接，解析后分别选择视频与音频。B 站链接保留分 P、源格式和备用 CDN，拒绝将 HTML 页面当成媒体。
 - Gecko 浏览器默认桌面模式，多标签、登录保存、资源发现与工作台共享会话；不导入外部浏览器 Cookie。
 - Media3 下载 HLS／DASH／直链，JNI／FFmpeg 无损合并和检查，成功后写入 MediaStore 或系统授权的文件夹。

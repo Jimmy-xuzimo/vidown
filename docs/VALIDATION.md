@@ -6,11 +6,15 @@ Android **0.1.0-preview.4** 使用独立测试与版本链路，不沿用下方�
 
 主分支[运行 39157748209](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39157748209)在 API 37.2／16KB 平板中出现一次 `webpageBlobSavePublishesRealMedia` 的 60 秒超时，其余八个模拟器作业通过。本次失败发生在应用测试阶段，与先前已修复的 SDK／AVD 启动问题不同。
 
-原因是测试把媒体响应头与页面加载完成当作异步 blob 已就绪，固定等待一秒后点击仍被禁用的按钮，随后一直等待不存在的下载任务。增加受控的三秒文件准备延迟后，旧测试在本地 16KB 模拟器复现同样超时。修复后等待网页完成准备、确认真实触摸已触发保存，再逐字节对比成品与源文件；没有增加原有下载超时、自动重试或绕过系统限制。
+定位到测试存在网页就绪及触摸同步缺陷。媒体响应头不代表异步 blob 已准备好，Compose 空闲也不代表独立 Gecko 合成器已绘制完成。增加三秒准备延迟后，旧测试在本地复现超时；原 CI 未记录点击瞬间的 DOM 状态。第一轮修正仅等待 DOM 就绪，本地通过，但[云端重测](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39187745887)在 API 37 平板未收到保存点击确认，进一步定位到实际触摸阶段。该轮 API 35 平板另有系统镜像 ZIP 下载错误，尚未执行应用测试。
 
-本地 API 37.2／16KB 平板的 38 项受控测试、独立冷启动检查、三次慢速 blob 保存复测通过；JVM 测试和 Lint 通过。新云端运行及最终结果见 [blob 回归记录](../android/verification/regressions/2026-10-19-blob-save.json)。原失败和此前通过记录分别保留，不能用历史绿灯覆盖后续失败。只修改测试与 fixture，应用代码、签名 APK、版本和发行标签保持原样，无需用户重新安装。
+最终测试等待网页就绪与实际 Gecko 渲染帧，使用原生视图的屏幕坐标注入真实触摸，确认保存已触发后逐字节对比成品与源文件；同时保存点击前和失败时的截图。没有增加原有下载超时或自动重试失败测试。
 
-项目网站增加桌面／Android 独立更新历史。`node scripts/verify-site.mjs` 检查 320／390／768／1024／1440 px、中英文和深浅主题共 20 组，以及无 JavaScript 的展开阅读；检查未出现横向溢出、空翻译或脚本错误。线上验证使用 `--url https://jimmy-xuzimo.github.io/vidown/`，与本地检查分开执行。
+本地 API 37.2／16KB 平板的 38 项受控测试、独立冷启动检查、三次慢速 blob 保存复测通过。[最终云端运行 39188787785](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39188787785)的九种配置均通过，每种 38 项受控测试加一项独立冷启动检查；JVM 测试通过，Lint 零错误、28 项警告，178 个原生 ELF 通过 16KB 对齐检查。
+
+本轮云端 API 34 平板第一次被 [Pixel Launcher 无响应弹窗](../android/verification/regressions/launcher-anr-before-tap.png)遮挡，系统拒绝向其他 UID 窗口注入针对应用的触摸。日志与截图确认是系统启动器故障后，仅重跑该作业并通过；其余八个作业未重跑。精确结果和两轮定位过程见 [blob 回归记录](../android/verification/regressions/2026-10-19-blob-save.json)。原失败和此前通过记录分别保留。只修改测试与 fixture，应用代码、签名 APK、版本和发行标签保持原样，无需用户重新安装。
+
+项目网站增加桌面／Android 独立更新历史。`node scripts/verify-site.mjs` 检查 320／390／768／1024／1440 px、中英文和深浅主题共 20 组，以及无 JavaScript 的展开阅读；检查未出现横向溢出、空翻译或脚本错误。本地和部署后的[线上检查](validation/website-history-2026-10-19.json)分别执行并通过，五个发行说明和 Android APK 的公开链接均返回 HTTP 200。[Pages 部署](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39188207354)成功。
 
 ## 1.0.5 抖音网页解析修复（2026-10-18，本地 Windows x64）
 

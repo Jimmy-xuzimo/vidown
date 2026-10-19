@@ -30,4 +30,4 @@ body:
     id: environment
     attributes:
       label: 相关平台与版本
-      placeholder: "例如：Windows 11、Vidown 1.0.4；或适用于所有平台"
+      placeholder: "例如：Windows 11／桌面 1.0.5，Android 14／0.1.0-preview.4；或所有平台"

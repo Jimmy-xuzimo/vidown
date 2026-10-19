@@ -2,6 +2,8 @@
 
 Vidown's newly authored application source is MIT licensed. This does not relicense the components below. No Cat Catch source code is incorporated.
 
+## Desktop distribution
+
 | Component                                     | Pinned version              | License / source                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | --------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Electron                                      | 44.8.0                      | MIT; Chromium and Node include additional notices. [Source](https://github.com/electron/electron/tree/v44.8.0)                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -19,3 +21,27 @@ Installed npm components retain their license files. The Windows application dir
 The Windows webpage host uses the user's installed Microsoft Evergreen WebView2 runtime; that browser runtime is not bundled. Electron remains the local application shell and network transport for protocol downloads. The native host is self-contained, so users do not need a separate .NET installation. Its pinned runtime versions and associated notices are retained in `webview2-host`.
 
 Public release packages are built by `.github/workflows/release.yml` on native Windows, macOS and Linux runners. The application release links to a separate persistent `v<version>-materials` release containing each platform’s corresponding-source archive with the actual FFmpeg/x264 trees, Python and Python dependency sources, source revisions, build recipes and configuration. The application source is available at the same release tag. Exact dependency inventories and SHA-256 values accompany the artifacts. See [build instructions](docs/BUILDING.md). Electron retains its LICENSE / Chromium notices; the Windows native host retains WebView2 and .NET notices. macOS uses ad-hoc signatures only; Windows binaries are unsigned. The application must not describe the entire binary bundle as MIT.
+
+## Android distribution
+
+Android is a separate native application. It does not ship Electron, React, the
+Windows WebView2/.NET host, the desktop yt-dlp executable or N_m3u8DL-RE. Its
+component inventory and licenses are documented in [Android third-party materials](android/THIRD_PARTY.md),
+with exact native archives in [sources.lock.json](android/tools/sources.lock.json),
+Python wheel hashes in [requirements.lock.txt](android/app/requirements.lock.txt)
+and resolved Android dependencies in the Gradle lock and verification metadata.
+
+The APK includes GeckoView (MPL-2.0 and retained third-party notices), Chaquopy
+(MIT), Python (PSF and component exceptions), yt-dlp/yt-dlp-ejs (Unlicense and
+component notices), QuickJS-NG/libxml2 (MIT), AndroidX/Kotlin (Apache-2.0 and
+retained notices), and dynamically linked LGPL FFmpeg. The Android FFmpeg build
+disables GPL/nonfree options and does not bundle x264; the desktop GPL build
+described above does not describe the APK. Optional compatibility export uses
+Android MediaCodec.
+
+The [Android materials release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.4)
+provides the matching source/build archive and checksums. Settings exposes the
+bundled component notices; Mozilla's notices remain in Gecko's package. No Seal
+source, assets or binaries are incorporated; see the [reference review](android/REFERENCE_REVIEW.md).
+The application-owned source remains MIT, while every bundled component retains
+its own license. Do not label the complete APK solely MIT.

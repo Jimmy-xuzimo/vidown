@@ -136,9 +136,11 @@ crash loops ([upstream report](https://github.com/actions/runner-images/issues/1
 change a developer's local SDK or skip application assertions.
 
 The blob-save fixture intentionally prepares its file asynchronously. Its test
-waits for the DOM-ready title, performs a real touch, waits for the save
-acknowledgement and compares complete output bytes with the source. Network
-response headers alone do not establish blob readiness. Subsequent failures and
+waits for the DOM-ready title and an actual Gecko compositor frame, performs a
+system-coordinate touch on the native view, waits for save acknowledgement and
+compares complete output bytes with the source. Compose idleness does not wait
+for the separate Gecko compositor; response headers alone do not establish blob
+readiness. Subsequent failures and
 fix verification are recorded separately from the immutable preview evidence in
 [acceptance](ACCEPTANCE.md#subsequent-ci-regression-blob-readiness).
 
