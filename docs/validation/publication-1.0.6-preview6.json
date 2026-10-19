@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "7a67976d0e2b6dfa9a598667e7adbe8bc015341a",
+  "desktop": {
+    "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6",
+    "installers": [
+      {
+        "name": "Vidown-1.0.6-Linux-arm64.AppImage",
+        "size": 198048277,
+        "digest": "sha256:37b2527ffb61d4ba68acbcfad5ded15d1c649b8689097c5f0f7017d586c9b8eb"
+      },
+      {
+        "name": "Vidown-1.0.6-Linux-x86_64.AppImage",
+        "size": 199352470,
+        "digest": "sha256:897cd147d1f8113cb0b3d7f42b57526b92d91f2ba7713c79edd856913508b9d6"
+      },
+      {
+        "name": "Vidown-1.0.6-macOS-arm64.dmg",
+        "size": 178032155,
+        "digest": "sha256:0c6b9d4a4b79173b4115f0bd639d4badbbf8bfa8e2711aa8b179f9f2afe63f16"
+      },
+      {
+        "name": "Vidown-1.0.6-macOS-x64.dmg",
+        "size": 186886755,
+        "digest": "sha256:68df65c6a8aa3d76fd9bb6bddcd2ac21a5be8691b2fa8d16988e305fcccbffb4"
+      },
+      {
+        "name": "Vidown-Setup-1.0.6.exe",
+        "size": 213767503,
+        "digest": "sha256:1c83b7d53c866ff1cd6b30a899333f5f8fadb1e87772f8c61323712642fc7741"
+      }
+    ],
+    "materialsUrl": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6-materials",
+    "platformReports": [
+      {
+        "platform": "Linux",
+        "arch": "arm64",
+        "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304"
+      },
+      {
+        "platform": "Linux",
+        "arch": "x64",
+        "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304"
+      },
+      {
+        "platform": "macOS",
+        "arch": "arm64",
+        "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304"
+      },
+      {
+        "platform": "macOS",
+        "arch": "x64",
+        "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304"
+      },
+      {
+        "platform": "Windows",
+        "arch": "x64",
+        "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304"
+      }
+    ]
+  },
+  "android": {
+    "sourceCommit": "690203459127e7af05fa5b3ae1647fc54981052b",
+    "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6",
+    "materialsUrl": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.6",
+    "apk": [
+      {
+        "name": "Vidown-Android-0.1.0-preview.6.apk",
+        "size": 452740245,
+        "digest": "sha256:02f746ed81e369c382117018e23599f68db74c8c4de7bea7dfb77d85430d6115"
+      }
+    ]
+  },
+  "latestStable": "v1.0.6",
+  "allServerDigestsVerified": true
+}

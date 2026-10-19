@@ -74,5 +74,20 @@
         "screenshot": "ci-34-phone-launcher-anr.png"
       }
     ]
+  },
+  "finalRuntimeCi": {
+    "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937",
+    "sourceCommit": "690203459127e7af05fa5b3ae1647fc54981052b",
+    "firstAttemptFailures": [
+      {
+        "job": 117895119697,
+        "configuration": "API 34 tablet",
+        "cause": "Pixel Launcher ANR overlay; screenshot and am_anr identify com.google.android.apps.nexuslauncher. App-targeted input correctly refused another UID window.",
+        "screenshot": "ci-6902034-34-tablet-launcher-anr.png"
+      }
+    ],
+    "result": "All nine configurations passed; only the diagnosed launcher-ANR job was rerun.",
+    "rerunJob": 117897164530,
+    "attempts": 2
   }
 }

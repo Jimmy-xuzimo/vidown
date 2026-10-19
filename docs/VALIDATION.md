@@ -2,6 +2,12 @@
 
 ## 1.0.6 影片／单集与跨站点回归（2026-10-19）
 
+桌面 [1.0.6 五平台发行运行](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39200094304)全部通过，包含 Windows x64、macOS Intel／Apple Silicon 和 Linux x64／ARM64 的实际打包载荷、受控下载、浏览器登录与清理检查。发行标签固定在 `7a67976`。此前 Linux 退出回归发现迟到的浏览器布局回调错误，已修复并增加退出压力检查；Windows 新标签测试的同名控件定位也已修正。安装包、对应源码和报告的线上 SHA-256 已核对，见[发行核验](validation/publication-1.0.6-preview6.json)。
+
+Android 最终运行时为 `6902034`，独立发布 **0.1.0-preview.6**。[九种配置的完整矩阵](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937)全部通过，每种 44 项受控测试与一项独立冷启动检查；覆盖 Android 14—17 的手机／平板和 16KB 环境。初轮 API 34 平板被 Pixel Launcher 系统 ANR 弹窗遮挡，日志和截图确认后仅重跑该作业并通过。此前两轮发现并修正键盘高度处理：根布局避让键盘、换页收起键盘，横屏导航不重复扣除 IME 高度。最终签名 APK 在 API 34 手机和 API 37.0 横屏平板分别完成分轨、登录、进程重启、鉴权下载、JNI 合并、MediaStore 与 ffprobe 检查；178 个原生库及 APK 映射通过 16KB 检查，签名与 preview.5 一致，AAB 校验通过。Lint 零错误、28 项警告。[完整 CI 证据](../android/verification/preview.6/github-ci.json)保留每种配置及失败尝试；[本轮过程](../android/verification/preview.6/attempts.json)保留初始缺陷与系统弹窗证据。真实会员完整全片和 ARM64 真机仍待验收。
+
+两个新版发行后重新执行[官网线上检查](../android/verification/preview.6/website-deployed.json)：20 组尺寸／主题／语言与无 JavaScript 阅读通过，发行说明与 APK 下载链接均返回 HTTP 200。官网展示桌面与 Android 的独立更新历史。
+
 本轮增加两端 PGC 单集适配，不将普通投稿解析器套用到电影／剧集。用户提供的 `ss231879` 正常影片接口列出潮汕话和普通话两个版本；选择对应单集后读取当前浏览器会话的播放接口。无账号公开测试只获得试看，因此界面明确提示试看，不作为会员全片证据。
 
 桌面端对该影片页实际执行版本选择、单集规格展示及原始 CDN 部分字节读取；同时对普通投稿、X、YouTube 做格式解析与实际队列限量取流。抖音第一次隔离会话未返回资源，后续正常公开复测通过格式解析、4K 片段及短视频完整保存；Vimeo 公开样本要求登录，不能声明抽样全部通过。完整矩阵见[逐站点范围](SITE_SUPPORT.md)。长视频仅验证有界部分，不重复完整下载。

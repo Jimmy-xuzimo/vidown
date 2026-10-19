@@ -1,0 +1,181 @@
+{
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937",
+  "sourceCommit": "690203459127e7af05fa5b3ae1647fc54981052b",
+  "attempts": 2,
+  "status": "completed",
+  "conclusion": "success",
+  "configurations": [
+    {
+      "configuration": "android-36-phone-google_apis",
+      "summary": {
+        "api": 36,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-34-tablet-google_apis",
+      "summary": {
+        "api": 34,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-34-phone-google_apis",
+      "summary": {
+        "api": 34,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.0-tablet-google_apis",
+      "summary": {
+        "api": 37,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.0-phone-google_apis",
+      "summary": {
+        "api": 37,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-36-tablet-google_apis",
+      "summary": {
+        "api": 36,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-35-phone-google_apis",
+      "summary": {
+        "api": 35,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-35-tablet-google_apis",
+      "summary": {
+        "api": 35,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.2-tablet-google_apis_ps16k",
+      "summary": {
+        "api": 37,
+        "pageSize": 16384,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 44,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    }
+  ],
+  "lint": {
+    "Fatal": 0,
+    "Error": 0,
+    "Warning": 28
+  },
+  "nativeLibraries": 178,
+  "scope": "Final source debug packages and controlled synthetic media; no live accounts or physical devices.",
+  "failedAttempts": [
+    {
+      "id": 117895119697,
+      "name": "emulator (34, tablet, google_apis)",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937/job/117895119697",
+      "conclusion": "failure"
+    }
+  ],
+  "runtimeTree": {
+    "packaged": "1a41925b36f0a91e65a7fb33e9d6336ed7f2c9c6",
+    "tested": "1a41925b36f0a91e65a7fb33e9d6336ed7f2c9c6"
+  }
+}

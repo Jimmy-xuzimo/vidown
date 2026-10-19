@@ -34,8 +34,8 @@
   },
   "jvmTests": 4,
   "controlledDeviceReports": [
-    "preview.6/phone34.json",
-    "preview.6/tablet37-16k.json"
+    "preview.6/phone34-final.json",
+    "preview.6/tablet37-final.json"
   ],
   "startupIsolationTests": "1 separate cold check per full local suite",
   "finalAdapterRegression": "preview.6/site-adapter-regression.json",
@@ -51,7 +51,18 @@
   "previousVersionEvidence": "preview.5/index.json",
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
-  "ciStatusAtPackaging": "Final navigation now excludes already-consumed keyboard insets; API 37 landscape keyboard regression passed. Replacement full matrix pending.",
+  "ciStatusAtPackaging": "All nine final-source configurations passed; final signed APK separately verified locally.",
   "keyboardRegression": "preview.6/keyboard-navigation34-tablet.json",
-  "keyboardRegression37": "preview.6/keyboard-navigation37-tablet.json"
+  "keyboardRegression37": "preview.6/keyboard-navigation37-tablet.json",
+  "executedPageSizes": [4096, 16384],
+  "previousLocalExtractionBaseline": [
+    "preview.6/phone34.json",
+    "preview.6/tablet37-16k.json"
+  ],
+  "ciPassed": true,
+  "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937",
+  "ciReport": "preview.6/github-ci.json",
+  "runtimeCommit": "690203459127e7af05fa5b3ae1647fc54981052b",
+  "deployedWebsiteReport": "preview.6/website-deployed.json",
+  "publicationReport": "../../docs/validation/publication-1.0.6-preview6.json"
 }
