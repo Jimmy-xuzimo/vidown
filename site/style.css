@@ -65,6 +65,13 @@ img {
   max-width: 100%;
   height: auto;
 }
+.icon-arrow {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: -0.14em;
+}
 p {
   color: var(--muted);
   line-height: 1.9;

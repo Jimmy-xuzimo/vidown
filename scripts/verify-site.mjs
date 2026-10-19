@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import { readFile, mkdir, writeFile } from "node:fs/promises";
 import { resolve, extname } from "node:path";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 // Local QA uses the same /vidown/ base path as Pages. Pass --url for deployed QA.
 const root = resolve("site");
@@ -46,8 +46,9 @@ if (!url) {
 }
 let browser;
 try {
-  browser = await chromium.launch({
-    channel: process.platform === "win32" ? "msedge" : undefined,
+  const useWebKit = process.argv.includes("--webkit");
+  browser = await (useWebKit ? webkit : chromium).launch({
+    channel: !useWebKit && process.platform === "win32" ? "msedge" : undefined,
   });
   const page = await browser.newPage({
     reducedMotion: "reduce",
@@ -60,6 +61,30 @@ try {
     200,
   );
   const cases = [];
+  // SVG paths must render identically across Apple/Windows emoji font choices.
+  assert.equal(await page.locator("svg.icon-arrow-outward").count(), 29);
+  assert.equal(await page.locator("svg.icon-arrow-right").count(), 1);
+  assert.equal(
+    await page
+      .locator("body")
+      .innerText()
+      .then((text) => /[↗→]/u.test(text)),
+    false,
+  );
+  assert.equal(
+    await page
+      .locator("svg.icon-arrow")
+      .evaluateAll((icons) =>
+        icons.every(
+          (icon) =>
+            icon.getAttribute("aria-hidden") === "true" &&
+            icon.getAttribute("focusable") === "false" &&
+            icon.querySelector("path") &&
+            icon.getAttribute("stroke") === "currentColor",
+        ),
+      ),
+    true,
+  );
   const viewports = [
     [320, 568],
     [360, 640],
@@ -316,6 +341,8 @@ try {
   }
   const result = {
     passed: true,
+    browser: useWebKit ? "webkit" : "chromium",
+    vectorArrows: true,
     url,
     cases,
     noJavaScript: true,

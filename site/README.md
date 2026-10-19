@@ -20,6 +20,9 @@ the Android card in both languages, both themes and compact/wide layouts.
 
 The first screen pairs the project slogan and download/source links with a real
 application screenshot. Its framing is decorative CSS, with no animation loop.
+All decorative arrows are inline SVG paths with `currentColor`, hidden from
+assistive technology; they do not depend on Unicode/emoji fonts on iOS or other
+systems. Their appearance remains consistent without JavaScript or external assets.
 
 The theme button toggles the currently visible light/dark palette in one click;
 system appearance is only the initial default, not a third button state. Explicit
@@ -52,6 +55,9 @@ phone, tablet and desktop portrait/landscape sizes, first-screen slogan/actions
 and screenshot visibility, timeline layout and expansion, keyboard navigation,
 mobile navigation, translations and no-JavaScript reading. Screenshots
 and the report remain in ignored `work/site-history-qa/`.
+Add `--webkit` to run the layout and vector-arrow checks with Playwright WebKit
+(install the matching engine with `npx playwright install webkit`). This is engine
+coverage on the test host, not an iOS hardware acceptance claim.
 
 Run `node scripts/verify-site-motion.mjs` (optionally with the same `--url`) for
 normal-motion checks at four phone/tablet/desktop window sizes: radial origin,
