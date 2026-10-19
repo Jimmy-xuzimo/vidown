@@ -8,6 +8,8 @@
 
 新增 `node scripts/verify-site-motion.mjs`，在手机横竖屏、平板与电脑四种窗口检查扩散原点、单击切换、快速点击、主题记忆、键盘、滚动入场与结束后零活动动画、折叠状态、旧偏好迁移、系统主题变化、减少动态效果、强制颜色及不支持 View Transitions 的降级。同时采集本机浏览器的空闲主线程开销和 4 倍 CPU 降速下的帧间隔，不能据此承诺所有真实设备帧率。[本地报告](validation/website-motion-2026-10-19-local.json)保留具体数据；原有 72 组响应式／中英文／深浅主题检查继续执行。
 
+网页提交 `aa00ae9` 的 [Pages 部署](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39207445272)成功。[线上动效检查](validation/website-motion-2026-10-19-deployed.json)及 [72 组线上布局回归](validation/website-motion-layout-2026-10-19-deployed.json)均通过，公开发行说明和 APK 链接可访问。本次仅更新官网，不变更桌面／Android 应用版本与安装包。
+
 ## 官网首屏与统一时间轴（2026-10-19）
 
 官网首屏调整为项目口号、下载／源码链接与真实应用截图；保留中英文、深浅主题和无 JavaScript 阅读。桌面与 Android 发行记录使用同一种原生折叠卡片，默认只显示平台、版本、日期和标题；宽窗口交错排列在同一根时间轴两侧，窄窗口使用左侧单轴。完整说明与原 Release 链接保留，没有更改应用版本或重新打包安装程序。
