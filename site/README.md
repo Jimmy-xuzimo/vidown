@@ -21,6 +21,20 @@ the Android card in both languages, both themes and compact/wide layouts.
 The first screen pairs the project slogan and download/source links with a real
 application screenshot. Its framing is decorative CSS, with no animation loop.
 
+The theme button toggles the currently visible light/dark palette in one click;
+system appearance is only the initial default, not a third button state. Explicit
+choices persist across visits. View Transitions reveals the new palette from the
+button centre in 520 ms; unsupported browsers use a short opacity fade. Rapid
+input retains the latest choice. Reduced motion and forced colours skip effects.
+
+Motion uses native Web Animations and one-shot IntersectionObserver reveals for
+headings, screenshots, cards and the footer, plus screenshot/menu/disclosure
+transitions. Most effects animate opacity and transform; supported browsers also
+animate disclosure height briefly. There are no scroll handlers, parallax loops,
+blur layers, external animation libraries or permanently promoted layers. Hidden
+pages cancel active effects. Content remains readable without animation APIs or
+JavaScript. Reduced motion suppresses both CSS and JavaScript effects.
+
 `#history` records published desktop and Android releases on one shared timeline,
 with China Standard Time dates. Cards alternate sides on wide windows and use a
 single left axis on narrow windows. All cards use the same native `<details>`
@@ -38,3 +52,11 @@ phone, tablet and desktop portrait/landscape sizes, first-screen slogan/actions
 and screenshot visibility, timeline layout and expansion, keyboard navigation,
 mobile navigation, translations and no-JavaScript reading. Screenshots
 and the report remain in ignored `work/site-history-qa/`.
+
+Run `node scripts/verify-site-motion.mjs` (optionally with the same `--url`) for
+normal-motion checks at four phone/tablet/desktop window sizes: radial origin,
+one-click and rapid input, keyboard, persistence, disclosure/reveal completion,
+idle state, legacy preferences, system changes, reduced motion, forced colours
+and unsupported View Transitions. `work/site-motion-qa/summary.json` also includes
+local idle main-thread and 4× CPU-throttled frame measurements. These are browser
+observations on the test machine, not a performance guarantee on real devices.

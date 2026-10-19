@@ -1490,7 +1490,76 @@ html[lang="en"] .hero h1 {
     padding: 8px;
   }
 }
-@media (prefers-reduced-motion: reduce) {
+/* A single viewport snapshot reveals the new palette from the theme button.
+   No per-element colour animation, blur, scroll listener or perpetual RAF. */
+::view-transition {
+  pointer-events: none;
+}
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 1;
+}
+::view-transition-new(root) {
+  z-index: 2;
+}
+/* Snapshot the final palette, rather than the first frame of hover colours. */
+:root[data-theme-transition] * {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .controls button,
+  .gallery-bar [role="tab"],
+  .release-entry summary,
+  .faq summary {
+    transition:
+      background-color 180ms ease,
+      color 180ms ease,
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .controls button:active,
+  .button:active {
+    transform: scale(0.97);
+  }
+  .text-link > [aria-hidden],
+  .button > [aria-hidden] {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .text-link:hover > [aria-hidden],
+    .button:hover > [aria-hidden] {
+      transform: translate(2px, -2px);
+    }
+    .controls button:hover {
+      transform: translateY(-1px);
+    }
+  }
+  @supports (interpolate-size: allow-keywords) {
+    .release-entry,
+    .faq details {
+      interpolate-size: allow-keywords;
+    }
+    .release-entry::details-content,
+    .faq details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        content-visibility 280ms allow-discrete;
+    }
+    .release-entry[open]::details-content,
+    .faq details[open]::details-content {
+      block-size: auto;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
   :root {
     scroll-behavior: auto;
   }

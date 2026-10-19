@@ -137,6 +137,58 @@ const save = (key, value) => {
   } catch {}
 };
 const media = matchMedia("(prefers-color-scheme: dark)");
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const forcedColors = matchMedia("(forced-colors: active)");
+const runningAnimations = new Set();
+const elementAnimations = new WeakMap();
+const motionEase = "cubic-bezier(0.22, 1, 0.36, 1)";
+const canAnimate = () =>
+  !reducedMotion.matches && !forcedColors.matches && !document.hidden;
+
+function animateElement(element, keyframes, options = {}) {
+  if (!element || !canAnimate() || !element.animate) return;
+  elementAnimations.get(element)?.cancel();
+  const animation = element.animate(keyframes, {
+    duration: 480,
+    easing: motionEase,
+    ...options,
+  });
+  elementAnimations.set(element, animation);
+  runningAnimations.add(animation);
+  const cleanup = () => {
+    runningAnimations.delete(animation);
+    if (elementAnimations.get(element) === animation)
+      elementAnimations.delete(element);
+  };
+  animation.finished.then(cleanup, cleanup);
+  return animation;
+}
+
+function revealElement(element, delay = 0) {
+  return animateElement(
+    element,
+    [
+      { opacity: 0, transform: "translateY(18px)" },
+      { opacity: 1, transform: "translateY(0)" },
+    ],
+    { delay, fill: "backwards" },
+  );
+}
+
+let themeTransition;
+let themeRevision = 0;
+let requestedTheme = root.dataset.theme;
+
+function stopMotion() {
+  themeTransition?.skipTransition();
+  for (const animation of runningAnimations) animation.cancel();
+}
+reducedMotion.addEventListener("change", stopMotion);
+forcedColors.addEventListener("change", stopMotion);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopMotion();
+});
+window.addEventListener("pagehide", stopMotion);
 const screenAlts = {
   zh: {
     workbench: "Vidown 下载工作台，包含链接输入和任务列表",
@@ -155,16 +207,17 @@ function updateTheme() {
     preference === "system" ? (media.matches ? "dark" : "light") : preference;
   const names =
     language === "en"
-      ? { system: "System", light: "Light", dark: "Dark" }
-      : { system: "跟随系统", light: "浅色", dark: "深色" };
-  const next = { system: "light", light: "dark", dark: "system" }[preference];
+      ? { light: "Light", dark: "Dark" }
+      : { light: "浅色", dark: "深色" };
+  const current = root.dataset.theme;
+  const next = current === "dark" ? "light" : "dark";
   const label =
     language === "en"
-      ? `Theme: ${names[preference]}. Switch to ${names[next]}`
-      : `主题：${names[preference]}。切换为${names[next]}`;
+      ? `Theme: ${names[current]}. Switch to ${names[next]}`
+      : `主题：${names[current]}。切换为${names[next]}`;
   themeButton.setAttribute("aria-label", label);
   themeButton.title = label;
-  themeButton.textContent = { system: "◐", light: "☀", dark: "☾" }[preference];
+  themeButton.textContent = next === "dark" ? "☾" : "☀";
   document.querySelector('meta[name="theme-color"]').content =
     root.dataset.theme === "dark" ? "#16171c" : "#f5f3f0";
 }
@@ -234,6 +287,10 @@ function closeMenu() {
 menuButton.addEventListener("click", () => {
   mobileNav.hidden = !mobileNav.hidden;
   updateMenuLabel();
+  if (!mobileNav.hidden)
+    animateElement(mobileNav, [{ opacity: 0 }, { opacity: 1 }], {
+      duration: 180,
+    });
 });
 mobileNav.addEventListener("click", (e) => {
   if (e.target.closest("a")) closeMenu();
@@ -251,16 +308,73 @@ languageButton.addEventListener("click", () => {
   setLanguage(language === "zh" ? "en" : "zh");
   save("vidown-site-language", language);
 });
-themeButton.addEventListener("click", () => {
-  root.dataset.preference = { system: "light", light: "dark", dark: "system" }[
-    root.dataset.preference
-  ];
-  save("vidown-site-theme", root.dataset.preference);
-  updateTheme();
+themeButton.addEventListener("click", async () => {
+  const next = requestedTheme === "dark" ? "light" : "dark";
+  requestedTheme = next;
+  const revision = ++themeRevision;
+  themeTransition?.skipTransition();
+  const apply = () => {
+    if (revision !== themeRevision) return;
+    root.dataset.preference = next;
+    save("vidown-site-theme", next);
+    updateTheme();
+  };
+  if (!canAnimate() || !document.startViewTransition) {
+    apply();
+    animateElement(document.body, [{ opacity: 0.86 }, { opacity: 1 }], {
+      duration: 180,
+    });
+    return;
+  }
+  // Keyboard activation uses the same button-centred origin as pointer input.
+  const bounds = themeButton.getBoundingClientRect();
+  const x = bounds.left + bounds.width / 2;
+  const y = bounds.top + bounds.height / 2;
+  const radius = Math.ceil(
+    Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y)),
+  );
+  root.dataset.themeTransition = "true";
+  const transition = document.startViewTransition(apply);
+  themeTransition = transition;
+  try {
+    await transition.ready;
+    if (revision !== themeRevision || !canAnimate()) {
+      transition.skipTransition();
+      return;
+    }
+    const animation = animateElement(
+      root,
+      {
+        clipPath: [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${radius}px at ${x}px ${y}px)`,
+        ],
+      },
+      { duration: 520, pseudoElement: "::view-transition-new(root)" },
+    );
+    await animation?.finished;
+  } catch {
+    // Interrupted snapshots (resize, rapid clicks, backgrounding) still apply
+    // the most recent choice; there is no animation-dependent theme state.
+    apply();
+    transition.skipTransition();
+  } finally {
+    await transition.finished.catch(() => {});
+    if (themeTransition === transition) {
+      themeTransition = undefined;
+      delete root.dataset.themeTransition;
+    }
+  }
 });
-media.addEventListener("change", updateTheme);
+media.addEventListener("change", () => {
+  if (root.dataset.preference === "system") {
+    updateTheme();
+    requestedTheme = root.dataset.theme;
+  }
+});
 const tabs = [...document.querySelectorAll('[role="tab"]')];
 function activateTab(tab) {
+  const changed = tab.getAttribute("aria-selected") !== "true";
   tabs.forEach((el) => {
     const selected = el === tab;
     el.setAttribute("aria-selected", String(selected));
@@ -268,6 +382,15 @@ function activateTab(tab) {
     document.getElementById(el.getAttribute("aria-controls")).hidden =
       !selected;
   });
+  if (changed)
+    animateElement(
+      document.getElementById(tab.getAttribute("aria-controls")),
+      [
+        { opacity: 0, transform: "translateY(6px)" },
+        { opacity: 1, transform: "translateY(0)" },
+      ],
+      { duration: 260 },
+    );
 }
 tabs.forEach((tab, index) => {
   tab.addEventListener("click", () => activateTab(tab));
@@ -292,3 +415,36 @@ setLanguage(
       ? "zh"
       : "en",
 );
+
+// Observe once, animate once, then release each target. Content is never hidden
+// in CSS, so unsupported APIs, script failures and reduced motion stay readable.
+if (canAnimate() && "IntersectionObserver" in window) {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      let stagger = 0;
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        observer.unobserve(entry.target);
+        if (entry.boundingClientRect.bottom > 0)
+          revealElement(entry.target, Math.min(stagger++ * 55, 165));
+      }
+    },
+    { threshold: 0.08, rootMargin: "0px 0px -16px 0px" },
+  );
+  document
+    .querySelectorAll(
+      ".hero-copy, .hero-preview, .section-top, .gallery, .steps > article, .detail-grid > div, .feature-grid > article, .download-card, .android-preview, .release-entry, .faq > details, .project-note, .closing, footer",
+    )
+    .forEach((element) => observer.observe(element));
+}
+
+document.querySelectorAll("details").forEach((details) => {
+  details.addEventListener("toggle", () => {
+    if (!details.open) return;
+    animateElement(
+      details.querySelector(".release-body") || details.querySelector("p"),
+      [{ opacity: 0 }, { opacity: 1 }],
+      { duration: 240 },
+    );
+  });
+});

@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "url": "http://127.0.0.1:4572/vidown/",
+  "browser": "155.0.4283.62",
+  "checks": [
+    {
+      "width": 390,
+      "height": 844,
+      "ripple": {
+        "frames": ["circle(0px at 315px 34px)", "circle(870px at 315px 34px)"],
+        "duration": 520,
+        "x": 315,
+        "y": 34
+      },
+      "oneClick": true,
+      "rapidClicks": true,
+      "persisted": true,
+      "keyboard": true,
+      "revealAndIdle": true,
+      "disclosure": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "ripple": {
+        "frames": ["circle(0px at 780px 30px)", "circle(860px at 780px 30px)"],
+        "duration": 520,
+        "x": 780,
+        "y": 30
+      },
+      "oneClick": true,
+      "rapidClicks": true,
+      "persisted": true,
+      "keyboard": true,
+      "revealAndIdle": true,
+      "disclosure": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "ripple": {
+        "frames": ["circle(0px at 679px 40px)", "circle(1196px at 679px 40px)"],
+        "duration": 520,
+        "x": 679,
+        "y": 40
+      },
+      "oneClick": true,
+      "rapidClicks": true,
+      "persisted": true,
+      "keyboard": true,
+      "revealAndIdle": true,
+      "disclosure": true
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "ripple": {
+        "frames": [
+          "circle(0px at 1300px 40px)",
+          "circle(1559px at 1300px 40px)"
+        ],
+        "duration": 520,
+        "x": 1300,
+        "y": 40
+      },
+      "oneClick": true,
+      "rapidClicks": true,
+      "persisted": true,
+      "keyboard": true,
+      "revealAndIdle": true,
+      "disclosure": true
+    }
+  ],
+  "legacyPreferences": true,
+  "reducedMotion": true,
+  "followsSystemUntilExplicitChoice": true,
+  "fallback": true,
+  "interrupted": true,
+  "forcedColors": true,
+  "errors": [],
+  "idleMetrics": {
+    "sampleMs": 600,
+    "taskMs": 1.53,
+    "scriptMs": 0,
+    "layoutCount": 0
+  },
+  "throttledFrames": {
+    "cpuThrottle": 4,
+    "sampleMs": 901.6000000059603,
+    "frames": 144,
+    "medianFrameMs": 6.099999999999909,
+    "p95FrameMs": 6.2000000000000455
+  }
+}

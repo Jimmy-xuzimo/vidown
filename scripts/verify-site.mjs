@@ -93,11 +93,7 @@ try {
   for (const [width, height] of viewports) {
     await page.setViewportSize({ width, height });
     for (const theme of ["light", "dark"]) {
-      for (
-        let i = 0;
-        i < 3 && (await page.getAttribute("html", "data-preference")) !== theme;
-        i++
-      )
+      if ((await page.getAttribute("html", "data-theme")) !== theme)
         await page.locator("#theme").click();
       assert.equal(await page.getAttribute("html", "data-theme"), theme);
       for (const language of ["zh-CN", "en"]) {
@@ -298,6 +294,9 @@ try {
   await noJS.goto(url);
   assert.equal(await noJS.locator("#history .release-entry").count(), 8);
   await noJS.locator("#history details summary").first().click();
+  await noJS
+    .locator("#history details[open] .release-body")
+    .waitFor({ state: "visible" });
   assert.equal(
     await noJS.locator("#history details[open] .release-body").isVisible(),
     true,
