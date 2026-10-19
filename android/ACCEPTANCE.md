@@ -31,6 +31,15 @@ Preview.5 local execution:
   native objects passed 16 KB checks; APK signature, zipalign and AAB validation
   passed. The signer matches preview.4 for an in-place upgrade.
 
+The [preview.5 GitHub matrix](https://github.com/Jimmy-xuzimo/vidown/actions/runs/39191954514)
+also passed all **nine configurations**, each with 41 tests and a separate
+startup check. [Collected reports](verification/preview.5/github-ci.json)
+verify the tested runtime tree matches the published APK source tag. The initial
+SDK image download failure and two Pixel Launcher ANR overlays are retained in
+the report; only those three jobs were rerun, without changing code or assertions.
+The [deployed website checks](verification/preview.5/website-deployed.json)
+passed 20 layout/theme/language cases and checked the public download links.
+
 ## Previous preview.4 baseline
 
 The previous public Bilibili check was a false positive: missing extractor

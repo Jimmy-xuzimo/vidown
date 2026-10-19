@@ -1,0 +1,192 @@
+{
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39191954514",
+  "sourceCommit": "dac9650d273303ea0775f3eae6db0c7e570902ed",
+  "attempts": 2,
+  "status": "completed",
+  "conclusion": "success",
+  "configurations": [
+    {
+      "configuration": "android-36-tablet-google_apis",
+      "summary": {
+        "api": 36,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.2-tablet-google_apis_ps16k",
+      "summary": {
+        "api": 37,
+        "pageSize": 16384,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-34-phone-google_apis",
+      "summary": {
+        "api": 34,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-34-tablet-google_apis",
+      "summary": {
+        "api": 34,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.0-phone-google_apis",
+      "summary": {
+        "api": 37,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-37.0-tablet-google_apis",
+      "summary": {
+        "api": 37,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-36-phone-google_apis",
+      "summary": {
+        "api": 36,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-35-phone-google_apis",
+      "summary": {
+        "api": 35,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    },
+    {
+      "configuration": "android-35-tablet-google_apis",
+      "summary": {
+        "api": 35,
+        "pageSize": 4096,
+        "serial": "emulator-5554",
+        "variant": "debug",
+        "tests": 41,
+        "passed": true,
+        "scope": "controlled synthetic fixtures; no live accounts",
+        "layout": "device default",
+        "fontScale": 1.0,
+        "provisioningRetries": 0
+      },
+      "separateStartupTestsPassed": 1,
+      "preTouchScreenshotCaptured": true
+    }
+  ],
+  "lint": {
+    "Fatal": 0,
+    "Error": 0,
+    "Warning": 28
+  },
+  "nativeLibraries": 178,
+  "scope": "Debug packages and controlled synthetic media; no live accounts or physical devices.",
+  "initialInfrastructureFailures": [
+    {
+      "job": 117868207406,
+      "configuration": "API 34 tablet",
+      "cause": "Official SDK system-image ZIP download failed before emulator boot"
+    },
+    {
+      "job": 117868207401,
+      "configuration": "API 34 phone",
+      "cause": "Pixel Launcher ANR system dialog intercepted targeted app input",
+      "screenshot": "ci34-launcher-anr.png"
+    },
+    {
+      "job": 117868207395,
+      "configuration": "API 36 tablet",
+      "cause": "Pixel Launcher ANR system dialog intercepted targeted app input",
+      "screenshot": "ci36-launcher-anr.png"
+    }
+  ],
+  "runtimeTree": {
+    "published": "3178d9fed4ce7348708f03f7553bbce7dd4c0031",
+    "tested": "3178d9fed4ce7348708f03f7553bbce7dd4c0031"
+  }
+}

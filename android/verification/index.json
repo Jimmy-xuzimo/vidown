@@ -65,5 +65,8 @@
   },
   "signerMatchesPreview4": true,
   "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39191954514",
-  "ciStatusAtPackaging": "in progress; local signed-package and emulator checks passed"
+  "ciStatusAtPackaging": "in progress; local signed-package and emulator checks passed",
+  "ciPassed": true,
+  "ciReport": "preview.5/github-ci.json",
+  "websiteDeployedReport": "preview.5/website-deployed.json"
 }
