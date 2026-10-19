@@ -9,9 +9,9 @@ const english = {
   t6: "Download",
   t7: "Keep what",
   t8: "moves you.",
-  t9: "From a moment on the web<br>to a place in your collection.<br>Know the source. Keep the detail.",
+  t9: "Discover media. Choose your tracks.<br>Keep the original detail, on your device.",
   t10: "Get Vidown",
-  t11: "See how it works",
+  t11: "View source",
   t12: "SOURCE QUALITY · LOCAL SAVING",
   t13: "A little more clarity.<br>A lot less friction.",
   t14: "Discover media, choose tracks, manage tasks.<br>One considered desktop workflow.",
@@ -111,6 +111,8 @@ const english = {
   t108: "More webpage sources, smoother navigation",
   t109: "Add exact-video Douyin webpage discovery and individual episode and voice-version selection for films and series.",
   t110: "Keep navigation visible at the bottom in portrait and on the left in landscape; swipe between native pages while retaining their state.",
+  t112: "Windows · macOS · Linux · Android preview",
+  t113: "Actual application interface · Appearance varies by release",
   t111: "Extend media and UI regressions and public-site sampling. Report preview, login, network and premium limits as observed; physical devices and premium accounts still need acceptance.",
 };
 const root = document.documentElement;

@@ -18,9 +18,14 @@ does not change the five desktop links or imply desktop feature/account parity.
 Link to `android/ACCEPTANCE.md` for the current Android validation scope. Verify
 the Android card in both languages, both themes and compact/wide layouts.
 
-`#history` records each published application release in separate desktop and
-Android tracks, with China Standard Time dates. Native `<details>` keeps older
-releases readable without JavaScript. Match entries to GitHub Release notes and
+The first screen pairs the project slogan and download/source links with a real
+application screenshot. Its framing is decorative CSS, with no animation loop.
+
+`#history` records published desktop and Android releases on one shared timeline,
+with China Standard Time dates. Cards alternate sides on wide windows and use a
+single left axis on narrow windows. All cards use the same native `<details>`
+component, initially collapsed; titles, versions and dates remain visible.
+Details are readable without JavaScript. Match entries to GitHub Release notes and
 `docs/CHANGELOG.md`; do not present materials releases or unpublished intermediate
 builds as application versions. Update English strings together with Chinese copy.
 
@@ -28,6 +33,8 @@ Project-owned code is MIT licensed. Third-party components retain their own lice
 
 Run `node scripts/verify-site.mjs` from the repository root for local `/vidown/`
 base-path checks, or append `--url https://jimmy-xuzimo.github.io/vidown/` for
-production checks. It tests 20 viewport/theme/language combinations, history
-expansion, mobile navigation, translations and no-JavaScript reading. Screenshots
+production checks. It tests 72 viewport/theme/language combinations across 18
+phone, tablet and desktop portrait/landscape sizes, first-screen slogan/actions
+and screenshot visibility, timeline layout and expansion, keyboard navigation,
+mobile navigation, translations and no-JavaScript reading. Screenshots
 and the report remain in ignored `work/site-history-qa/`.
