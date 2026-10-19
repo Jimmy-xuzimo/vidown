@@ -1,9 +1,7 @@
 package top.xuzimo.vidown
 
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.File
@@ -13,6 +11,8 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mozilla.geckoview.GeckoView
+import top.xuzimo.vidown.browser.awaitGecko
 import top.xuzimo.vidown.core.TaskState
 
 class InterfaceIntegrationTest {
@@ -99,10 +99,46 @@ class InterfaceIntegrationTest {
                     graph.browser.candidates.value.any { it.tabId == tab }
             }
             ui.waitForIdle()
-            ui.onNodeWithTag("browser-web").performTouchInput {
-                // Desktop viewport scales CSS pixels on phones; tap inside the top of the real
-                // button.
-                click(Offset(width / 2f, 24.dp.toPx()))
+            val view = ui.runOnIdle { requireNotNull(findBrowser(ui.activity.window.decorView)) }
+            // Compose idleness does not wait for Gecko's separate compositor. Verify the
+            // fixture's actual button frame before injecting a system-coordinate touch.
+            withTimeout(30000) {
+                while (true) {
+                    val bitmap = withContext(Dispatchers.Main) { view.capturePixels().awaitGecko() }
+                    val painted = bitmap.getPixel(bitmap.width / 4, 8) == 0xff9cc9df.toInt()
+                    bitmap.recycle()
+                    if (painted) break
+                    delay(100)
+                }
+            }
+            screenshot("blob-before-tap")
+            val point = ui.runOnIdle {
+                val location = IntArray(2)
+                view.getLocationOnScreen(location)
+                android.graphics.PointF(
+                    location[0] + view.width / 2f,
+                    location[1] + 24 * view.resources.displayMetrics.density,
+                )
+            }
+            val instrumentation = InstrumentationRegistry.getInstrumentation()
+            val downTime = android.os.SystemClock.uptimeMillis()
+            for (action in
+                listOf(android.view.MotionEvent.ACTION_DOWN, android.view.MotionEvent.ACTION_UP)) {
+                val event =
+                    android.view.MotionEvent.obtain(
+                        downTime,
+                        android.os.SystemClock.uptimeMillis(),
+                        action,
+                        point.x,
+                        point.y,
+                        0,
+                    )
+                try {
+                    instrumentation.sendPointerSync(event)
+                } finally {
+                    event.recycle()
+                }
+                if (action == android.view.MotionEvent.ACTION_DOWN) delay(80)
             }
             // Acknowledgement separates a missed/disabled DOM click from a transfer timeout.
             ui.waitUntil(10000) {
@@ -141,6 +177,9 @@ class InterfaceIntegrationTest {
                     delay(100)
                 }
             }
+        } catch (failure: Throwable) {
+            runCatching { screenshot("blob-save-failure") }
+            throw failure
         } finally {
             output?.let { graph.app.contentResolver.delete(it, null, null) }
             task?.let {
@@ -149,6 +188,16 @@ class InterfaceIntegrationTest {
             }
             withContext(Dispatchers.Main) { graph.browser.close(tab) }
         }
+    }
+
+    private fun findBrowser(view: android.view.View): GeckoView? {
+        if (view is GeckoView) return view
+        if (view is android.view.ViewGroup) {
+            for (i in 0 until view.childCount) findBrowser(view.getChildAt(i))?.let {
+                return it
+            }
+        }
+        return null
     }
 
     private fun screenshot(name: String) {
