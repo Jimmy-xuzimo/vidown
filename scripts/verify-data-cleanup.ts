@@ -272,7 +272,17 @@ try {
     name: "settings-ui-browser-only-cleanup-closes-tabs-clears-cookies-cache-and-candidates-preserves-records-and-preferences",
     status: "passed",
   });
+  // Stress late presentation IPC during shutdown. These must remain harmless,
+  // while new extraction/download requests are still refused by the main process.
+  await page.evaluate(() => {
+    window.setInterval(() => void window.vidown.browser({ action: "hide" }), 1);
+  });
   await app.close();
+  assert.equal(pageErrors.length, 0, JSON.stringify(pageErrors));
+  results.push({
+    name: "late-browser-visibility-during-shutdown-does-not-reject",
+    status: "passed",
+  });
   const inspected = new Store(join(profile, "vidown.sqlite"));
   assert.equal(inspected.sealed("paused"), undefined);
   assert.equal(inspected.settings().browserSession, undefined);

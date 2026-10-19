@@ -28,7 +28,7 @@
       "resolution": "Separate real-source regression and final survey passed. Website restrictions still reported."
     }
   ],
-  "localSequence": "44-test full suites passed before final bounded-read/default-header refinements; final focused two-test regression and signed release checks passed after those refinements. Fresh full source is also submitted to the GitHub matrix.",
+  "localSequence": "Final exact source rerun: API 34 portrait phone and API 37.2 / 16KB landscape tablet each passed all 44 controlled tests and a separate cold-start isolation check. Final signed APK checks are separate.",
   "notVerified": [
     "Premium full movie",
     "DRM media",

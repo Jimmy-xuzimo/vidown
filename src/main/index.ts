@@ -809,12 +809,18 @@ function registerIPC(): void {
   };
   for (const [name, handler] of Object.entries(methods))
     ipcMain.handle("vidown:" + name, async (event, input) => {
-      if (shuttingDown) throw new Error("应用正在退出，请重新启动后继续。");
       if (
         event.sender !== win.webContents ||
         event.senderFrame !== win.webContents.mainFrame
       )
         throw new Error("拒绝远程页面调用应用接口");
+      if (shuttingDown) {
+        // Resize/visibility callbacks may arrive while the window is closing.
+        // They cannot start work and must not reject an unawaited UI update.
+        if (name === "browser" && ["hide", "bounds"].includes(input?.action))
+          return;
+        throw new Error("应用正在退出，请重新启动后继续。");
+      }
       try {
         if (name !== "snapshot") await initialization;
         const passive =

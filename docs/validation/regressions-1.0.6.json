@@ -225,6 +225,75 @@
           "status": "passed"
         }
       ]
+    },
+    "dataCleanup-chromium": {
+      "generatedAt": "2026-10-19T04:19:48.404Z",
+      "backend": "chromium",
+      "packaged": false,
+      "results": [
+        {
+          "name": "reject-empty-selection-and-browser-cleanup-with-paused-tasks-without-mutating-data",
+          "status": "passed"
+        },
+        {
+          "name": "confirmation-cancel-and-history-only-cleanup-preserve-browser-paused-task-and-files",
+          "status": "passed"
+        },
+        {
+          "name": "settings-ui-browser-only-cleanup-closes-tabs-clears-cookies-cache-and-candidates-preserves-records-and-preferences",
+          "status": "passed"
+        },
+        {
+          "name": "late-browser-visibility-during-shutdown-does-not-reject",
+          "status": "passed"
+        },
+        {
+          "name": "restart-does-not-restore-cookies-or-sealed-plans-both-site-storage-indexeddb-cache-storage-and-http-cache-are-empty",
+          "status": "passed"
+        },
+        {
+          "name": "combined-cleanup-and-repeated-cleanup-preserve-downloaded-file",
+          "status": "passed"
+        }
+      ]
+    },
+    "dataCleanup-webview2": {
+      "generatedAt": "2026-10-19T04:19:55.344Z",
+      "backend": "webview2",
+      "packaged": false,
+      "results": [
+        {
+          "name": "reject-empty-selection-and-browser-cleanup-with-paused-tasks-without-mutating-data",
+          "status": "passed"
+        },
+        {
+          "name": "confirmation-cancel-and-history-only-cleanup-preserve-browser-paused-task-and-files",
+          "status": "passed"
+        },
+        {
+          "name": "settings-ui-browser-only-cleanup-closes-tabs-clears-cookies-cache-and-candidates-preserves-records-and-preferences",
+          "status": "passed"
+        },
+        {
+          "name": "late-browser-visibility-during-shutdown-does-not-reject",
+          "status": "passed"
+        },
+        {
+          "name": "restart-does-not-restore-cookies-or-sealed-plans-both-site-storage-indexeddb-cache-storage-and-http-cache-are-empty",
+          "status": "passed"
+        },
+        {
+          "name": "combined-cleanup-and-repeated-cleanup-preserve-downloaded-file",
+          "status": "passed"
+        }
+      ]
     }
+  },
+  "releaseAttempt": {
+    "run": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39198309548",
+    "failedJob": 117885784421,
+    "cause": "Late browser visibility callback rejected during app shutdown; packaged download itself passed.",
+    "fix": "Authenticated presentation-only hide/bounds requests become no-ops during shutdown. Other commands stay rejected. Added late visibility IPC stress to existing cleanup regression.",
+    "action": "Canceled remaining first-attempt build jobs; rebuild all five platforms from corrected source. This is an application fix, not an infrastructure retry."
   }
 }
