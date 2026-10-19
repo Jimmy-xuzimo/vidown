@@ -121,6 +121,15 @@ try {
       if ((await page.getAttribute("html", "data-theme")) !== theme)
         await page.locator("#theme").click();
       assert.equal(await page.getAttribute("html", "data-theme"), theme);
+      assert.equal(
+        await page.locator("#theme .icon-sun").isVisible(),
+        theme === "dark",
+      );
+      assert.equal(
+        await page.locator("#theme .icon-moon").isVisible(),
+        theme === "light",
+      );
+      assert.equal((await page.locator("#theme").innerText()).trim(), "");
       for (const language of ["zh-CN", "en"]) {
         if ((await page.getAttribute("html", "lang")) !== language)
           await page.locator("#language").click();

@@ -217,7 +217,6 @@ function updateTheme() {
       : `主题：${names[current]}。切换为${names[next]}`;
   themeButton.setAttribute("aria-label", label);
   themeButton.title = label;
-  themeButton.textContent = next === "dark" ? "☾" : "☀";
   document.querySelector('meta[name="theme-color"]').content =
     root.dataset.theme === "dark" ? "#16171c" : "#f5f3f0";
 }

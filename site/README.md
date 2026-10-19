@@ -23,6 +23,9 @@ application screenshot. Its framing is decorative CSS, with no animation loop.
 All decorative arrows are inline SVG paths with `currentColor`, hidden from
 assistive technology; they do not depend on Unicode/emoji fonts on iOS or other
 systems. Their appearance remains consistent without JavaScript or external assets.
+The theme button also uses inline sun/moon SVGs with the same 1.7-unit rounded
+stroke, fixed 20 px sizing and theme-aware colour. CSS selects the icon for the
+next action; changing language or theme never replaces it with a font glyph.
 
 The theme button toggles the currently visible light/dark palette in one click;
 system appearance is only the initial default, not a third button state. Explicit

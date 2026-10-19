@@ -183,7 +183,17 @@ a:hover {
   background: var(--tint);
 }
 #theme {
-  font-size: 22px;
+  display: inline-grid;
+  place-items: center;
+}
+.icon-theme {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+:root[data-theme="dark"] #theme .icon-moon,
+:root:not([data-theme="dark"]) #theme .icon-sun {
+  display: none;
 }
 #menu {
   display: none;
