@@ -114,6 +114,10 @@ const english = {
   t112: "Windows · macOS · Linux · Android preview",
   t113: "Actual application interface · Appearance varies by release",
   t111: "Extend media and UI regressions and public-site sampling. Report preview, login, network and premium limits as observed; physical devices and premium accounts still need acceptance.",
+  hero74: "Keep what moves you.",
+  hero75: "Download workbench",
+  hero76: "Source quality first",
+  hero77: "A place for every keeper.",
 };
 const root = document.documentElement;
 const languageButton = document.getElementById("language");
@@ -406,6 +410,51 @@ tabs.forEach((tab, index) => {
     }
   });
 });
+// Decorative pointer tilt: at most 3 degrees per axis, never touch-driven.
+const heroArt = document.querySelector(".hero-art");
+const heroSection = document.querySelector(".hero");
+const tiltMedia = matchMedia(
+  "(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) and (forced-colors: none)",
+);
+let tiltFrame = 0;
+let pointerX = 0;
+let pointerY = 0;
+function resetTilt() {
+  cancelAnimationFrame(tiltFrame);
+  tiltFrame = 0;
+  heroArt.classList.remove("is-tracking");
+  heroArt.style.removeProperty("--tilt-x");
+  heroArt.style.removeProperty("--tilt-y");
+}
+function paintTilt() {
+  tiltFrame = 0;
+  const bounds = heroSection.getBoundingClientRect();
+  const clamp = (value) => Math.max(-1, Math.min(1, value));
+  const x = clamp(((pointerX - bounds.left) / bounds.width) * 2 - 1);
+  const y = clamp(((pointerY - bounds.top) / bounds.height) * 2 - 1);
+  heroArt.classList.add("is-tracking");
+  heroArt.style.setProperty("--tilt-x", `${(-y * 3).toFixed(2)}deg`);
+  heroArt.style.setProperty("--tilt-y", `${(x * 3).toFixed(2)}deg`);
+}
+heroSection.addEventListener(
+  "pointermove",
+  (event) => {
+    if (!tiltMedia.matches || event.pointerType !== "mouse") return;
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+    if (!tiltFrame) tiltFrame = requestAnimationFrame(paintTilt);
+  },
+  { passive: true },
+);
+heroSection.addEventListener("pointerleave", resetTilt);
+heroSection.addEventListener("pointercancel", resetTilt);
+tiltMedia.addEventListener("change", resetTilt);
+window.addEventListener("blur", resetTilt);
+window.addEventListener("scroll", resetTilt, { passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) resetTilt();
+});
+
 const storedLanguage = read("vidown-site-language");
 setLanguage(
   ["zh", "en"].includes(storedLanguage)
@@ -432,7 +481,7 @@ if (canAnimate() && "IntersectionObserver" in window) {
   );
   document
     .querySelectorAll(
-      ".hero-copy, .hero-preview, .section-top, .gallery, .steps > article, .detail-grid > div, .feature-grid > article, .download-card, .android-preview, .release-entry, .faq > details, .project-note, .closing, footer",
+      ".hero-copy, .hero-art, .section-top, .gallery, .steps > article, .detail-grid > div, .feature-grid > article, .download-card, .android-preview, .release-entry, .faq > details, .project-note, .closing, footer",
     )
     .forEach((element) => observer.observe(element));
 }

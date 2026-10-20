@@ -18,8 +18,18 @@ does not change the five desktop links or imply desktop feature/account parity.
 Link to `android/ACCEPTANCE.md` for the current Android validation scope. Verify
 the Android card in both languages, both themes and compact/wide layouts.
 
-The first screen pairs the project slogan and download/source links with a real
-application screenshot. Its framing is decorative CSS, with no animation loop.
+The first screen pairs the project slogan and download/source links with a
+decorative workbench drawn using CSS and inline SVG. Its window, sidebar, input,
+statistics and task rows simplify the real application layout; the numbers and
+progress bars are illustrative rather than live application state. The experience
+gallery below retains the actual screenshots.
+
+With a fine mouse pointer, the hero illustration tilts by at most 3 degrees per
+axis in response to pointer movement within the hero. Updates use one requested
+animation frame per incoming batch, with no idle animation loop. Leaving the
+hero, scrolling, changing tabs or losing focus resets the pose. Touch/coarse
+pointers, reduced motion and forced colours disable pointer tilt. Colours follow
+the current theme, and all four short illustration captions are bilingual.
 All decorative arrows are inline SVG paths with `currentColor`, hidden from
 assistive technology; they do not depend on Unicode/emoji fonts on iOS or other
 systems. Their appearance remains consistent without JavaScript or external assets.
@@ -55,7 +65,7 @@ Run `node scripts/verify-site.mjs` from the repository root for local `/vidown/`
 base-path checks, or append `--url https://jimmy-xuzimo.github.io/vidown/` for
 production checks. It tests 72 viewport/theme/language combinations across 18
 phone, tablet and desktop portrait/landscape sizes, first-screen slogan/actions
-and screenshot visibility, timeline layout and expansion, keyboard navigation,
+and drawn-workbench visibility, timeline layout and expansion, keyboard navigation,
 mobile navigation, translations and no-JavaScript reading. Screenshots
 and the report remain in ignored `work/site-history-qa/`.
 Add `--webkit` to run the layout and vector-arrow checks with Playwright WebKit

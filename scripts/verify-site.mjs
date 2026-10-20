@@ -62,7 +62,7 @@ try {
   );
   const cases = [];
   // SVG paths must render identically across Apple/Windows emoji font choices.
-  assert.equal(await page.locator("svg.icon-arrow-outward").count(), 29);
+  assert.equal(await page.locator("svg.icon-arrow-outward").count(), 28);
   assert.equal(await page.locator("svg.icon-arrow-right").count(), 1);
   assert.equal(
     await page
@@ -153,28 +153,31 @@ try {
           );
         await overflow();
         const hero = await page.locator(".hero").evaluate((el) => {
-          const image = el.querySelector(".hero-preview img");
-          const img = image.getBoundingClientRect();
+          const artwork = el.querySelector(".hero-art");
+          const card = artwork.querySelector(".drawn-window");
+          const img = artwork.getBoundingClientRect();
           const title = el.querySelector("h1").getBoundingClientRect();
           const action = el
             .querySelector(".hero-actions")
             .getBoundingClientRect();
           return {
-            imageLoaded: image.complete && image.naturalWidth > 0,
+            artworkDrawn:
+              !artwork.querySelector("img") &&
+              card.querySelectorAll("svg").length >= 8,
             imageVisible: Math.max(
               0,
               Math.min(innerHeight, img.bottom) - Math.max(0, img.top),
             ),
             titleBottom: title.bottom,
             actionBottom: action.bottom,
-            imageRatio: img.width / img.height,
+            cardWidth: card.getBoundingClientRect().width,
             viewportHeight: innerHeight,
           };
         });
-        assert(hero.imageLoaded, `Missing screenshot: ${label}`);
+        assert(hero.artworkDrawn, `Missing vector workbench: ${label}`);
         assert(
           hero.imageVisible >= 64,
-          `Screenshot absent from first viewport: ${label} ${JSON.stringify(hero)}`,
+          `Artwork absent from first viewport: ${label} ${JSON.stringify(hero)}`,
         );
         assert(
           hero.titleBottom <= height,
@@ -184,10 +187,7 @@ try {
           hero.actionBottom <= height,
           `Actions outside first viewport: ${label}`,
         );
-        assert(
-          Math.abs(hero.imageRatio - 1384 / 901) < 0.02,
-          `Distorted screenshot: ${label}`,
-        );
+        assert(hero.cardWidth >= 180, `Workbench too narrow: ${label}`);
         assert.equal(
           await page
             .locator("[data-i18n]")
