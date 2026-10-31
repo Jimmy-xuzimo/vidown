@@ -23,7 +23,9 @@ import {
 import { randomUUID } from "node:crypto";
 import { Store } from "../core/store";
 import { TransportBridge, limitedBody } from "../core/bridge";
-import { chooseTracks, publicAsset } from "../core/formats";
+import { automaticTracks, chooseTracks, publicAsset } from "../core/formats";
+import { Submissions } from "../core/submissions";
+import { mediaLinks } from "../shared/links";
 import { isBilibiliPage, addBilibiliMirrors } from "../core/bilibili";
 import { pgcTarget, probePgc } from "../core/bilibili-pgc";
 import {
@@ -68,7 +70,31 @@ let win: BrowserWindow,
 let sessionKeeper: SessionKeeper;
 let webDownloads: WebDownloads;
 const assets = new Map<string, PrivateAsset>();
+const assetSources = new Map<string, string>();
 const plans = new Map<string, DownloadPlan>();
+const planKeys = new Map<string, string>();
+const submissions = new Submissions({
+  probe: async (url) => {
+    if (shuttingDown || dataClearing) throw new Error("应用正在退出或清理数据");
+    const asset = await probeInput({ url });
+    return asset;
+  },
+  enqueue: async (asset) => {
+    if (shuttingDown || dataClearing) throw new Error("应用正在退出或清理数据");
+    const source = assets.get(asset.id);
+    if (!source) throw new Error("探测结果已过期，请重试");
+    const tracks = automaticTracks(source);
+    if (!tracks) return;
+    return download({
+      assetId: asset.id,
+      trackIds: tracks.map((t) => t.id),
+      output: "source",
+    });
+  },
+  browser: (url) => isDouyinPage(url) || isTelegramLink(url),
+  error: classifyError,
+  changed,
+});
 const running = new Map<
   string,
   { bridge: TransportBridge; promise: Promise<unknown> }
@@ -96,6 +122,7 @@ let toolsStatus: Record<string, string> = {};
 let snapshotRevision = 0;
 function snapshot(): Snapshot {
   return {
+    submissions: submissions.list(),
     version: app.getVersion(),
     startup: { ...startup },
     revision: ++snapshotRevision,
@@ -262,14 +289,16 @@ async function probeInput(input: {
       );
     });
     assets.set(asset.id, asset);
-    if (assets.size > 100) assets.delete(assets.keys().next().value!);
+    assetSources.set(asset.id, url);
+    trimAssets(asset.id);
     return publicAsset(asset);
   }
   if (!candidate && isDouyinPage(url)) {
     const asset = await browser.probeDouyin(url, input.tabId);
     await browser.synchronize();
     assets.set(asset.id, asset);
-    if (assets.size > 100) assets.delete(assets.keys().next().value!);
+    assetSources.set(asset.id, url);
+    trimAssets(asset.id);
     return publicAsset(asset);
   }
   const telegramPage =
@@ -307,6 +336,7 @@ async function probeInput(input: {
       ],
     };
     assets.set(asset.id, asset);
+    assetSources.set(asset.id, url);
     return publicAsset(asset);
   }
   const id = randomUUID(),
@@ -365,7 +395,8 @@ async function probeInput(input: {
       }
     }
     assets.set(asset.id, asset);
-    if (assets.size > 100) assets.delete(assets.keys().next().value!);
+    assetSources.set(asset.id, url);
+    trimAssets(asset.id);
     return publicAsset(asset);
   } finally {
     await temporary?.close();
@@ -381,6 +412,15 @@ function schedule(): void {
     .reverse()
     .slice(0, settings.concurrency - active))
     void run(t.id);
+}
+function trimAssets(newestId: string): void {
+  if (assets.size <= 100) return;
+  for (const id of assets.keys()) {
+    if (assets.size <= 100) break;
+    if (id === newestId || submissions.pin(id)) continue;
+    assets.delete(id);
+    assetSources.delete(id);
+  }
 }
 async function run(id: string): Promise<void> {
   const plan = plans.get(id);
@@ -496,7 +536,7 @@ async function download(input: {
   assetId: string;
   trackIds: string[];
   output: "source" | "compatible";
-}): Promise<void> {
+}): Promise<string> {
   const asset = assets.get(input.assetId);
   if (!asset) throw new Error("探测结果已过期，请重新探测");
   if (!["source", "compatible"].includes(input.output))
@@ -504,6 +544,46 @@ async function download(input: {
   const tracks = chooseTracks(asset, input.trackIds);
   if (tracks.some((t) => t.protocol === "browser") && input.output !== "source")
     throw new Error("网页媒体使用原文件保存，请选择保留源规格");
+  const key = (
+    source: PrivateAsset,
+    selected: typeof tracks,
+    output: string,
+    directory: string,
+  ) =>
+    digest(
+      JSON.stringify([
+        assetSources.get(source.id) ?? source.pageUrl,
+        selected
+          .map((t) => [
+            t.kind,
+            t.protocol,
+            t.engineId,
+            t.codec,
+            t.audioCodec,
+            t.width,
+            t.height,
+            t.fps,
+            t.bitrate,
+            t.language,
+            t.selector,
+          ])
+          .sort(),
+        output,
+        directory,
+      ]),
+    );
+  const fingerprint = key(asset, tracks, input.output, settings.downloadDir);
+  for (const [id, plan] of plans) {
+    if (
+      ["queued", "downloading", "merging", "verifying", "paused"].includes(
+        store.get(id)?.state ?? "",
+      ) &&
+      planKeys.get(id) === fingerprint
+    ) {
+      submissions.complete(asset.id, id);
+      return id;
+    }
+  }
   const id = randomUUID();
   const plan: DownloadPlan = {
     id,
@@ -512,7 +592,6 @@ async function download(input: {
     output: input.output,
     directory: settings.downloadDir,
   };
-  plans.set(id, plan);
   store.put(
     {
       id,
@@ -525,7 +604,10 @@ async function download(input: {
     },
     seal(plan),
   );
+  plans.set(id, plan);
+  planKeys.set(id, fingerprint);
   changed();
+  submissions.complete(asset.id, id);
   if (tracks[0].protocol === "browser") {
     const ref = JSON.parse(tracks[0].selector!);
     try {
@@ -538,9 +620,10 @@ async function download(input: {
       });
       throw error;
     }
-    return;
+    return id;
   }
   schedule();
+  return id;
 }
 async function taskAction(input: {
   id: string;
@@ -679,7 +762,7 @@ async function clearData(input: { browser: boolean; history: boolean }) {
     (!input.browser && !input.history)
   )
     throw new Error("请选择需要清除的数据");
-  if (dataClearing || pendingActions || historyBusy)
+  if (dataClearing || pendingActions || historyBusy || submissions.busy)
     throw new Error("正在处理其他操作，请稍后清理");
   if (
     input.browser &&
@@ -694,7 +777,10 @@ async function clearData(input: { browser: boolean; history: boolean }) {
       await browser.clearData();
       await sessionKeeper.clear();
       assets.clear();
+      assetSources.clear();
+      submissions.clear();
       plans.clear();
+      planKeys.clear();
       store.forgetPlans();
     }
     const result = input.history
@@ -789,6 +875,20 @@ function registerIPC(): void {
   const methods: Record<string, (input: any) => any> = {
     snapshot: () => snapshot(),
     probe: probeInput,
+    submit: (input) => {
+      if (
+        !Array.isArray(input?.urls) ||
+        input.urls.some((u: unknown) => typeof u !== "string") ||
+        input.urls.length > 50
+      )
+        throw new Error("请提供 1–50 个媒体链接");
+      submissions.submit(input.requestId, mediaLinks(input.urls.join("\n")));
+    },
+    submission: (input) => {
+      if (!["retry", "cancel"].includes(input?.action))
+        throw new Error("无效提交操作");
+      submissions.action(input.id, input.action);
+    },
     download,
     task: taskAction,
     history: removeHistory,

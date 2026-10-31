@@ -281,7 +281,7 @@ fun SettingsScreen(vm: MainViewModel) {
                     onClick = {
                         clear = false
                         vm.run {
-                            val count = vm.graph.clearData(clearBrowser, clearHistory)
+                            val count = vm.clearData(clearBrowser, clearHistory)
                             if (clearBrowser) vm.assets.value = emptyList()
                             vm.message.value = "清理完成，移除 $count 条记录"
                         }

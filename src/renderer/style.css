@@ -317,13 +317,34 @@ h3 {
 .url-entry > svg {
   color: var(--subtle);
 }
-.url-entry input {
+.url-entry input,
+.url-entry textarea {
   border: 0;
   background: transparent;
   outline: none;
   flex: 1;
   padding: 12px 0;
   font-size: 14px;
+  min-width: 0;
+  color: var(--text);
+  font-family: inherit;
+  resize: vertical;
+}
+.submission-list {
+  margin-block: 16px;
+  padding: 20px;
+}
+.submission-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.submission-row > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .primary {
   background: var(--accent);

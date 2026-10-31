@@ -1,0 +1,243 @@
+{
+  "date": "2026-10-31",
+  "scope": "Local source build and isolated synthetic fixtures. No real accounts, public platform acceptance, release install or ARM64 physical device testing.",
+  "desktop": {
+    "sourceBuild": true,
+    "unitTests": 55,
+    "chromium": {
+      "passed": true,
+      "backend": "chromium",
+      "checks": [
+        "one-click-ui-multiple-links",
+        "input-deduplication",
+        "partial-failure-isolation",
+        "real-hls-and-direct-completed-with-verification",
+        "retry-only-failed",
+        "concurrent-manual-enqueue-deduplication",
+        "request-replay-idempotency"
+      ],
+      "errors": []
+    },
+    "browserSession": {
+      "generatedAt": "2026-10-31T14:59:52.100Z",
+      "packaged": false,
+      "results": [
+        {
+          "name": "responsive-native-view-fits-window-and-ui-zoom-with-webpage-zoom-controls",
+          "status": "passed"
+        },
+        {
+          "name": "encrypted-session-cookie-survives-restart-and-workbench-downloads-without-reopening-login-page",
+          "status": "passed"
+        },
+        {
+          "name": "site-zoom-local-storage-and-indexeddb-survive-restart",
+          "status": "passed"
+        },
+        {
+          "name": "explicit-clear-login-removes-native-cookies-and-encrypted-restart-backup",
+          "status": "passed"
+        }
+      ]
+    },
+    "webpageSaving": {
+      "generatedAt": "2026-10-31T15:01:44.546Z",
+      "packaged": false,
+      "browserBackend": "Chromium (controlled DOM adapter regression; not WebView2)",
+      "scope": "Controlled Web A and Web K DOM, service-worker URL routing, real blob/media validation. Real Telegram account and private messages remain unverified.",
+      "results": [
+        {
+          "name": "paste-message-link-parses-webpage-and-saves-real-blob-media-through-native-task-with-identical-file-hash",
+          "status": "passed"
+        },
+        {
+          "name": "failed-new-probe-clears-stale-task-success-notice",
+          "status": "passed"
+        },
+        {
+          "name": "no-site-specific-login-entry-or-api-form",
+          "status": "passed"
+        },
+        {
+          "name": "message-fingerprint-change-refuses-saving-a-different-message",
+          "status": "passed"
+        },
+        {
+          "name": "missing-save-permission-or-changed-page-does-not-produce-a-downloadable-asset",
+          "status": "passed"
+        },
+        {
+          "name": "fake-mp4-is-rejected-by-real-media-validation-and-never-marked-completed",
+          "status": "passed"
+        },
+        {
+          "name": "cancelled-webpage-preparation-cannot-later-save-a-file-or-become-completed",
+          "status": "passed"
+        },
+        {
+          "name": "cancel-native-media-download-stops-the-actual-http-response-and-never-publishes-output",
+          "status": "passed"
+        },
+        {
+          "name": "webk-captured-service-worker-media-uses-native-page-save-with-identical-file-hash-and-zero-http-replays",
+          "status": "passed"
+        },
+        {
+          "name": "webk-current-page-viewer-refuses-changed-media-before-saving",
+          "status": "passed"
+        },
+        {
+          "name": "webk-stale-captured-resource-cannot-save-the-current-different-video",
+          "status": "passed"
+        },
+        {
+          "name": "webk-protected-message-reports-permission-instead-of-502",
+          "status": "passed"
+        },
+        {
+          "name": "webk-download-button-detected-with-current-glyph-icon-as-well-as-legacy-class",
+          "status": "passed"
+        },
+        {
+          "name": "pasted-message-link-reuses-existing-webk-client-origin-and-exact-message",
+          "status": "passed"
+        }
+      ]
+    },
+    "webview2": {
+      "passed": true,
+      "backend": "Windows WebView2 · 156.0.4314.50",
+      "checks": [
+        "one-click-ui-multiple-links",
+        "input-deduplication",
+        "partial-failure-isolation",
+        "real-hls-and-direct-completed-with-verification",
+        "retry-only-failed",
+        "concurrent-manual-enqueue-deduplication",
+        "request-replay-idempotency"
+      ],
+      "errors": []
+    }
+  },
+  "android": {
+    "unitTests": 8,
+    "debugApk": {
+      "sha256": "24307c87d36e95cb59d5247d92aec6848d6c64b6715da6a44cfcfa3969e479a2",
+      "kind": "debug; not a signed public upgrade"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 29
+    },
+    "full": {
+      "api": 34,
+      "pageSize": 4096,
+      "serial": "emulator-5570",
+      "variant": "debug",
+      "tests": 46,
+      "passed": true,
+      "scope": "controlled synthetic fixtures; no live accounts",
+      "layout": "device default",
+      "fontScale": 1,
+      "provisioningRetries": 0
+    },
+    "coldStartup": {
+      "passed": true,
+      "tests": 1
+    },
+    "submissions": {
+      "api": 34,
+      "pageSize": 4096,
+      "serial": "emulator-5570",
+      "variant": "debug",
+      "tests": 2,
+      "passed": true,
+      "scope": "controlled synthetic fixtures; no live accounts",
+      "layout": "device default",
+      "fontScale": 1,
+      "provisioningRetries": 0
+    },
+    "phonePortrait": {
+      "api": 34,
+      "pageSize": 4096,
+      "serial": "emulator-5570",
+      "variant": "debug",
+      "tests": 8,
+      "passed": true,
+      "scope": "controlled synthetic fixtures; no live accounts",
+      "layout": "portrait asserted by UI tests",
+      "fontScale": 1,
+      "provisioningRetries": 0
+    },
+    "phoneLandscape": {
+      "api": 34,
+      "pageSize": 4096,
+      "serial": "emulator-5570",
+      "variant": "debug",
+      "tests": 8,
+      "passed": true,
+      "scope": "controlled synthetic fixtures; no live accounts",
+      "layout": "landscape asserted by UI tests",
+      "fontScale": 1,
+      "provisioningRetries": 0
+    },
+    "tabletLandscape": {
+      "api": 34,
+      "pageSize": 4096,
+      "serial": "emulator-5570",
+      "variant": "debug",
+      "tests": 8,
+      "passed": true,
+      "scope": "controlled synthetic fixtures; no live accounts",
+      "layout": "landscape asserted by UI tests",
+      "fontScale": 1,
+      "provisioningRetries": 0,
+      "display": {
+        "size": "1600x2560",
+        "density": 240
+      },
+      "note": "API 34 emulator resized as tablet; not a second device or API 37/16KB rerun"
+    }
+  },
+  "attempts": [
+    {
+      "step": "Existing test AVD install",
+      "result": "Blocked by old release/debug signing mismatch; original userdata retained and a separate test userdata image used"
+    },
+    {
+      "step": "New instrumentation test initialization",
+      "result": "Corrected test return type to Unit; no application defect"
+    },
+    {
+      "step": "Landscape format test",
+      "result": "Updated test to scroll LazyColumn to index zero before querying a virtualized input node; final 8 tests passed"
+    }
+  ],
+  "existingDependencyAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 18,
+    "high": 1,
+    "critical": 0,
+    "total": 19,
+    "note": "Same dependency declarations and lockfile as baseline; package.json only adds the integration test command. The audit does not pass. Dependency remediation and release verification remain separate work."
+  },
+  "runtimeSourceSha256": {
+    "android/app/src/main/java/top/xuzimo/vidown/core/AutoSelection.kt": "e9f5cf2ec0ac7573fdb40e7a2ae21bea673c1ae6fb0a8b33d51c4b0c9c61199a",
+    "src/core/submissions.ts": "90aecfd3fee61610a3beafe019b7d7090e80c516d8adbf8c9dd8e8d6c12225d7",
+    "src/shared/links.ts": "7e6063ac0920e4351de5a9bcbf0e3031f77a8d287c95b6a3426f3e6e25efb4da",
+    "android/app/src/main/java/top/xuzimo/vidown/MainViewModel.kt": "4a066a0ce46234c6802ff37baf7d4e455fdd9b8c030785c4a9a86659eda10447",
+    "android/app/src/main/java/top/xuzimo/vidown/download/TaskQueue.kt": "e4672446b01510d59e46d8d8783ef2895e651c0708df0e246d98bf5d6a7dfbc2",
+    "android/app/src/main/java/top/xuzimo/vidown/engine/ProbeRepository.kt": "665a461a7ef6b9469be08dc345451bd8478ccf2d2eb63a30665d131a59378ccc",
+    "android/app/src/main/java/top/xuzimo/vidown/engine/ProtocolInspector.kt": "e18c78d9e28d273678417f90936b581c5430484da5b04766f551bcc6eb36edb3",
+    "android/app/src/main/java/top/xuzimo/vidown/ui/FloatingNavigation.kt": "0a0875f2eb368532a6565395986e1706d551d7088f1e6d0a38d3535a0eb744c5",
+    "android/app/src/main/java/top/xuzimo/vidown/ui/SettingsScreen.kt": "4e4bf8480c7e2fca255b73d15ca98e36342ebc4caf00c7ac3c80232f9e0584b5",
+    "android/app/src/main/java/top/xuzimo/vidown/ui/VidownApp.kt": "fd6a1bd0d10f56aac5704df4315b8de1135f090d297eafc9e2cc055a19664d72",
+    "src/core/formats.ts": "fd14a2dab09f87e33f6b38ec14eab5c52262016857290c66c2c1d357d9d3f244",
+    "src/main/index.ts": "0bd996e65dc5bcbfb243717a39287b904c65dd9589af0f11797ef3ab6be5e825",
+    "src/preload/index.ts": "d2d8879c2268c7695363feb28f27305e6f5fcacdaf1402823e26c091101cdd8e",
+    "src/renderer/main.tsx": "406c07b558a1d8620786b3fa9c7576f320e40476bc08e796d5096a20d978e330",
+    "src/renderer/style.css": "48d093deef5c655057c17a59a19a9e118ea05a79a11d91416284b3954ec019e5",
+    "src/shared/types.ts": "4e20f9bf81c6842a0b1ce9ebf70facc185201ef707739485b94b44bd04464de2"
+  }
+}

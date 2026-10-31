@@ -6,6 +6,8 @@ import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import java.util.concurrent.ConcurrentHashMap
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import top.xuzimo.vidown.browser.*
 import top.xuzimo.vidown.core.*
 
@@ -16,6 +18,8 @@ class ProbeRepository(
 ) {
     private val assets = ConcurrentHashMap<String, PrivateAsset>()
     private val protocols = ProtocolInspector(transport)
+    // The embedded Python module and page-assisted extractors have shared state.
+    private val extractorLock = Mutex()
 
     fun get(id: String): PrivateAsset =
         requireNotNull(assets[id]) { "资源已失效，请重新解析" }.also { browser.ensureCurrent(it.context) }
@@ -65,25 +69,27 @@ class ProbeRepository(
                     }
             var results =
                 if (protocol != null) listOf(protocols.inspect(url, protocol, headers, ref))
-                else {
-                    val owner = newId()
-                    val bridge = PythonTransport(transport, browser, ref, owner)
-                    try {
-                        val pageData = if (isDouyinPage(url)) browser.douyinPageData(url) else "[]"
-                        if (!Python.isStarted())
-                            synchronized(Python::class.java) {
-                                if (!Python.isStarted()) Python.start(AndroidPlatform(context))
-                            }
-                        val result =
-                            Python.getInstance()
-                                .getModule("vidown_engine")
-                                .callAttr("probe", url, bridge, pageData)
-                                .toString()
-                        decodeExtractedResult(result, url, ref)
-                    } finally {
-                        bridge.closeAll()
+                else
+                    extractorLock.withLock {
+                        val owner = newId()
+                        val bridge = PythonTransport(transport, browser, ref, owner)
+                        try {
+                            val pageData =
+                                if (isDouyinPage(url)) browser.douyinPageData(url) else "[]"
+                            if (!Python.isStarted())
+                                synchronized(Python::class.java) {
+                                    if (!Python.isStarted()) Python.start(AndroidPlatform(context))
+                                }
+                            val result =
+                                Python.getInstance()
+                                    .getModule("vidown_engine")
+                                    .callAttr("probe", url, bridge, pageData)
+                                    .toString()
+                            decodeExtractedResult(result, url, ref)
+                        } finally {
+                            bridge.closeAll()
+                        }
                     }
-                }
             if (capture != null && isFullFormatPage(capture.candidate.pageUrl)) {
                 results = results.map {
                     it.copy(

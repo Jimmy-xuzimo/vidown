@@ -66,6 +66,7 @@ class ProtocolInspector(private val transport: SessionTransport) {
                                     ),
                                     v.url.toString(),
                                     headers,
+                                    selector = v.audioGroupId?.let { "audio-group:$it" },
                                 )
                             } +
                                 manifest.audios.mapIndexedNotNull { i, a ->
@@ -74,6 +75,7 @@ class ProtocolInspector(private val transport: SessionTransport) {
                                             track("a$i", TrackKind.AUDIO, a.format, Protocol.HLS),
                                             it.toString(),
                                             headers,
+                                            selector = "audio-group:${a.groupId}",
                                         )
                                     }
                                 }

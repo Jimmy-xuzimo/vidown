@@ -9,17 +9,18 @@ Preview.6 adds exact-video Douyin webpage discovery, Bilibili film/episode and v
 ## Native interface
 
 The workbench, queue, history and settings use Kotlin, Jetpack Compose and public
-Material 3 components. Phones and tablets use a centered floating navigation capsule: bottom-centered
-in portrait, left-centered in landscape. Resizing/rotation chooses the layout
-from the current window orientation. Its glass styling uses translucent gradients, an edge highlight
-and a spring-driven selection lens; it does not capture or continuously blur the screen. Browser resources open in a native modal bottom sheet on phones
+Material 3 components. The development branch replaces the former custom glass
+capsule with Google's `NavigationBar` / `NavigationBarItem` in portrait and
+`NavigationRail` / `NavigationRailItem` in landscape. The rail's items stay
+vertically centred and scroll when height is constrained. This change is not yet
+part of the published preview.6 APK. Browser resources open in a native modal bottom sheet on phones
 and in a side panel when sufficient width is available.
 
 Four palettes include complete light and dark surfaces. Status and navigation bar
-icons follow the app's selected mode. Navigation uses AndroidX Compose spring
-motion with a short fade; task progress animates between reported values. The
-app's motion switch disables these transitions, and Compose follows the system
-animation duration scale. No continuous decorative animation runs while idle.
+icons follow the app's selected mode. Page changes and task progress use AndroidX
+Compose motion. The app's motion switch disables app-owned transitions; official
+Material 3 controls retain their built-in interaction feedback and respect the
+system animation duration scale. No continuous decorative animation runs while idle.
 
 Every new browser tab starts with both Gecko's desktop User-Agent and desktop
 viewport. The desktop-site chip switches both settings for that tab and reloads

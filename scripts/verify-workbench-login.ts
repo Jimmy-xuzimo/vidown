@@ -52,7 +52,7 @@ try {
   );
   const url = "https://www.bilibili.com/video/BV1NGZtBwELa/";
   await page.getByLabel("视频链接", { exact: true }).fill(url);
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page
     .getByRole("heading", { name: "选择保存规格" })
     .waitFor({ timeout: 120000 });

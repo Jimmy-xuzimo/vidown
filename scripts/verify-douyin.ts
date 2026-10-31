@@ -54,7 +54,7 @@ try {
   const userUrl =
     "https://www.douyin.com/jingxuan?modal_id=7666811827413601586";
   await page.getByLabel("视频链接", { exact: true }).fill(userUrl);
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page
     .getByRole("heading", { name: "选择保存规格" })
     .waitFor({ timeout: 45000 });

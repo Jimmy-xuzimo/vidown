@@ -109,6 +109,7 @@ export interface Settings {
   density: "compact";
 }
 export interface Snapshot {
+  submissions?: SubmissionItem[];
   version: string;
   startup: { shellMs?: number; readyMs?: number };
   revision: number;
@@ -130,6 +131,8 @@ export type WorkerResponse = {
   data: any;
 };
 export interface DesktopAPI {
+  submit(input: { requestId: string; urls: string[] }): Promise<void>;
+  submission(input: { id: string; action: "retry" | "cancel" }): Promise<void>;
   snapshot(): Promise<Snapshot>;
   clearData(input: {
     browser: boolean;
@@ -176,4 +179,13 @@ export interface DesktopAPI {
   diagnostics(): Promise<string | undefined>;
   onUpdate(callback: (snapshot: Snapshot) => void): () => void;
   onClipboard(callback: (url: string) => void): () => void;
+}
+export interface SubmissionItem {
+  id: string;
+  state:
+    "waiting" | "probing" | "selection" | "queued" | "failed" | "cancelled";
+  title: string;
+  asset?: MediaAsset;
+  taskId?: string;
+  error?: string;
 }

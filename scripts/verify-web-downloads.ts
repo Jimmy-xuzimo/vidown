@@ -118,7 +118,7 @@ try {
   await page
     .getByLabel("视频链接", { exact: true })
     .fill("https://t.me/controlledchannel/42");
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page
     .getByRole("heading", { name: "选择保存规格" })
     .waitFor({ timeout: 45000 });
@@ -140,7 +140,7 @@ try {
   await page
     .getByLabel("视频链接", { exact: true })
     .fill("https://t.me/+invalid-invite");
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page
     .getByText("请粘贴具体消息链接，不是频道首页或邀请链接", {
       exact: true,

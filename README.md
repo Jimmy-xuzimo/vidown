@@ -8,6 +8,8 @@
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [桌面指南](docs/USER_GUIDE.md) · [Android 指南](docs/ANDROID.md) · [更新历史](docs/CHANGELOG.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
+**开发分支新增（Issue #2，尚未包含在上述公开安装包）：** 两端工作台支持“解析并下载”和多链接逐项处理，保留“选择格式…”入口；失败可单独重试，需要选择单集、语言或确认提示时不自动下载。Android 导航改用 Google 官方 Compose Material 3 `NavigationBar`／`NavigationRail`，保留横竖屏与滑动切页。具体范围见[使用说明](docs/USER_GUIDE.md#开发分支一键与多链接处理)。
+
 **Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.6 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
 
 ![Vidown 下载工作台](docs/images/workbench.png)

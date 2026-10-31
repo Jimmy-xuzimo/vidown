@@ -1,5 +1,7 @@
 # Android 安装与使用
 
+开发分支已接入 Issue #2 的一键解析入队、逐项失败重试与批量处理，新增界面与导航均使用 Google 官方 Compose Material 3 控件。公开 preview.6 APK 不含这些未发布改动，行为与边界见[开发分支说明](USER_GUIDE.md#开发分支一键与多链接处理)。
+
 当前为 **0.1.0-preview.6 签名预览版**，独立于桌面版 1.0.6。应用使用 Kotlin、Jetpack Compose 和 Material 3 编写，网页使用 GeckoView；不运行 Electron、React 或桌面原生宿主。尚未命名稳定版，也未上架 Google Play。
 
 ## 安装与升级

@@ -12,6 +12,7 @@ import "./style.css";
 import { useAppearance } from "./appearance";
 import { canRemoveHistory } from "../shared/history";
 import brandIcon from "../../assets/icon.svg";
+import { mediaLinks } from "../shared/links";
 declare global {
   interface Window {
     vidown: DesktopAPI;
@@ -106,6 +107,7 @@ function App() {
   const [audio, setAudio] = useState("");
   const [output, setOutput] = useState<"source" | "compatible">("source");
   const [busy, setBusy] = useState(false);
+  const submitting = useRef(false);
   const [creatingTab, setCreatingTab] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
@@ -205,13 +207,28 @@ function App() {
     setBusy(false);
   }
   async function addTask() {
-    if (!asset) return;
+    if (!asset || submitting.current) return;
+    submitting.current = true;
     const ids = [video, audio].filter(Boolean);
     await attempt(async () => {
       await api.download({ assetId: asset.id, trackIds: ids, output });
       setNotice("已加入下载队列");
       setAsset(undefined);
     });
+    submitting.current = false;
+  }
+  async function submitLinks() {
+    if (submitting.current) return;
+    submitting.current = true;
+    setBusy(true);
+    try {
+      await attempt(() =>
+        api.submit({ requestId: crypto.randomUUID(), urls: mediaLinks(url) }),
+      );
+    } finally {
+      submitting.current = false;
+      setBusy(false);
+    }
   }
   const tasks = snapshot?.tasks ?? [];
   const active = tasks.filter((t) =>
@@ -300,25 +317,111 @@ function App() {
                 className="url-entry"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  if (url.trim()) void probe({ url });
+                  if (url.trim()) void submitLinks();
                 }}
               >
                 <Icon name="globe" />
-                <input
+                <textarea
                   aria-label="视频链接"
+                  rows={2}
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="粘贴视频、音频或网页链接…"
+                  placeholder="粘贴一个或多个媒体链接，每行一个…"
                 />
                 <button
                   className="primary"
                   type="submit"
                   disabled={busy || !url.trim()}
                 >
-                  {busy ? "正在探测…" : "探测资源"}
+                  {busy ? "正在提交…" : "解析并下载"}
                   <Icon name="arrow" size={16} />
                 </button>
               </form>
+              <div className="entry-caption">
+                <span>
+                  自动选择最高可用源规格 · 最多 50 个链接 ·
+                  需要确认时保留格式选择
+                </span>
+                <button
+                  className="text-button"
+                  disabled={busy || !url.trim()}
+                  onClick={() =>
+                    void attempt(async () => {
+                      const links = mediaLinks(url);
+                      if (links.length !== 1)
+                        throw new Error(
+                          "手动选择格式请一次输入一个链接；多链接请使用解析并下载。",
+                        );
+                      await probe({ url: links[0] });
+                    })
+                  }
+                >
+                  选择格式…
+                </button>
+              </div>
+              {!!snapshot.submissions?.length && (
+                <section
+                  className="card submission-list"
+                  aria-label="链接处理进度"
+                  aria-live="polite"
+                >
+                  <h2>链接处理进度</h2>
+                  {snapshot.submissions.map((item) => (
+                    <div key={item.id} className="submission-row">
+                      <div>
+                        <strong>{item.title}</strong>
+                        <p>
+                          {
+                            {
+                              waiting: "等待解析",
+                              probing: "正在解析",
+                              selection: "需要选择规格或确认提示",
+                              queued: "已加入下载队列",
+                              failed: "解析或入队失败",
+                              cancelled: "已取消",
+                            }[item.state]
+                          }
+                        </p>
+                        {item.error && (
+                          <p className="inline-warning">{item.error}</p>
+                        )}
+                      </div>
+                      {item.state === "selection" && item.asset && (
+                        <button
+                          className="secondary"
+                          onClick={() => selectAsset(item.asset!)}
+                        >
+                          选择格式
+                        </button>
+                      )}
+                      {item.state === "failed" && (
+                        <button
+                          className="secondary"
+                          onClick={() =>
+                            void attempt(() =>
+                              api.submission({ id: item.id, action: "retry" }),
+                            )
+                          }
+                        >
+                          重试此链接
+                        </button>
+                      )}
+                      {["waiting", "probing"].includes(item.state) && (
+                        <button
+                          className="text-button"
+                          onClick={() =>
+                            void attempt(() =>
+                              api.submission({ id: item.id, action: "cancel" }),
+                            )
+                          }
+                        >
+                          取消
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </section>
+              )}
               <div className="entry-caption">
                 <span>
                   自动使用内置浏览器登录状态 · 登录后重新探测可用最高规格

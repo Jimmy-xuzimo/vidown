@@ -178,7 +178,7 @@ try {
   await page
     .getByLabel("视频链接", { exact: true })
     .fill(fixture.origin + "/auth/master.m3u8");
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page.getByRole("heading", { name: "选择保存规格" }).waitFor();
   await page.getByRole("button", { name: "加入下载队列", exact: true }).click();
   await until(async () => {

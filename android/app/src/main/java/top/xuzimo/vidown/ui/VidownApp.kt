@@ -159,6 +159,7 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
     val reveal by vm.revealAsset.collectAsStateWithLifecycle()
     val busy by vm.busy.collectAsStateWithLifecycle()
     val failure by vm.probeError.collectAsStateWithLifecycle()
+    val submissions by vm.submissions.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val animations = LocalAnimationsEnabled.current
@@ -170,8 +171,8 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
     LaunchedEffect(reveal) {
         val index = assets.indexOfFirst { it.id == reveal }
         if (reveal != null && index >= 0) {
-            if (animations) listState.animateScrollToItem(index + 2)
-            else listState.scrollToItem(index + 2)
+            if (animations) listState.animateScrollToItem(index + 2 + submissions.size)
+            else listState.scrollToItem(index + 2 + submissions.size)
             vm.revealAsset.compareAndSet(reveal, null)
         }
     }
@@ -228,7 +229,8 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
                                 onClick = {
                                     focus.clearFocus()
                                     keyboard?.hide()
-                                    vm.probe()
+                                    permission()
+                                    vm.submitLinks()
                                 },
                                 enabled = !busy && input.isNotBlank(),
                                 contentPadding =
@@ -239,9 +241,19 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
                                         Modifier.size(20.dp),
                                         strokeWidth = 2.dp,
                                     )
-                                else Icon(Icons.Rounded.Search, null)
+                                else Icon(Icons.Rounded.Download, null)
                                 Spacer(Modifier.width(8.dp))
-                                Text(if (busy) "正在解析" else "解析链接")
+                                Text(if (busy) "正在解析" else "解析并下载")
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    focus.clearFocus()
+                                    keyboard?.hide()
+                                    vm.probe()
+                                },
+                                enabled = !busy && input.isNotBlank(),
+                            ) {
+                                Text("选择格式…")
                             }
                             FilledTonalButton(
                                 onClick = {
@@ -260,7 +272,7 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
                             }
                         }
                         Text(
-                            "需要登录时，先在内置浏览器登录并播放，再回到这里解析。",
+                            "自动选择最高可用源规格；需要确认时保留格式选择。每次最多 50 个链接，需要登录时先在内置浏览器登录。",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -299,6 +311,42 @@ fun Workbench(vm: MainViewModel, permission: () -> Unit) {
                                 }
                             }
                         }
+                    }
+                }
+            }
+            items(submissions, key = { "submission-${it.id}" }) { row ->
+                OutlinedCard(Modifier.fillMaxWidth()) {
+                    Column(
+                        Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            row.title,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            when (row.state) {
+                                SubmissionState.WAITING -> "等待解析"
+                                SubmissionState.PROBING -> "正在解析"
+                                SubmissionState.ENQUEUING -> "正在加入队列"
+                                SubmissionState.SELECTION -> "需要选择规格或确认提示"
+                                SubmissionState.QUEUED -> "已加入下载队列"
+                                SubmissionState.FAILED -> "解析或入队失败"
+                                SubmissionState.CANCELLED -> "已取消"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        row.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+                        if (row.state in setOf(SubmissionState.WAITING, SubmissionState.PROBING))
+                            TextButton(onClick = { vm.cancelSubmission(row) }) { Text("取消") }
+                        if (row.state == SubmissionState.FAILED)
+                            TextButton(onClick = { vm.retrySubmission(row) }) { Text("重试此链接") }
+                        if (row.state == SubmissionState.SELECTION)
+                            TextButton(onClick = { vm.revealAsset.value = row.asset?.id }) {
+                                Text("选择格式")
+                            }
                     }
                 }
             }

@@ -1,5 +1,17 @@
 # 验证记录
 
+## Issue #2：一键入队、批量处理与官方 Material 3（2026-10-31，开发分支）
+
+桌面和 Android 工作台新增“解析并下载”，每批 1–50 个链接；提交状态与下载状态机分离。普通探测槽位为 2，网页辅助操作保守串行，Android Python 提取器通过互斥锁串行；下载继续沿用 1–4 并发。源警告、多语言、剧集列表和网页原生保存保留明确选择；一条失败不终止整批。新增请求幂等、活动任务同来源同规格查重、逐项重试和取消迟到结果抑制；不承诺短链／签名地址之间的全站媒体身份查重或跨重启续传。待选资源避免被桌面普通缓存清退。
+
+Android 使用 Google 官方 `androidx.compose.material3` 的 `NavigationBar`／`NavigationBarItem`、`NavigationRail`／`NavigationRailItem` 替换自绘玻璃导航；新增提交卡片、按钮和错误提示沿用官方 Material 3 组件。横屏左侧轨道、竖屏底栏及 Compose 滑动切页保留。参照[官方组件文档](https://developer.android.com/develop/ui/compose/components)和[导航栏文档](https://developer.android.com/develop/ui/compose/components/navigation-bar)。
+
+[本轮报告](validation/issue-2-2026-10-31.json)记录：桌面生产构建、55 项测试、真实 Electron 的 7 项批量／下载验证通过；Chromium 与 Windows WebView2 路径分别执行。原有 4 项浏览器登录／清理回归、14 项 Chromium 受控网页保存回归通过。Android 8 项 JVM 测试、debug APK／测试 APK 构建通过；Lint 零错误、29 项警告。API 34 独立模拟器中，完整 46 项受控集成和独立冷启动通过；新批量／重复入队 2 项，以及手机竖屏、横屏、平板横屏各 8 项界面／格式选择检查通过。平板使用同一模拟器调整显示尺寸，不等同于 API 37／16KB 或真机复验。
+
+首次模拟器安装遇到旧发行签名与 debug 签名不同，保留原数据并使用独立 userdata；新增测试曾因返回类型不是 Unit 无法启动，已更正。横屏旧测试曾查找被 LazyColumn 回收的输入节点，改为先滚动列表再验证可访问性，复测通过。原失败与最终结果分别保留，没有把重跑通过当成原失败不存在。
+
+本轮不更新公开 Release、版本号或安装包；真实账号、外网平台和正式签名安装升级不属于本次测试。重新安装依赖时发现既有 npm audit 为 18 项 moderate、1 项 high，依赖声明和锁文件未由本次功能改动修改；未将其计为通过，发行前仍需单独处理。
+
 ## 官网主题切换与动效（2026-10-19）
 
 主题按钮原先循环“系统／浅色／深色”，跟随系统与显式主题可能显示相同外观。现按当前可见主题一次点击切换深浅；首次访问仍跟随系统，手动选择后保存。支持 View Transitions 时从按钮中心执行 520 ms 圆形扩散；不支持时使用短淡入，减少动态效果或强制颜色时直接切换。连续点击、键盘触发和中途停止均不依赖动画结束才能保存主题。

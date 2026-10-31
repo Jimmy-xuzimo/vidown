@@ -24,6 +24,8 @@ class TaskQueue(private val graph: AppGraph) {
     private val external = ConcurrentHashMap<String, WebResponse>()
     private val ready = CompletableDeferred<Unit>()
     private val queueLock = Mutex()
+    private val enqueueLock = Mutex()
+    private val planKeys = ConcurrentHashMap<String, String>()
     private var transferring = false
 
     init {
@@ -49,55 +51,107 @@ class TaskQueue(private val graph: AppGraph) {
         audioOnly: Boolean = false,
     ): String =
         withContext(Dispatchers.IO) {
-            ready.await()
-            val asset = graph.probe.get(assetId)
-            val selected = asset.tracks.filter { it.track.id in trackIds }
-            require(selected.size == trackIds.size) { "轨道已失效，请重新解析" }
-            val tracks =
-                if (audioOnly) {
-                    val audio =
-                        selected.firstOrNull { it.track.kind == TrackKind.AUDIO }
-                            ?: selected.firstOrNull { it.track.kind == TrackKind.MUXED }
-                    requireNotNull(audio) { "所选源不含可提取的音频" }
-                    listOf(audio.copy(track = audio.track.copy(kind = TrackKind.AUDIO)))
-                } else selected
-            require(tracks.isNotEmpty()) { "请选择至少一条轨道" }
-            require(tracks.none { it.track.kind == TrackKind.MUXED } || tracks.size == 1) {
-                "所选源已包含音频，不能再叠加独立音轨"
-            }
-            require(
-                audioOnly ||
-                    tracks.none { it.track.kind == TrackKind.VIDEO } ||
-                    tracks.any { it.track.kind == TrackKind.AUDIO } ||
-                    asset.tracks.none { it.track.kind == TrackKind.AUDIO }
-            ) {
-                "该视频不含音频，请同时选择一个音轨"
-            }
-            require(
-                tracks.count { it.track.kind != TrackKind.AUDIO } <= 1 &&
-                    tracks.count { it.track.kind == TrackKind.AUDIO } <= 1
-            ) {
-                "每个任务最多选择一个视频轨和一个音频轨"
-            }
-            if (compatible)
-                require(tracks.none { it.track.dynamicRange?.let { d -> d != "SDR" } == true }) {
-                    "该规格没有安全的动态范围转换策略，请保留原画质"
+            enqueueLock.withLock {
+                ready.await()
+                val asset = graph.probe.get(assetId)
+                val selected = asset.tracks.filter { it.track.id in trackIds }
+                require(selected.size == trackIds.size) { "轨道已失效，请重新解析" }
+                val tracks =
+                    if (audioOnly) {
+                        val audio =
+                            selected.firstOrNull { it.track.kind == TrackKind.AUDIO }
+                                ?: selected.firstOrNull { it.track.kind == TrackKind.MUXED }
+                        requireNotNull(audio) { "所选源不含可提取的音频" }
+                        listOf(audio.copy(track = audio.track.copy(kind = TrackKind.AUDIO)))
+                    } else selected
+                require(tracks.isNotEmpty()) { "请选择至少一条轨道" }
+                val videoGroup = tracks.firstOrNull { it.track.kind == TrackKind.VIDEO }?.selector
+                if (videoGroup?.startsWith("audio-group:") == true)
+                    require(
+                        tracks.firstOrNull { it.track.kind == TrackKind.AUDIO }?.selector ==
+                            videoGroup
+                    ) {
+                        "该音轨不属于所选视频的音频组"
+                    }
+                require(tracks.none { it.track.kind == TrackKind.MUXED } || tracks.size == 1) {
+                    "所选源已包含音频，不能再叠加独立音轨"
                 }
-            val plan =
-                DownloadPlan(
-                    asset = asset,
-                    tracks = tracks,
-                    compatible = compatible,
-                    directoryUri = graph.settings.value.directoryUri,
-                )
-            graph.secrets.put("source-${plan.id}", asset.asset.pageUrl)
-            graph.secrets.put("plan-${plan.id}", Json.encodeToString(plan))
-            plans[plan.id] = plan
-            queueLock.withLock {
-                dao.insert(TaskEntity(plan.id, asset.asset.title))
-                check(transferring || schedule()) { "系统暂时无法启动下载，请回到应用后重试" }
+                require(
+                    audioOnly ||
+                        tracks.none { it.track.kind == TrackKind.VIDEO } ||
+                        tracks.any { it.track.kind == TrackKind.AUDIO } ||
+                        asset.tracks.none { it.track.kind == TrackKind.AUDIO }
+                ) {
+                    "该视频不含音频，请同时选择一个音轨"
+                }
+                require(
+                    tracks.count { it.track.kind != TrackKind.AUDIO } <= 1 &&
+                        tracks.count { it.track.kind == TrackKind.AUDIO } <= 1
+                ) {
+                    "每个任务最多选择一个视频轨和一个音频轨"
+                }
+                if (compatible)
+                    require(
+                        tracks.none { it.track.dynamicRange?.let { d -> d != "SDR" } == true }
+                    ) {
+                        "该规格没有安全的动态范围转换策略，请保留原画质"
+                    }
+                val key =
+                    sha256(
+                        listOf(
+                                asset.asset.pageUrl,
+                                tracks
+                                    .map {
+                                        listOf(
+                                            it.track.kind,
+                                            it.track.protocol,
+                                            it.track.codec,
+                                            it.track.width,
+                                            it.track.height,
+                                            it.track.fps,
+                                            it.track.bitrate,
+                                            it.track.language,
+                                            it.selector,
+                                            it.url,
+                                        )
+                                    }
+                                    .sortedBy { it.toString() },
+                                compatible,
+                                audioOnly,
+                                graph.settings.value.directoryUri,
+                            )
+                            .toString()
+                    )
+                val existing =
+                    dao.all().firstOrNull {
+                        planKeys[it.id] == key &&
+                            TaskTransitions.active(TaskState.valueOf(it.state))
+                    }
+                if (existing != null) return@withLock existing.id
+                val plan =
+                    DownloadPlan(
+                        asset = asset,
+                        tracks = tracks,
+                        compatible = compatible,
+                        directoryUri = graph.settings.value.directoryUri,
+                    )
+                graph.secrets.put("source-${plan.id}", asset.asset.pageUrl)
+                graph.secrets.put("plan-${plan.id}", Json.encodeToString(plan))
+                plans[plan.id] = plan
+                planKeys[plan.id] = key
+                queueLock.withLock {
+                    dao.insert(TaskEntity(plan.id, asset.asset.title))
+                    if (!(transferring || schedule())) {
+                        dao.delete(plan.id)
+                        plans.remove(plan.id)
+                        planKeys.remove(plan.id)
+                        graph.secrets.remove("plan-${plan.id}")
+                        graph.secrets.remove("source-${plan.id}")
+                        error("系统暂时无法启动下载，请回到应用后重试")
+                    }
+                }
+                plan.id
             }
-            plan.id
         }
 
     suspend fun acceptBrowser(tabId: String, response: WebResponse) {

@@ -32,7 +32,7 @@ try {
   await page
     .getByLabel("视频链接", { exact: true })
     .fill("https://www.bilibili.com/bangumi/play/ss231879?theme=movie");
-  await page.getByRole("button", { name: "探测资源", exact: true }).click();
+  await page.getByRole("button", { name: "选择格式…", exact: true }).click();
   await page
     .getByRole("button", { name: "潮汕话版", exact: true })
     .waitFor({ timeout: 60000 });

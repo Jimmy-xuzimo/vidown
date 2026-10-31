@@ -144,6 +144,50 @@ export function chooseTracks(
     throw new Error("该音轨不属于所选视频的音频组。");
   return selected;
 }
+
+/** Pure public-track ranking, followed by private HLS/audio-group validation. */
+export function automaticTracks(
+  asset: PrivateAsset,
+): PrivateTrack[] | undefined {
+  if (
+    asset.episodes?.length ||
+    asset.warnings.length ||
+    asset.tracks.some((t) => t.protocol === "browser")
+  )
+    return;
+  const video = asset.tracks
+    .filter((t) => t.kind !== "audio")
+    .sort(
+      (a, b) =>
+        (b.height ?? 0) - (a.height ?? 0) ||
+        (b.fps ?? 0) - (a.fps ?? 0) ||
+        (b.bitrate ?? 0) - (a.bitrate ?? 0),
+    )[0];
+  const audios = asset.tracks
+    .filter((t) => t.kind === "audio")
+    .sort(
+      (a, b) =>
+        Number(/flac/i.test(b.codec ?? "")) -
+          Number(/flac/i.test(a.codec ?? "")) ||
+        (b.bitrate ?? 0) - (a.bitrate ?? 0),
+    );
+  if (new Set(audios.map((t) => t.language).filter(Boolean)).size > 1) return;
+  const attempts =
+    video?.kind === "muxed"
+      ? [[video.id]]
+      : video
+        ? audios.length
+          ? audios.map((a) => [video.id, a.id])
+          : [[video.id]]
+        : audios.map((a) => [a.id]);
+  for (const ids of attempts) {
+    try {
+      return chooseTracks(asset, ids);
+    } catch {
+      /* Try the matching audio group. */
+    }
+  }
+}
 export function containerFor(tracks: Track[], compatible = false): string {
   if (compatible)
     return tracks.every((t) => t.kind === "audio") ? "m4a" : "mp4";

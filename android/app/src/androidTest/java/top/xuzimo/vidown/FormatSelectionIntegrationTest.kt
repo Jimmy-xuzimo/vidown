@@ -184,6 +184,9 @@ class FormatSelectionIntegrationTest {
         ui.onNodeWithTag("nav-2").performClick()
         ui.onNodeWithTag("nav-0").performClick()
         // Pager restores the list's scroll position; the input must remain reachable.
+        // LazyColumn disposes the off-screen input once the taller link card is
+        // beyond the viewport; scroll the owning list before querying that node.
+        ui.onNodeWithTag("workbench-list").performScrollToIndex(0)
         ui.onNodeWithTag("media-input").performScrollTo().assertIsDisplayed()
     }
 
