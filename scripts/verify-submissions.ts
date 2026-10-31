@@ -29,7 +29,12 @@ const env: Record<string, string> = {
 };
 delete env.ELECTRON_RUN_AS_NODE;
 const app = await _electron.launch({
-  args: ["."],
+  ...(process.env.VIDOWN_VERIFY_EXECUTABLE
+    ? {
+        executablePath: resolve(process.env.VIDOWN_VERIFY_EXECUTABLE),
+        args: [],
+      }
+    : { args: ["."] }),
   cwd: resolve("."),
   env,
   timeout: 60000,

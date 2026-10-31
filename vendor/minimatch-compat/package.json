@@ -1,0 +1,11 @@
+{
+  "name": "@vidown/minimatch-compat",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "index.cjs",
+  "description": "Legacy callable adapter over the patched upstream minimatch engine; no matching implementation is forked.",
+  "dependencies": {
+    "minimatch-modern": "npm:minimatch@11.0.3"
+  }
+}

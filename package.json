@@ -1,6 +1,6 @@
 {
   "name": "vidown-desktop",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "private": true,
   "description": "Vidown rebuild — browser-assisted, source-quality media downloads",
   "license": "MIT",
@@ -58,20 +58,24 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "6.1.2",
-    "electron": "44.8.0",
-    "electron-builder": "26.15.3",
+    "electron": "44.10.1",
+    "electron-builder": "26.18.0",
     "electron-vite": "6.0.0",
     "playwright": "^1.58.0",
     "prettier": "3.9.10",
     "tsx": "^4.21.0",
     "typescript": "^5.9.0",
     "vite": "^8.0.0",
-    "vitest": "^4.1.0"
+    "vitest": "4.1.12",
+    "@vidown/minimatch-compat": "file:vendor/minimatch-compat"
   },
   "overrides": {
     "@electron/get@3.1.0": {
       "global-agent": "4.1.3"
-    }
+    },
+    "minimatch@>=9 <11": "11.0.3",
+    "fast-uri": "3.1.9",
+    "minimatch@<9": "$@vidown/minimatch-compat"
   },
   "build": {
     "appId": "top.xuzimo.vidown",
@@ -177,7 +181,7 @@
     ]
   },
   "allowScripts": {
-    "electron@44.8.0": true,
+    "electron@44.10.1": true,
     "esbuild@0.28.2": true,
     "electron-winstaller@5.4.0": true
   }

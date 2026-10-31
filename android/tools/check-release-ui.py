@@ -90,30 +90,35 @@ def main():
     tap(text('工作台'))
     # Ensure the directory exists without writing into arbitrary shared folders.
     existing=files()
-    def download(url,label,public=False):
+    def download(url,label,public=False,automatic=False):
         tap(text('历史'))
         old_completed=sum(n.get('text')=='完成' for n in tree())
         tap(text('工作台'))
-        edit(url);tap(text('解析链接'))
-        wait(lambda nodes:not any(n.get('class')=='android.widget.EditText' and n.get('focused')=='true' for n in nodes))
-        # Wait for extraction independently of scrolling; cold engine startup
-        # and the larger native cards can both take time on an emulator.
-        deadline=time.monotonic()+90
-        while time.monotonic()<deadline:
-            nodes=tree()
-            button=next((n for n in nodes if n.get('text')=='加入队列' and n.get('enabled')=='true'),None)
-            if button is not None:break
-            if any(n.get('text')=='正在解析' for n in nodes):
-                time.sleep(.5);continue
-            bounds=list(map(int,re.findall(r'\d+',nodes[0].get('bounds'))))
-            adb('shell','input','swipe',str(bounds[2]//2),str(bounds[3]*3//4),str(bounds[2]//2),str(bounds[3]//3),'300')
+        edit(url)
+        selected=[]
+        if automatic:
+            tap(text('解析并下载'))
         else:
-            (out/'format-failure-tree.xml').write_text(adb('shell','cat','/sdcard/vidown-release-test.xml'),encoding='utf-8')
-            screenshot('format-failure')
-            raise RuntimeError('No actionable format-selection card')
-        screenshot(label+'-formats')
-        selected=[n.get('text','') for n in nodes if n.get('class')=='android.widget.EditText']
-        tap(button)
+            tap(text('选择格式…'))
+            wait(lambda nodes:not any(n.get('class')=='android.widget.EditText' and n.get('focused')=='true' for n in nodes))
+            # Wait for extraction independently of scrolling; cold engine startup
+            # and the larger native cards can both take time on an emulator.
+            deadline=time.monotonic()+90
+            while time.monotonic()<deadline:
+                nodes=tree()
+                button=next((n for n in nodes if n.get('text')=='加入队列' and n.get('enabled')=='true'),None)
+                if button is not None:break
+                if any(n.get('text')=='正在解析' for n in nodes):
+                    time.sleep(.5);continue
+                bounds=list(map(int,re.findall(r'\d+',nodes[0].get('bounds'))))
+                adb('shell','input','swipe',str(bounds[2]//2),str(bounds[3]*3//4),str(bounds[2]//2),str(bounds[3]//3),'300')
+            else:
+                (out/'format-failure-tree.xml').write_text(adb('shell','cat','/sdcard/vidown-release-test.xml'),encoding='utf-8')
+                screenshot('format-failure')
+                raise RuntimeError('No actionable format-selection card')
+            screenshot(label+'-formats')
+            selected=[n.get('text','') for n in nodes if n.get('class')=='android.widget.EditText']
+            tap(button)
         # Fresh install can display the notification permission prompt.
         time.sleep(1)
         for node in tree():
@@ -153,6 +158,7 @@ def main():
         existing.update(new)
         print(label+': actual file verified',flush=True)
         return reports
+    automatic=download('http://10.0.2.2:18763/sample.mp4','one-click',automatic=True)
     hls=download('http://10.0.2.2:18763/split/master.m3u8','hls')
     tap(text('工作台'))
     edit('http://10.0.2.2:18763/login');tap(text('在浏览器中打开'))
@@ -164,7 +170,7 @@ def main():
     adb('shell','am','force-stop',PACKAGE)
     adb('shell','am','start','-W','-n',PACKAGE+'/.MainActivity')
     auth=download('http://10.0.2.2:18763/auth/page','authenticated-after-restart')
-    result={'variant':'release','serial':args.serial,'passed':True,'scope':'black-box HLS independent video/audio, browser session login, process restart, authenticated download, native remux, MediaStore, host ffprobe','hls':hls,'authenticated':auth}
+    result={'variant':'release','serial':args.serial,'passed':True,'scope':'black-box HLS independent video/audio, browser session login, process restart, authenticated download, native remux, MediaStore, host ffprobe','oneClick':automatic,'hls':hls,'authenticated':auth}
     if args.public_bilibili:
         result['publicBilibili']=download('https://www.bilibili.com/video/BV1NGZtBwELa/','public-bilibili',True)
         result['publicScope']='One public sample without login; complete download and ffprobe comparison to selected format; premium formats and physical devices not tested'
