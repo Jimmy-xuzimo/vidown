@@ -1,0 +1,88 @@
+name: Publish existing verified installers
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Completed native release build run
+        type: string
+        required: true
+      tag:
+        description: Version tag matching the tested packages
+        type: string
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: publish-verified-installers
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Validate original build provenance
+        id: provenance
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node --input-type=module <<'JS'
+          import { execFileSync } from 'node:child_process';
+          import { appendFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const { RUN_ID, RELEASE_TAG, GITHUB_REPOSITORY, GITHUB_OUTPUT } = process.env;
+          assert(/^\d+$/.test(RUN_ID));
+          assert(/^v\d+\.\d+\.\d+$/.test(RELEASE_TAG));
+          const api = (path) => JSON.parse(execFileSync('gh', ['api', path], { encoding: 'utf8' }));
+          const run = api(`repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}`);
+          assert.equal(run.path, '.github/workflows/release.yml');
+          assert.equal(run.status, 'completed');
+          assert.equal(run.head_repository.full_name, GITHUB_REPOSITORY);
+          assert.equal(run.head_branch, 'main');
+          const { jobs } = api(`repos/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}/jobs?per_page=100`);
+          for (const platform of ['Windows-x64', 'macOS-x64', 'macOS-arm64', 'Linux-x64', 'Linux-arm64']) {
+            const job = jobs.find(j => j.name === `Package ${platform}`);
+            assert.equal(job?.conclusion, 'success', `Unverified native package: ${platform}`);
+          }
+          assert(/^[a-f0-9]{40}$/.test(run.head_sha));
+          appendFileSync(GITHUB_OUTPUT, `sha=${run.head_sha}\n`);
+          JS
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.provenance.outputs.sha }}
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ inputs.run_id }}
+          pattern: release-*
+          path: release/publish
+          merge-multiple: true
+      - name: Load reviewed release notes and verify original evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NOTES_REF: ${{ github.sha }}
+          RUN_ID: ${{ inputs.run_id }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          node --input-type=module <<'JS'
+          import { execFileSync } from 'node:child_process';
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import assert from 'node:assert/strict';
+          const { GITHUB_REPOSITORY, NOTES_REF, RUN_ID, RELEASE_TAG } = process.env;
+          const entry = JSON.parse(execFileSync('gh', ['api', `repos/${GITHUB_REPOSITORY}/contents/docs/RELEASE_NOTES.md?ref=${NOTES_REF}`], {encoding:'utf8'}));
+          const notes = Buffer.from(entry.content, 'base64').toString('utf8').replace(/^\uFEFF/, '');
+          assert(notes.startsWith(`# Vidown ${RELEASE_TAG.slice(1)}\n`));
+          assert(notes.includes(`/releases/tag/${RELEASE_TAG}-materials`));
+          for (const platform of ['Windows-x64', 'macOS-x64', 'macOS-arm64', 'Linux-x64', 'Linux-arm64']) {
+            const report = JSON.parse(readFileSync(`release/publish/Vidown-${RELEASE_TAG.slice(1)}-${platform}-verification.json`));
+            assert.equal(report.run, `https://github.com/${GITHUB_REPOSITORY}/actions/runs/${RUN_ID}`);
+          }
+          writeFileSync('docs/RELEASE_NOTES.md', notes);
+          JS
+          node scripts/publish-release.mjs
