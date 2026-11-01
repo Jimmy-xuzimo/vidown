@@ -4,17 +4,17 @@
 
 一个从零重写的本地视频下载器：粘贴链接解析，或在内置浏览器中登录、播放并发现媒体，选择音视频轨道后保存到本机。优先保留源编码，下载完成后检查成品。
 
-**桌面版 1.0.6 · Android 0.1.0-preview.6。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
+**桌面版 1.0.7 · Android 0.1.0-preview.7。** 两端独立开发和发行。桌面 Windows 网页使用系统 WebView2，本地界面由 Electron 承载；Android 使用原生 Kotlin／Jetpack Compose／Material 3 与 GeckoView。旧 Python 工程仅保留在 Git 历史中，没有复用旧业务代码。公开安装包和已验证范围以对应 Release 为准。
 
 [项目介绍](https://jimmy-xuzimo.github.io/vidown/) · [桌面指南](docs/USER_GUIDE.md) · [Android 指南](docs/ANDROID.md) · [更新历史](docs/CHANGELOG.md) · [测试记录](docs/VALIDATION.md) · [后续计划](docs/ROADMAP.md)
 
-**开发分支新增（Issue #2，尚未包含在上述公开安装包）：** 两端工作台支持“解析并下载”和多链接逐项处理，保留“选择格式…”入口；失败可单独重试，需要选择单集、语言或确认提示时不自动下载。Android 导航改用 Google 官方 Compose Material 3 `NavigationBar`／`NavigationRail`，保留横竖屏与滑动切页。具体范围见[使用说明](docs/USER_GUIDE.md#开发分支一键与多链接处理)。
+**本版改进（Issue #2）：** 两端工作台支持“解析并下载”和多链接逐项处理，保留“选择格式…”入口；失败可单独重试，需要选择单集、语言或确认提示时不自动下载。Android 导航改用 Google 官方 Compose Material 3 `NavigationBar`／`NavigationRail`，保留横竖屏与滑动切页。具体范围见[使用说明](docs/USER_GUIDE.md#一键与多链接处理)。
 
-**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.6 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
+**Android 预览版：** 原生 Kotlin／Jetpack Compose 工程现位于 [`android/`](android/README.md)，支持 Android 14+ 的手机和平板，使用独立版本号。下载 [Android 0.1.0-preview.7 APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7)。浏览器与运行时随包提供；横竖屏导航、音视频格式选择、受控协议下载与公开样本分别验收，真实会员账号及真机后台性能仍需验证，详见 [Android 验收记录](android/ACCEPTANCE.md)。桌面版能力矩阵不作为 Android 的支持声明。
 
 ![Vidown 下载工作台](docs/images/workbench.png)
 
-本轮新增两端影片／剧集的单集与版本选择，以及 Android 抖音网页探测、常驻导航和滑动切页。公开样本、受控测试与真实会员账号分别记录；试看、地区或 DRM 限制不会被宣称已解决。见[更新历史](docs/CHANGELOG.md)。
+本轮新增两端一键解析入队、最多 50 条链接逐项处理与失败单独重试，Android 导航改用官方 Material 3 控件。此前的影片／剧集单集选择和网页探测继续保留。公开样本、受控测试与真实会员账号分别记录；试看、地区或 DRM 限制不会被宣称已解决。见[更新历史](docs/CHANGELOG.md)。
 
 ## 桌面版能做什么
 
@@ -57,7 +57,7 @@
 - Gecko 浏览器默认桌面模式，多标签、登录保存、资源发现与工作台共享会话；不导入外部浏览器 Cookie。
 - Media3 下载 HLS／DASH／直链，JNI／FFmpeg 无损合并和检查，成功后写入 MediaStore 或系统授权的文件夹。
 - UIDT 后台下载、WorkManager 后处理、队列、历史与数据清理；同次运行可安全暂停恢复，重启须重新解析。
-- Material 3 原生界面，竖屏底部、横屏左侧的居中悬浮导航；四套深浅配色和可关闭的 Compose 动效。
+- Material 3 原生界面，竖屏底部导航栏、横屏左侧居中导航轨道；四套深浅配色和可关闭的 Compose 动效。
 
 受控协议及公开 B 站样本已有模拟器下载证据；**真实会员最高规格、ARM64 真机、厂商后台策略、续航／温控仍待验证**。它尚非稳定版，未上架 Google Play，不能把桌面能力矩阵当作 Android 验收结果。详见 [Android 安装与使用](docs/ANDROID.md)、[验收记录](android/ACCEPTANCE.md)及[隐私政策](android/PRIVACY.md)。
 
@@ -72,7 +72,7 @@
 | Linux x64／ARM64               | 各自的 AppImage（Ubuntu 24.04 构建）            |
 | Android 14+ ARM64／x86_64      | 独立 Android Release 中的单一通用 APK（预览版） |
 
-桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.6)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
+桌面 Release 仅列 5 个应用包（Windows 安装版、两种架构的 macOS DMG 和 Linux AppImage）；SHA-256、测试报告和第三方对应源码／构建材料保存在[桌面资料页](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7-materials)。Android 使用[独立预览 Release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7)和[对应源码／校验材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.7)，不使用 `/releases/latest` 获取 Android。请按附件选择，不把源码 ZIP 当作安装包。Windows 未签名；macOS 只有 ad-hoc 签名，没有 Developer ID／公证；系统可能提示来源验证。
 
 最终用户无需安装 Python、Node.js 或 .NET。应用包自带下载工具与原生宿主运行时；Windows 网页需要系统的 [Microsoft Evergreen WebView2 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/)。产品名称为 Vidown，沿用 `%APPDATA%/Vidown Preview` 资料目录以保留已有记录；旧 Chromium 完整站点存储不会自动迁移到 WebView2，升级后可能需要登录一次。
 

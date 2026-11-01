@@ -1,8 +1,33 @@
 # Android preview acceptance
 
-Version: **0.1.0-preview.6**. Reviewed on **19 October 2026**. This is a
+Version: **0.1.0-preview.7**. Reviewed on **1 November 2026**. This is a
 signed Android preview, not a stable release or Google Play approval. Desktop
 remains on its independent release track. Raw local logs retain their host dates.
+
+## Preview.7 one-click submissions and official Material 3
+
+The signed preview adds one-click extraction and enqueue, batches of up to 50
+links, bounded probing, individual retry/cancel and active-task deduplication.
+Manual track selection remains available. Episode/language choices, warnings and
+page-native saves require confirmation. Different signed URLs/aliases are not
+guaranteed to deduplicate. Downloads retain their existing 1–4 concurrency limit.
+
+Navigation now uses Google's official Compose Material 3 NavigationBar and
+NavigationRail components; portrait/landscape positioning and swipe paging remain.
+No replacement of official interaction semantics with custom glass controls.
+
+[CI](https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205) passed all nine
+Android 14–17 phone/tablet configurations including API 37.2 with 16KB pages.
+Each ran 46 controlled integration tests and an independent startup check; eight
+JVM tests and release Lint also passed. The signed APK was separately installed
+on an isolated API 34 emulator: one-click download, split HLS, browser login,
+process restart and authenticated download produced ffprobe-validated files.
+All 178 packaged native libraries passed alignment checks; zipalign and AAB
+bundletool validation passed. Its signer matches preview.6.
+
+[Evidence index](verification/preview.7/index.json). ARM64 physical devices,
+actual premium/private accounts, OEM background restrictions, thermals and HDR
+display remain unverified; emulator success does not satisfy those release gates.
 
 ## Preview.6 site adapters and navigation
 

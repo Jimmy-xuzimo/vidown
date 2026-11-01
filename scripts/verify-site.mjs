@@ -62,7 +62,7 @@ try {
   );
   const cases = [];
   // SVG paths must render identically across Apple/Windows emoji font choices.
-  assert.equal(await page.locator("svg.icon-arrow-outward").count(), 28);
+  assert.equal(await page.locator("svg.icon-arrow-outward").count(), 30);
   assert.equal(await page.locator("svg.icon-arrow-right").count(), 1);
   assert.equal(
     await page
@@ -106,6 +106,8 @@ try {
     [2560, 1440],
   ];
   const order = [
+    "0.1.0-preview.7",
+    "1.0.7",
     "0.1.0-preview.6",
     "1.0.6",
     "0.1.0-preview.5",
@@ -201,7 +203,10 @@ try {
           false,
         );
         const history = page.locator("#history");
-        assert.equal(await history.locator("details.release-entry").count(), 8);
+        assert.equal(
+          await history.locator("details.release-entry").count(),
+          10,
+        );
         assert.equal(
           await history.locator("details[open]").count(),
           0,
@@ -213,11 +218,11 @@ try {
         );
         assert.equal(
           await history.locator('[data-platform="desktop"]').count(),
-          5,
+          6,
         );
         assert.equal(
           await history.locator('[data-platform="android"]').count(),
-          3,
+          4,
         );
         for (const entry of await history.locator("details").all()) {
           assert.equal(await entry.locator(".release-body").isVisible(), false);
@@ -319,14 +324,14 @@ try {
     .getAttribute("href");
   assert.equal(
     apk,
-    "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.6/Vidown-Android-0.1.0-preview.6.apk",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.7/Vidown-Android-0.1.0-preview.7.apk",
   );
   const noJS = await browser.newPage({
     javaScriptEnabled: false,
     viewport: { width: 390, height: 900 },
   });
   await noJS.goto(url);
-  assert.equal(await noJS.locator("#history .release-entry").count(), 8);
+  assert.equal(await noJS.locator("#history .release-entry").count(), 10);
   await noJS.locator("#history details summary").first().click();
   await noJS
     .locator("#history details[open] .release-body")

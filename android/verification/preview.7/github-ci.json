@@ -1,0 +1,62 @@
+{
+  "conclusion": "success",
+  "headSha": "9bfba0363ae4c0dfe65722ab93f10b1975ac95d7",
+  "jobs": [
+    {
+      "name": "build",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124576050481"
+    },
+    {
+      "name": "emulator (34, tablet, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008068"
+    },
+    {
+      "name": "emulator (37.0, tablet, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008113"
+    },
+    {
+      "name": "emulator (37.2, tablet, google_apis_ps16k)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008118"
+    },
+    {
+      "name": "emulator (34, phone, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008121"
+    },
+    {
+      "name": "emulator (35, tablet, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008166"
+    },
+    {
+      "name": "emulator (36, phone, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008173"
+    },
+    {
+      "name": "emulator (36, tablet, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008196"
+    },
+    {
+      "name": "emulator (35, phone, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008248"
+    },
+    {
+      "name": "emulator (37.0, phone, google_apis)",
+      "conclusion": "success",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124578008289"
+    },
+    {
+      "name": "signed-preview",
+      "conclusion": "skipped",
+      "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205/job/124579752818"
+    }
+  ],
+  "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205"
+}

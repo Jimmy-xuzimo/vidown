@@ -51,3 +51,9 @@ bash tools/build-native.sh
 正式签名从环境读取 `VIDOWN_KEYSTORE`、`VIDOWN_STORE_PASSWORD`、`VIDOWN_KEY_ALIAS` 和 `VIDOWN_KEY_PASSWORD`，无配置的 release 构建不带发行签名。密钥、密码、本地 SDK 路径、网站登录资料不得进入 Git。手动 Actions 签名打包另需对应 `ANDROID_*` Secrets，且依赖所有构建与模拟器检查通过；当前公开 APK 在本机签名和验收，不能据此声称云端已配置签名。
 
 Android 采用独立 `android-v…` 标签：主预览 Release 仅一个通用签名 APK；`android-materials-v…` 保留匹配的源码／构建材料及 SHA-256。AAB 独立生成用于 Play 评估，不放在普通用户下载附件中。桌面标签和五个安装包不受影响；测试或文档修复若不改变应用代码，无需替换已经发布的 APK 或移动其标签。
+
+## 旧 glob 与现代 minimatch 的构建兼容
+
+1.0.7 使用 `vendor/minimatch-compat` 为 glob 7／dir-compare 等构建依赖提供旧版可调用导出、defaults 及编译片段接口；匹配工作委托给固定的 `minimatch@11.0.3`，不恢复旧的正则实现。它是本项目 MIT 代码，原始 minimatch 保留其独立许可。锁文件中的链接统一指向仓库内 vendor 目录。
+
+使用完整 `npm ci --ignore-scripts` 后检查 `npm ls --all --omit=optional` 和 `npm audit`，再通过 `npm run setup` 准备固定版本 Electron 与引擎。兼容测试覆盖真实 glob 遍历、目录比较及 ASAR 打包／解包，不能仅以审计计数为零判断打包链路正确。不要将相对 file 路径直接写入任意层级 override，也不要删除 optional 依赖来掩盖平台构建问题。

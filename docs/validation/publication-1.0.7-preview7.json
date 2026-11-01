@@ -1,0 +1,179 @@
+{
+  "date": "2026-11-01",
+  "desktop": {
+    "assets": [
+      {
+        "name": "Vidown-1.0.7-Linux-arm64.AppImage",
+        "size": 197815714,
+        "digest": "sha256:f79a750506d3bf685cc958ea845b39d82b913b3ab05874e7885c50d489fea737",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.7/Vidown-1.0.7-Linux-arm64.AppImage"
+      },
+      {
+        "name": "Vidown-1.0.7-Linux-x86_64.AppImage",
+        "size": 199098837,
+        "digest": "sha256:c1b369e14960437b41338867221b36b7d869982012eaf31c8a16301e7edcf79e",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.7/Vidown-1.0.7-Linux-x86_64.AppImage"
+      },
+      {
+        "name": "Vidown-1.0.7-macOS-arm64.dmg",
+        "size": 178290332,
+        "digest": "sha256:27a91f0f4077f3f348dd15d4c33635121444afc9f0f68a695f52826fc00e1cae",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.7/Vidown-1.0.7-macOS-arm64.dmg"
+      },
+      {
+        "name": "Vidown-1.0.7-macOS-x64.dmg",
+        "size": 186942668,
+        "digest": "sha256:4f76e21d8eb2a17cb48b017909cf196746f6de3efb9305351b9e4ac173a582dc",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.7/Vidown-1.0.7-macOS-x64.dmg"
+      },
+      {
+        "name": "Vidown-Setup-1.0.7.exe",
+        "size": 223874412,
+        "digest": "sha256:81c2accfc51c1a350faa84ab7992b7529234551e0e773d02b7d03a39aa0c9f7e",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/v1.0.7/Vidown-Setup-1.0.7.exe"
+      }
+    ],
+    "isDraft": false,
+    "publishedAt": "2026-11-01T04:53:56Z",
+    "tagName": "v1.0.7",
+    "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7",
+    "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+  },
+  "android": {
+    "assets": [
+      {
+        "name": "Vidown-Android-0.1.0-preview.7.apk",
+        "size": 452773013,
+        "digest": "sha256:b90d36d9e9403a6c2331a8563748b05850c9ad84e213619b4d7976ab88ffee9a",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.7/Vidown-Android-0.1.0-preview.7.apk"
+      }
+    ],
+    "isDraft": false,
+    "publishedAt": "2026-11-01T04:42:40Z",
+    "tagName": "android-v0.1.0-preview.7",
+    "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7",
+    "sourceCommit": "9bfba0363ae4c0dfe65722ab93f10b1975ac95d7"
+  },
+  "desktopCI": {
+    "conclusion": "cancelled",
+    "headSha": "e196f396c4b219067f40449b5de6a970d44c74e0",
+    "jobs": [
+      {
+        "name": "Package Windows-x64",
+        "conclusion": "success",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124752282466"
+      },
+      {
+        "name": "Package macOS-x64",
+        "conclusion": "success",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124752282643"
+      },
+      {
+        "name": "Package macOS-arm64",
+        "conclusion": "success",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124752282648"
+      },
+      {
+        "name": "Package Linux-x64",
+        "conclusion": "success",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124752282655"
+      },
+      {
+        "name": "Package Linux-arm64",
+        "conclusion": "success",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124752282662"
+      },
+      {
+        "name": "Publish verified release files",
+        "conclusion": "cancelled",
+        "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921/job/124754392047"
+      }
+    ],
+    "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41273973921"
+  },
+  "androidCI": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205",
+  "signerSha256": "6fcb38e62184552ea074963cb454f3e94d105b710dfccc4616b754fdeb82b365",
+  "limitations": [
+    "No new real premium/private account acceptance",
+    "No Android ARM64 physical-device acceptance",
+    "Desktop Windows unsigned; macOS ad-hoc without notarization"
+  ],
+  "publicationCI": {
+    "conclusion": "success",
+    "headSha": "1c2c94172452786f38966edf3773d965e9570ee6",
+    "url": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41274773515"
+  },
+  "verifiedDesktopReports": [
+    {
+      "file": "Vidown-1.0.7-Linux-arm64-verification.json",
+      "platform": "Linux",
+      "arch": "arm64",
+      "suites": [
+        "media-verification",
+        "protocol-edge-verification",
+        "mirror-verification",
+        "packaged-verification",
+        "data-cleanup-chromium",
+        "package-layout"
+      ],
+      "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+    },
+    {
+      "file": "Vidown-1.0.7-Linux-x64-verification.json",
+      "platform": "Linux",
+      "arch": "x64",
+      "suites": [
+        "media-verification",
+        "protocol-edge-verification",
+        "mirror-verification",
+        "packaged-verification",
+        "data-cleanup-chromium",
+        "package-layout"
+      ],
+      "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+    },
+    {
+      "file": "Vidown-1.0.7-macOS-arm64-verification.json",
+      "platform": "macOS",
+      "arch": "arm64",
+      "suites": [
+        "media-verification",
+        "protocol-edge-verification",
+        "mirror-verification",
+        "packaged-verification",
+        "data-cleanup-chromium",
+        "package-layout"
+      ],
+      "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+    },
+    {
+      "file": "Vidown-1.0.7-macOS-x64-verification.json",
+      "platform": "macOS",
+      "arch": "x64",
+      "suites": [
+        "media-verification",
+        "protocol-edge-verification",
+        "mirror-verification",
+        "packaged-verification",
+        "data-cleanup-chromium",
+        "package-layout"
+      ],
+      "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+    },
+    {
+      "file": "Vidown-1.0.7-Windows-x64-verification.json",
+      "platform": "Windows",
+      "arch": "x64",
+      "suites": [
+        "media-verification",
+        "protocol-edge-verification",
+        "mirror-verification",
+        "packaged-verification",
+        "data-cleanup-webview2",
+        "webview2-verification",
+        "portable-release-verification"
+      ],
+      "sourceCommit": "e196f396c4b219067f40449b5de6a970d44c74e0"
+    }
+  ]
+}

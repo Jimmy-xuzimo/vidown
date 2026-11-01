@@ -1,11 +1,21 @@
 # 更新历史
 
-## 开发分支 · 尚未发布
+## Android 0.1.0-preview.7 · 2026-11-01
 
-- Issue #2：桌面／Android 工作台新增“解析并下载”，支持 1–50 个链接逐项处理；保留手动选轨、单集与语言确认，默认保留源规格。
-- 探测使用有界并发，浏览器辅助操作与 Android Python 提取器保守串行；下载沿用 1–4 并发设置。失败项可单独重试，取消后迟到结果不入队；增加请求幂等和同来源同规格的活动任务查重。
-- Android 自绘玻璃导航替换为 Google 官方 Compose Material 3 导航栏／导航轨道，保留滑动切页、横竖屏布局和触控语义。
-- 本节为源码变化，不代表已有公开安装包更新，也不构成真实账号、所有站点或真机后台验收。
+- 一键“解析并下载”，每批最多 50 条链接，逐项显示状态；失败可单独重试，取消后迟到结果不入队。
+- 保留手动音视频选轨；有单集、语言、源提示或网页保存步骤时要求确认。增加活动任务查重。
+- 导航改用 Google 官方 Compose Material 3 NavigationBar／NavigationRail，保留横竖屏布局与滑动切页。
+- Android 14—17 九种模拟器配置通过；签名 APK 另外验证一键下载、分轨合并、登录及重启后鉴权下载。真实会员和真机后台仍待验证。
+
+[APK](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7) · [源码与材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-materials-v0.1.0-preview.7)
+
+## 桌面 1.0.7 · 2026-11-01
+
+- Issue #2：新增一键解析入队、多链接有界探测、逐项重试与取消；保留原来的手动选轨流程，下载沿用 1–4 并发。
+- 增加请求幂等和同来源同规格活动任务查重，避免重复点击重复下载。不保证识别所有短链与签名地址为同一媒体。
+- 更新 Electron 44.10.1、打包与测试依赖，修复依赖审计告警；旧 glob 构建工具通过兼容适配使用新版 minimatch 匹配实现。
+
+[安装包](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7) · [源码与材料](https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7-materials)
 
 按已公开的应用 Release 记录，桌面与 Android 使用独立版本。日期采用北京时间。资料 Release 不是额外应用版本；未单独公开发行的中间预览不列为发行版本。
 

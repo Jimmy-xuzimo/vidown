@@ -2,18 +2,17 @@
 
 Native Android implementation of Vidown. This independent project lives beside the desktop application. It does not embed Electron, Node.js, React or the desktop Windows browser host.
 
-**0.1.0-preview.6 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
+**0.1.0-preview.7 — signed Android preview.** Download the single universal APK from the [Android release](https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7). The complete migration plan is not yet finished. Premium-account extraction, physical-device background behavior, battery use, thermals and HDR display remain separate release gates. The desktop release number and tags are unchanged. See [acceptance and remaining work](ACCEPTANCE.md) for the exact tested scope.
 
-Preview.6 adds exact-video Douyin webpage discovery, Bilibili film/episode and voice-version selection, and a persistent adaptive navigation bar with native Compose swipe paging. All extraction uses the saved Gecko session. Preview-only playback is labeled explicitly; DRM and account/region restrictions remain enforceable. Public-network results are reported per site and do not establish premium-account support.
+Preview.6 introduced exact-video Douyin webpage discovery, Bilibili film/episode and voice-version selection, and a persistent adaptive navigation bar with native Compose swipe paging. All extraction uses the saved Gecko session. Preview-only playback is labeled explicitly; DRM and account/region restrictions remain enforceable. Public-network results are reported per site and do not establish premium-account support.
 
 ## Native interface
 
 The workbench, queue, history and settings use Kotlin, Jetpack Compose and public
-Material 3 components. The development branch replaces the former custom glass
+Material 3 components. Preview.7 replaces the former custom glass
 capsule with Google's `NavigationBar` / `NavigationBarItem` in portrait and
 `NavigationRail` / `NavigationRailItem` in landscape. The rail's items stay
-vertically centred and scroll when height is constrained. This change is not yet
-part of the published preview.6 APK. Browser resources open in a native modal bottom sheet on phones
+vertically centred and scroll when height is constrained. This change is included in the signed preview.7 APK. Browser resources open in a native modal bottom sheet on phones
 and in a side panel when sufficient width is available.
 
 Four palettes include complete light and dark surfaces. Status and navigation bar
@@ -28,7 +27,7 @@ it; newly created tabs continue to default to desktop mode. Fixed-height tabs,
 ellipsis titles and a reserved progress row prevent browser chrome from jumping.
 Sites can still choose their own responsive layout.
 
-![Adaptive floating navigation and link-first workbench](verification/preview.4/interface-preview.png)
+![Earlier preview.4 interface, before the preview.7 official Material 3 navigation](verification/preview.4/interface-preview.png)
 
 The link input is the first workbench card. Successful extraction reveals the new
 format card automatically; repeated extraction replaces the old result for that

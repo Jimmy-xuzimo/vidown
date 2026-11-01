@@ -1,0 +1,49 @@
+{
+  "appId": "top.xuzimo.vidown",
+  "minSdk": 34,
+  "compileSdk": "37.2",
+  "targetSdk": 37,
+  "packagedAbis": ["arm64-v8a", "x86_64"],
+  "executedAbis": ["x86_64"],
+  "signerSha256": "6fcb38e62184552ea074963cb454f3e94d105b710dfccc4616b754fdeb82b365",
+  "executedPageSizes": [4096, 16384],
+  "version": "0.1.0-preview.7",
+  "date": "2026-11-01",
+  "runtimeCommit": "9bfba0363ae4c0dfe65722ab93f10b1975ac95d7",
+  "previousVersionEvidence": "preview.6/index.json",
+  "ciPassed": true,
+  "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205",
+  "ciReport": "preview.7/github-ci.json",
+  "releaseReports": ["preview.7/signed-apk.json"],
+  "nativeReport": "preview.7/native-alignment.json",
+  "realAccountAcceptance": false,
+  "physicalDeviceAcceptance": false,
+  "jvmTests": 8,
+  "artifacts": [
+    {
+      "file": "Vidown-Android-0.1.0-preview.7.apk",
+      "bytes": 452773013,
+      "sha256": "b90d36d9e9403a6c2331a8563748b05850c9ad84e213619b4d7976ab88ffee9a"
+    },
+    {
+      "file": "Vidown-Android-0.1.0-preview.7.aab",
+      "bytes": 210904934,
+      "sha256": "fb93aa29a73777470dd42dc5c7503df0aae82c59eaeac91816f3cfd79bc57e11"
+    }
+  ],
+  "controlledDeviceReports": [
+    "preview.7/android-34-phone-google_apis.json",
+    "preview.7/android-34-tablet-google_apis.json",
+    "preview.7/android-35-phone-google_apis.json",
+    "preview.7/android-35-tablet-google_apis.json",
+    "preview.7/android-36-phone-google_apis.json",
+    "preview.7/android-36-tablet-google_apis.json",
+    "preview.7/android-37.0-phone-google_apis.json",
+    "preview.7/android-37.0-tablet-google_apis.json",
+    "preview.7/android-37.2-tablet-google_apis_ps16k.json"
+  ],
+  "startupIsolationTests": "1 independent cold-start test per configuration",
+  "apkMapping": "zipalign -c -P 16 4 passed",
+  "bundletoolValidation": "1.18.3 validate passed",
+  "publicationReport": "../../docs/validation/publication-1.0.7-preview7.json"
+}

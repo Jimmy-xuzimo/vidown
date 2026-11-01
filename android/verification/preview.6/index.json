@@ -1,0 +1,68 @@
+{
+  "version": "0.1.0-preview.6",
+  "date": "2026-10-19",
+  "appId": "top.xuzimo.vidown",
+  "runtimeReference": "android-v0.1.0-preview.6 tag and corresponding source materials",
+  "minSdk": 34,
+  "compileSdk": "37.2",
+  "targetSdk": 37,
+  "packagedAbis": ["arm64-v8a", "x86_64"],
+  "executedAbis": ["x86_64"],
+  "artifacts": [
+    {
+      "file": "Vidown-Android-0.1.0-preview.6.apk",
+      "bytes": 452740245,
+      "sha256": "02f746ed81e369c382117018e23599f68db74c8c4de7bea7dfb77d85430d6115"
+    },
+    {
+      "file": "Vidown-Android-0.1.0-preview.6.aab",
+      "bytes": 210852431,
+      "sha256": "37664842c6379f2c43206d0d6bd4d7e8c1dadcdce35ffadc3cd58c5fdcf8eda8"
+    }
+  ],
+  "lint": {
+    "debug": {
+      "Fatal": 0,
+      "Error": 0,
+      "Warning": 28
+    },
+    "release": {
+      "Fatal": 0,
+      "Error": 0,
+      "Warning": 28
+    }
+  },
+  "jvmTests": 4,
+  "controlledDeviceReports": [
+    "preview.6/phone34-final.json",
+    "preview.6/tablet37-final.json"
+  ],
+  "startupIsolationTests": "1 separate cold check per full local suite",
+  "finalAdapterRegression": "preview.6/site-adapter-regression.json",
+  "releaseReports": ["preview.6/release34.json", "preview.6/release37.json"],
+  "publicReport": "preview.6/public-sites.json",
+  "nativeReport": "preview.6/native-alignment.json",
+  "attemptHistory": "preview.6/attempts.json",
+  "websiteReport": "preview.6/website-local.json",
+  "apkSignature": "apksigner verify: v2, same distribution signer as preview.5",
+  "signerSha256": "6fcb38e62184552ea074963cb454f3e94d105b710dfccc4616b754fdeb82b365",
+  "apkMapping": "zipalign -c -P 16 4 passed",
+  "bundletoolValidation": "1.18.3 validate passed",
+  "previousVersionEvidence": "preview.5/index.json",
+  "realAccountAcceptance": false,
+  "physicalDeviceAcceptance": false,
+  "ciStatusAtPackaging": "All nine final-source configurations passed; final signed APK separately verified locally.",
+  "keyboardRegression": "preview.6/keyboard-navigation34-tablet.json",
+  "keyboardRegression37": "preview.6/keyboard-navigation37-tablet.json",
+  "executedPageSizes": [4096, 16384],
+  "previousLocalExtractionBaseline": [
+    "preview.6/phone34.json",
+    "preview.6/tablet37-16k.json"
+  ],
+  "ciPassed": true,
+  "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/39201219937",
+  "ciReport": "preview.6/github-ci.json",
+  "runtimeCommit": "690203459127e7af05fa5b3ae1647fc54981052b",
+  "deployedWebsiteReport": "preview.6/website-deployed.json",
+  "publicationReport": "../../docs/validation/publication-1.0.6-preview6.json"
+}
