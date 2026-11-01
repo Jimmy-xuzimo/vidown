@@ -145,7 +145,15 @@ try {
         .length === 4,
   );
   assert.deepEqual(errors, []);
-  await page.screenshot({ path: join(root, "workbench.png") });
+  // Hidden windows on Linux do not submit compositor frames for screenshots.
+  // Show only after the behavioral checks, without changing headless download tests.
+  await app.evaluate(({ BrowserWindow }) => {
+    BrowserWindow.getAllWindows()[0]?.show();
+  });
+  await page.screenshot({
+    path: join(root, "workbench.png"),
+    animations: "disabled",
+  });
   await writeFile(
     join(root, "summary.json"),
     JSON.stringify(

@@ -1,4 +1,4 @@
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { resolve, join } from "node:path";
 import { createHash, randomUUID } from "node:crypto";
 import assert from "node:assert/strict";
@@ -65,13 +65,7 @@ for (const kind of ["Setup", "Portable"]) {
     sha256: await hash(resolve("release", file)),
     payloadSHA256: await hash(payload),
   });
-  await command(zip, [
-    "x",
-    payload,
-    `-o${directory}/payload`,
-    "-y",
-    ...selected,
-  ]);
+  await command(zip, ["x", payload, `-o${directory}/payload`, "-y"]);
   for (const name of selected) {
     const actual = await hash(join(directory, "payload", name));
     assert.equal(
@@ -87,7 +81,30 @@ for (const kind of ["Setup", "Portable"]) {
     });
   }
 }
-assert.equal(artifacts[0].payloadSHA256, artifacts[1].payloadSHA256);
+// NSIS compression metadata can differ across targets. Compare every extracted
+// file against the tested application instead of requiring byte-identical archives.
+async function manifest(directory: string) {
+  const files = (
+    await readdir(directory, { recursive: true, withFileTypes: true })
+  ).filter((entry) => entry.isFile());
+  return Object.fromEntries(
+    await Promise.all(
+      files.map(async (entry) => {
+        const path = join(entry.parentPath, entry.name);
+        const key = path.slice(directory.length + 1).replaceAll("\\", "/");
+        return [key, await hash(path)];
+      }),
+    ),
+  );
+}
+const expected = await manifest(resolve("release/win-unpacked"));
+for (const kind of ["Setup", "Portable"]) {
+  assert.deepEqual(
+    await manifest(join(root, kind, "payload")),
+    expected,
+    `Full extracted payload differs: ${kind}`,
+  );
+}
 const report = {
   generatedAt: new Date().toISOString(),
   version,
