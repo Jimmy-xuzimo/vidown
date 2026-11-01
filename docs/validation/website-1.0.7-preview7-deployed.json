@@ -1,0 +1,1079 @@
+{
+  "passed": true,
+  "browser": "chromium",
+  "vectorArrows": true,
+  "url": "https://jimmy-xuzimo.github.io/vidown/",
+  "cases": [
+    {
+      "width": 320,
+      "height": 568,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 146.078125,
+        "titleBottom": 227.140625,
+        "actionBottom": 359.921875,
+        "cardWidth": 272,
+        "viewportHeight": 568
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 146.078125,
+        "titleBottom": 227.140625,
+        "actionBottom": 359.921875,
+        "cardWidth": 272,
+        "viewportHeight": 568
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 146.078125,
+        "titleBottom": 227.140625,
+        "actionBottom": 359.921875,
+        "cardWidth": 272,
+        "viewportHeight": 568
+      }
+    },
+    {
+      "width": 320,
+      "height": 568,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 146.078125,
+        "titleBottom": 227.140625,
+        "actionBottom": 359.921875,
+        "cardWidth": 272,
+        "viewportHeight": 568
+      }
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 217.609375,
+        "titleBottom": 227.609375,
+        "actionBottom": 360.390625,
+        "cardWidth": 312,
+        "viewportHeight": 640
+      }
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 217.609375,
+        "titleBottom": 227.609375,
+        "actionBottom": 360.390625,
+        "cardWidth": 312,
+        "viewportHeight": 640
+      }
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 217.609375,
+        "titleBottom": 227.609375,
+        "actionBottom": 360.390625,
+        "cardWidth": 312,
+        "viewportHeight": 640
+      }
+    },
+    {
+      "width": 360,
+      "height": 640,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 217.609375,
+        "titleBottom": 227.609375,
+        "actionBottom": 360.390625,
+        "cardWidth": 312,
+        "viewportHeight": 640
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 235.953125,
+        "actionBottom": 368.734375,
+        "cardWidth": 342,
+        "viewportHeight": 844
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 235.953125,
+        "actionBottom": 368.734375,
+        "cardWidth": 342,
+        "viewportHeight": 844
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 235.953125,
+        "actionBottom": 368.734375,
+        "cardWidth": 342,
+        "viewportHeight": 844
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 235.953125,
+        "actionBottom": 368.734375,
+        "cardWidth": 342,
+        "viewportHeight": 844
+      }
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 247.078125,
+        "actionBottom": 379.859375,
+        "cardWidth": 382,
+        "viewportHeight": 932
+      }
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 247.078125,
+        "actionBottom": 379.859375,
+        "cardWidth": 382,
+        "viewportHeight": 932
+      }
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 247.078125,
+        "actionBottom": 379.859375,
+        "cardWidth": 382,
+        "viewportHeight": 932
+      }
+    },
+    {
+      "width": 430,
+      "height": 932,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 290,
+        "titleBottom": 247.078125,
+        "actionBottom": 379.859375,
+        "cardWidth": 382,
+        "viewportHeight": 932
+      }
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 243,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 271.5,
+        "viewportHeight": 320
+      }
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 243,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 271.5,
+        "viewportHeight": 320
+      }
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 243,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 271.5,
+        "viewportHeight": 320
+      }
+    },
+    {
+      "width": 568,
+      "height": 320,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 243,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 271.5,
+        "viewportHeight": 320
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 328.4375,
+        "viewportHeight": 375
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 328.4375,
+        "viewportHeight": 375
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 328.4375,
+        "viewportHeight": 375
+      }
+    },
+    {
+      "width": 667,
+      "height": 375,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 201.328125,
+        "actionBottom": 303.609375,
+        "cardWidth": 328.4375,
+        "viewportHeight": 375
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 219.234375,
+        "actionBottom": 332.828125,
+        "cardWidth": 395.453125,
+        "viewportHeight": 390
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 219.234375,
+        "actionBottom": 332.828125,
+        "cardWidth": 395.453125,
+        "viewportHeight": 390
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 219.234375,
+        "actionBottom": 332.828125,
+        "cardWidth": 395.453125,
+        "viewportHeight": 390
+      }
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 219.234375,
+        "actionBottom": 332.828125,
+        "cardWidth": 395.453125,
+        "viewportHeight": 390
+      }
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 229.15625,
+        "actionBottom": 342.75,
+        "cardWidth": 446.0625,
+        "viewportHeight": 430
+      }
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 229.15625,
+        "actionBottom": 342.75,
+        "cardWidth": 446.0625,
+        "viewportHeight": 430
+      }
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 229.15625,
+        "actionBottom": 342.75,
+        "cardWidth": 446.0625,
+        "viewportHeight": 430
+      }
+    },
+    {
+      "width": 932,
+      "height": 430,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 280,
+        "titleBottom": 229.15625,
+        "actionBottom": 342.75,
+        "cardWidth": 446.0625,
+        "viewportHeight": 430
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 272.46875,
+        "actionBottom": 488.25,
+        "cardWidth": 381.90625,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 272.46875,
+        "actionBottom": 488.25,
+        "cardWidth": 381.90625,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 272.46875,
+        "actionBottom": 488.25,
+        "cardWidth": 381.90625,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 272.46875,
+        "actionBottom": 488.25,
+        "cardWidth": 381.90625,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 768
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 768
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 768
+      }
+    },
+    {
+      "width": 1024,
+      "height": 768,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 768
+      }
+    },
+    {
+      "width": 800,
+      "height": 1280,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 276.9375,
+        "actionBottom": 492.71875,
+        "cardWidth": 400.3125,
+        "viewportHeight": 1280
+      }
+    },
+    {
+      "width": 800,
+      "height": 1280,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 276.9375,
+        "actionBottom": 492.71875,
+        "cardWidth": 400.3125,
+        "viewportHeight": 1280
+      }
+    },
+    {
+      "width": 800,
+      "height": 1280,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 276.9375,
+        "actionBottom": 492.71875,
+        "cardWidth": 400.3125,
+        "viewportHeight": 1280
+      }
+    },
+    {
+      "width": 800,
+      "height": 1280,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 276.9375,
+        "actionBottom": 492.71875,
+        "cardWidth": 400.3125,
+        "viewportHeight": 1280
+      }
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 800
+      }
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 800
+      }
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 800
+      }
+    },
+    {
+      "width": 1280,
+      "height": 800,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 800
+      }
+    },
+    {
+      "width": 1024,
+      "height": 1366,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 1366
+      }
+    },
+    {
+      "width": 1024,
+      "height": 1366,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 1366
+      }
+    },
+    {
+      "width": 1024,
+      "height": 1366,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 1366
+      }
+    },
+    {
+      "width": 1024,
+      "height": 1366,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 350,
+        "titleBottom": 308.125,
+        "actionBottom": 465.90625,
+        "cardWidth": 500.109375,
+        "viewportHeight": 1366
+      }
+    },
+    {
+      "width": 1366,
+      "height": 1024,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 358.71875,
+        "actionBottom": 520.21875,
+        "cardWidth": 638.109375,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 1366,
+      "height": 1024,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 358.71875,
+        "actionBottom": 520.21875,
+        "cardWidth": 638.109375,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 1366,
+      "height": 1024,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 358.71875,
+        "actionBottom": 520.21875,
+        "cardWidth": 638.109375,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 1366,
+      "height": 1024,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 358.71875,
+        "actionBottom": 520.21875,
+        "cardWidth": 638.109375,
+        "viewportHeight": 1024
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 720
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 720
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 720
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 347.9375,
+        "actionBottom": 509.4375,
+        "cardWidth": 633.5,
+        "viewportHeight": 720
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 368,
+        "actionBottom": 529.5,
+        "cardWidth": 638.109375,
+        "viewportHeight": 900
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 368,
+        "actionBottom": 529.5,
+        "cardWidth": 638.109375,
+        "viewportHeight": 900
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 368,
+        "actionBottom": 529.5,
+        "cardWidth": 638.109375,
+        "viewportHeight": 900
+      }
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 368,
+        "actionBottom": 529.5,
+        "cardWidth": 638.109375,
+        "viewportHeight": 900
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1080
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1080
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1080
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1080
+      }
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "theme": "light",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1440
+      }
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "theme": "light",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1440
+      }
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "theme": "dark",
+      "language": "zh-CN",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1440
+      }
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "theme": "dark",
+      "language": "en",
+      "hero": {
+        "artworkDrawn": true,
+        "imageVisible": 405,
+        "titleBottom": 384.53125,
+        "actionBottom": 546.03125,
+        "cardWidth": 628.90625,
+        "viewportHeight": 1440
+      }
+    }
+  ],
+  "noJavaScript": true,
+  "keyboard": true,
+  "firstViewport": true,
+  "timelineInitiallyCollapsed": true,
+  "releaseLinks": [
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3",
+    "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.2"
+  ],
+  "apk": "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.7/Vidown-Android-0.1.0-preview.7.apk",
+  "remoteStatus": [
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.7",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.7",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.6",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.6",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.5",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/android-v0.1.0-preview.4",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.5",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.4",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.3",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/tag/v1.0.2",
+      "status": 200
+    },
+    {
+      "url": "https://github.com/Jimmy-xuzimo/vidown/releases/download/android-v0.1.0-preview.7/Vidown-Android-0.1.0-preview.7.apk",
+      "status": 200
+    }
+  ]
+}

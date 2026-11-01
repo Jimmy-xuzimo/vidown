@@ -4,6 +4,8 @@
 
 [网页本地 72 组布局检查](validation/website-1.0.7-preview7-local.json)与[四种窗口动效检查](validation/website-motion-1.0.7-preview7-local.json)通过，覆盖更新记录折叠、首屏、主题扩散、快速点击、减少动态效果和回退。
 
+发布后[线上 72 组布局及链接检查](validation/website-1.0.7-preview7-deployed.json)和[线上动效检查](validation/website-motion-1.0.7-preview7-deployed.json)同样通过。Pages 部署成功，正式桌面 Release 仅 5 个包、Android Release 仅 1 个 APK，公开 APK 摘要与本机签名产物一致。
+
 本次将 Issue #2 的一键／批量提交和官方 Material 3 导航打入安装包。桌面依赖更新至 Electron 44.10.1、electron-builder 26.18.0、Vitest 4.1.12；旧 glob 的 minimatch 调用经本项目 MIT 兼容适配委托给 11.0.3 的匹配器。全新 npm ci、依赖图检查、生产构建和 57 项测试通过；npm audit 为零，GitHub Dependabot 未解决项为零。此结果是本轮检测快照，不表示未来不会新增公告。
 
 Android [构建与九种模拟器配置](https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205)全部通过，每种执行 46 项受控集成和独立冷启动测试，包含 API 34—37 的手机／平板及 16KB 页面环境。签名 APK 另经实际一键下载、HLS 分轨合并、浏览器登录及进程重启后的鉴权下载验证，成品由 ffprobe 检查。178 个原生库对齐、zipalign 和 AAB bundletool 验证通过；签名延续 preview.6。[Android 证据索引](../android/verification/preview.7/index.json)。真实会员账号、ARM64 真机、温控与厂商后台仍未验收。

@@ -10,12 +10,12 @@
   "version": "0.1.0-preview.7",
   "date": "2026-11-01",
   "runtimeCommit": "9bfba0363ae4c0dfe65722ab93f10b1975ac95d7",
-  "previousVersionEvidence": "preview.6/index.json",
+  "previousVersionEvidence": "../preview.6/index.json",
   "ciPassed": true,
   "ciRun": "https://github.com/Jimmy-xuzimo/vidown/actions/runs/41214490205",
-  "ciReport": "preview.7/github-ci.json",
-  "releaseReports": ["preview.7/signed-apk.json"],
-  "nativeReport": "preview.7/native-alignment.json",
+  "ciReport": "github-ci.json",
+  "releaseReports": ["signed-apk.json"],
+  "nativeReport": "native-alignment.json",
   "realAccountAcceptance": false,
   "physicalDeviceAcceptance": false,
   "jvmTests": 8,
@@ -32,18 +32,18 @@
     }
   ],
   "controlledDeviceReports": [
-    "preview.7/android-34-phone-google_apis.json",
-    "preview.7/android-34-tablet-google_apis.json",
-    "preview.7/android-35-phone-google_apis.json",
-    "preview.7/android-35-tablet-google_apis.json",
-    "preview.7/android-36-phone-google_apis.json",
-    "preview.7/android-36-tablet-google_apis.json",
-    "preview.7/android-37.0-phone-google_apis.json",
-    "preview.7/android-37.0-tablet-google_apis.json",
-    "preview.7/android-37.2-tablet-google_apis_ps16k.json"
+    "android-34-phone-google_apis.json",
+    "android-34-tablet-google_apis.json",
+    "android-35-phone-google_apis.json",
+    "android-35-tablet-google_apis.json",
+    "android-36-phone-google_apis.json",
+    "android-36-tablet-google_apis.json",
+    "android-37.0-phone-google_apis.json",
+    "android-37.0-tablet-google_apis.json",
+    "android-37.2-tablet-google_apis_ps16k.json"
   ],
   "startupIsolationTests": "1 independent cold-start test per configuration",
   "apkMapping": "zipalign -c -P 16 4 passed",
   "bundletoolValidation": "1.18.3 validate passed",
-  "publicationReport": "../../docs/validation/publication-1.0.7-preview7.json"
+  "publicationReport": "../../../docs/validation/publication-1.0.7-preview7.json"
 }
