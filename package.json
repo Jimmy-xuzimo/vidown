@@ -48,7 +48,7 @@
     "verify:douyin": "node --import tsx scripts/verify-douyin.ts"
   },
   "dependencies": {
-    "fast-xml-parser": "5.11.2",
+    "fast-xml-parser": "5.12.0",
     "m3u8-parser": "7.2.0",
     "react": "19.2.4",
     "react-dom": "19.2.4"
